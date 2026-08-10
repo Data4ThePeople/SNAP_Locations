@@ -140,6 +140,12 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 .item .n { color: var(--ink-3); font-size: 11px; font-variant-numeric: tabular-nums; flex: none; }
 .item.dim .nm { color: var(--ink-3); }
 
+/* Parent company rows own their banners; children are indented under them. */
+.item.parent { margin-top: 5px; }
+.item.parent .nm { font-weight: 600; }
+.item.child { padding-left: 18px; }
+.item.child .nm { color: var(--ink-2); }
+
 .group {
   margin: 9px 0 3px;
   font-size: 10px;

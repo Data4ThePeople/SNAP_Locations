@@ -385,10 +385,28 @@ const CATEGORY_LABEL = {
   variety: 'Variety & closeout', specialty: 'Specialty & delivery',
 };
 
+/** Recompute each parent row's checkbox from its members: on / off / mixed. */
+function syncParents() {
+  document.querySelectorAll('[data-parent]').forEach((cb) => {
+    const ids = cb.dataset.parent.split(',').map(Number);
+    const on = ids.filter((id) => state.brandOn[id]).length;
+    cb.checked = on > 0;
+    cb.indeterminate = on > 0 && on < ids.length;
+  });
+}
+
 function buildBrandList() {
   const box = document.getElementById('brands');
-  const groups = {};
-  meta.brands.forEach((b, i) => (groups[b.category] ||= []).push({ ...b, id: i + 1 }));
+  const byName = new Map(meta.brands.map((b, i) => [b.name, { ...b, id: i + 1 }]));
+
+  // A brand can sit under two parents — Tom Thumb is Kroger in FL/AL and
+  // Albertsons in TX — but it is one filterable brand, so it is listed once
+  // under the first parent and marked.
+  const parentsOf = new Map();
+  meta.groups.forEach((g) => g.members.forEach((m) => {
+    if (!parentsOf.has(m.brand)) parentsOf.set(m.brand, []);
+    if (!parentsOf.get(m.brand).includes(g.name)) parentsOf.get(m.brand).push(g.name);
+  }));
 
   // These carry data-name like every other row so the search filter hides them
   // too; without it they sat pinned above the results looking like matches.
@@ -399,10 +417,45 @@ function buildBrandList() {
       <span class="n">${fmtNum(meta.unbranded.independent)}</span></label>
     <label class="item" data-name="unknown"><input type="checkbox" data-unb="2" checked>
       <span class="nm">Unknown</span>
-      <span class="n">${fmtNum(meta.unbranded.unknown)}</span></label>`;
+      <span class="n">${fmtNum(meta.unbranded.unknown)}</span></label>
+    <div class="group">Parent companies</div>`;
 
+  const claimed = new Set();
+  for (const g of [...meta.groups].sort((a, b) => b.total - a.total)) {
+    const members = [...new Map(
+      g.members.map((m) => byName.get(m.brand)).filter(Boolean).map((m) => [m.id, m])
+    ).values()].filter((m) => !claimed.has(m.id));
+    if (!members.length) continue;
+    members.sort((a, b) => b.total - a.total);
+
+    const ids = members.map((m) => m.id);
+    const names = [g.name, ...members.map((m) => m.name)].join(' ').toLowerCase();
+    html += `
+      <label class="item parent" data-name="${names}">
+        <input type="checkbox" data-parent="${ids}" checked>
+        <span class="nm">${g.name}</span>
+        <span class="n">${fmtNum(g.total)}</span>
+      </label>`;
+    for (const m of members) {
+      claimed.add(m.id);
+      const also = (parentsOf.get(m.name) || []).filter((p) => p !== g.name);
+      html += `
+        <label class="item child" data-name="${m.name.toLowerCase()}"
+               ${also.length ? `title="Also part of ${also.join(', ')}"` : ''}>
+          <input type="checkbox" data-brand="${m.id}" checked>
+          <span class="nm">${m.name}${also.length ? ' †' : ''}</span>
+          <span class="n">${fmtNum(m.total)}</span>
+        </label>`;
+    }
+  }
+
+  // Everything with no parent company, still grouped by what kind of store it is.
+  const rest = {};
+  meta.brands.forEach((b, i) => {
+    if (!claimed.has(i + 1)) (rest[b.category] ||= []).push({ ...b, id: i + 1 });
+  });
   for (const cat of Object.keys(CATEGORY_LABEL)) {
-    const list = groups[cat];
+    const list = rest[cat];
     if (!list) continue;
     list.sort((a, b) => b.total - a.total);
     html += `<div class="group">${CATEGORY_LABEL[cat]}</div>` + list.map((b) => `
@@ -415,17 +468,38 @@ function buildBrandList() {
   box.innerHTML = html;
 
   box.addEventListener('change', (e) => {
-    const { brand, unb } = e.target.dataset;
-    if (brand !== undefined) state.brandOn[brand] = e.target.checked ? 1 : 0;
-    else if (unb !== undefined) state.unbranded[unb] = e.target.checked ? 1 : 0;
-    else return;
+    const { brand, unb, parent } = e.target.dataset;
+    if (parent !== undefined) {
+      const on = e.target.checked ? 1 : 0;
+      parent.split(',').forEach((id) => {
+        state.brandOn[id] = on;
+        const cb = box.querySelector(`[data-brand="${id}"]`);
+        if (cb) cb.checked = !!on;
+      });
+    } else if (brand !== undefined) {
+      state.brandOn[brand] = e.target.checked ? 1 : 0;
+      syncParents();
+    } else if (unb !== undefined) {
+      state.unbranded[unb] = e.target.checked ? 1 : 0;
+    } else return;
     refresh(false);
   });
 
   document.getElementById('brandSearch').addEventListener('input', (e) => {
     const q = e.target.value.trim().toLowerCase();
+    // A parent row's data-name includes its members, so searching "kroger"
+    // matches the parent; its children are then revealed with it.
+    let parentShown = false;
     box.querySelectorAll('.item[data-name]').forEach((el) => {
-      el.style.display = !q || el.dataset.name.includes(q) ? '' : 'none';
+      let show;
+      if (!q) show = true;
+      else if (el.classList.contains('parent')) {
+        show = el.dataset.name.includes(q);
+        parentShown = show;
+      } else if (el.classList.contains('child')) {
+        show = parentShown || el.dataset.name.includes(q);
+      } else show = el.dataset.name.includes(q);
+      el.style.display = show ? '' : 'none';
     });
     box.querySelectorAll('.group').forEach((g) => { g.style.display = q ? 'none' : ''; });
   });
@@ -439,6 +513,10 @@ function setAll(kind, on) {
     state.brandOn.fill(on);
     state.unbranded[1] = state.unbranded[2] = on;
     document.querySelectorAll('[data-brand],[data-unb]').forEach((c) => (c.checked = !!on));
+    document.querySelectorAll('[data-parent]').forEach((c) => {
+      c.checked = !!on;
+      c.indeterminate = false;
+    });
   }
   refresh(false);
 }
