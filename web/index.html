@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNAP Retailers, 2006–2025</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/deck.gl@9.0.36/dist.min.js"></script>
+</head>
+<body>
+
+<aside id="panel">
+  <header>
+    <h1>SNAP Retailers</h1>
+    <p class="sub">Authorized retailers, 2006–2025</p>
+  </header>
+
+  <section class="block">
+    <div class="row-between">
+      <label class="lbl" for="year">Year <output id="yearOut">2025</output></label>
+      <button id="play" class="btn-icon" title="Animate through years" aria-label="Animate through years">▶</button>
+    </div>
+    <input type="range" id="year" min="0" max="19" value="19" step="1">
+    <p id="count" class="count">—</p>
+  </section>
+
+  <section class="block">
+    <span class="lbl">Color by</span>
+    <div class="seg" id="colorMode" role="group" aria-label="Color by">
+      <button data-mode="ownership" class="on">Ownership</button>
+      <button data-mode="format">Format</button>
+      <button data-mode="single">None</button>
+    </div>
+    <div id="legend" class="legend"></div>
+    <p id="highlightHint" class="hint" hidden>
+      Pick up to 3 formats to color. Everything else stays gray.
+    </p>
+  </section>
+
+  <section class="block">
+    <div class="row-between">
+      <span class="lbl">Store format</span>
+      <span class="mini-actions">
+        <button data-all="format">All</button><button data-none="format">None</button>
+      </span>
+    </div>
+    <div id="formats" class="list scroll-sm"></div>
+  </section>
+
+  <section class="block grow">
+    <div class="row-between">
+      <span class="lbl">Retailer</span>
+      <span class="mini-actions">
+        <button data-all="brand">All</button><button data-none="brand">None</button>
+      </span>
+    </div>
+    <input type="search" id="brandSearch" placeholder="Search 283 retailers…" autocomplete="off">
+    <div id="brands" class="list scroll-lg"></div>
+  </section>
+
+  <footer>
+    <label class="theme">
+      <input type="checkbox" id="light"> Light basemap
+    </label>
+    <p class="note">
+      A store appears in a year if it was authorized on <strong>Dec 31</strong> of that year.
+      33,972 stores (5.3%) opened and closed between Dec 31sts and never appear.
+      Stores without coordinates are excluded.
+    </p>
+    <p class="note">Source: USDA SNAP Retailer Locator Historical Data, 2005–2025.</p>
+  </footer>
+</aside>
+
+<main id="map"></main>
+<div id="loading">Loading 611,202 stores…</div>
+<div id="tooltip" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

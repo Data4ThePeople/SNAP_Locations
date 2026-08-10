@@ -13,4 +13,8 @@ data/raw/hist.csv
 # The source zip is 23MB; keep it out of git and re-fetch when needed.
 data/raw/*.zip
 
+# Map payload (9.78MB) — regenerate with `python src/export_map.py`.
+# Commit deliberately only when deploying to GitHub Pages.
+web/data/
+
 # data/brands.csv is deliberately NOT ignored — it is hand-curated source.
