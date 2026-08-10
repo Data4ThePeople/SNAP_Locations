@@ -35,11 +35,29 @@ const state = {
   formatOn: null,      // Uint8Array
   brandOn: null,       // Uint8Array, index 0 unused
   unbranded: [0, 1, 1], // by ownership id: [chain(unused), independent, unknown]
+  slots: [null, null, null], // each: {type:'group'|'brand', id} or null
+  onlySlots: false,
   dotSize: 1.6,
   visible: 0,
 };
 
+/** Which color slot (0-2) this store occupies, or -1. First match wins. */
+function slotOf(i) {
+  const y = state.yearIndex;
+  for (let s = 0; s < 3; s++) {
+    const ref = state.slots[s];
+    if (!ref) continue;
+    if (ref.type === 'brand') {
+      if (brandId[i] === ref.id) return s;
+    } else if (groupId[i] === ref.id && y >= groupFrom[i] && y <= groupUntil[i]) {
+      return s;
+    }
+  }
+  return -1;
+}
+
 let meta, N, position, formatId, ownershipId, brandId, yearMask, filterValue, colors, deckgl;
+let groupId, groupFrom, groupUntil;
 
 // ---------------------------------------------------------------- load
 
@@ -58,6 +76,11 @@ async function load() {
   ownershipId = new Uint8Array(buf, N * 9, N);
   brandId = new Uint16Array(buf, N * 10, N);
   yearMask = new Uint32Array(buf, N * 12, N);
+  // Group membership is year-bounded: Harris Teeter is Kroger only from 2014,
+  // and Kroger's convenience banners only through 2017.
+  groupId = new Uint8Array(buf, N * 16, N);
+  groupFrom = new Uint8Array(buf, N * 17, N);
+  groupUntil = new Uint8Array(buf, N * 18, N);
 
   filterValue = new Float32Array(N);
   colors = new Uint8Array(N * 3);
@@ -68,6 +91,7 @@ async function load() {
   selfCheck();
   buildFormatList();
   buildBrandList();
+  buildSlotPickers();
   wireControls();
   initDeck();
   refresh(true);
@@ -99,6 +123,7 @@ function recompute() {
     if ((yearMask[i] & bit) !== 0 && formatOn[formatId[i]]) {
       const b = brandId[i];
       v = b === 0 ? unbranded[ownershipId[i]] : brandOn[b];
+      if (v && state.onlySlots && state.colorMode === 'group' && slotOf(i) < 0) v = 0;
     }
     filterValue[i] = v;
     visible += v;
@@ -110,9 +135,9 @@ function recolor() {
   const t = THEME[state.theme];
   const other = t.other;
   // Slot per format index, only in format mode; -1 means "not highlighted".
-  const slotOf = new Int8Array(meta.formats.length).fill(-1);
+  const fmtSlot = new Int8Array(meta.formats.length).fill(-1);
   if (state.colorMode === 'format') {
-    state.highlight.forEach((fi, k) => { slotOf[fi] = k; });
+    state.highlight.forEach((fi, k) => { fmtSlot[fi] = k; });
   }
   for (let i = 0; i < N; i++) {
     let c;
@@ -120,7 +145,10 @@ function recolor() {
       const o = ownershipId[i];
       c = o === 0 ? t.slots[0] : o === 1 ? t.slots[1] : other;
     } else if (state.colorMode === 'format') {
-      const s = slotOf[formatId[i]];
+      const s = fmtSlot[formatId[i]];
+      c = s >= 0 ? t.slots[s] : other;
+    } else if (state.colorMode === 'group') {
+      const s = slotOf(i);
       c = s >= 0 ? t.slots[s] : other;
     } else {
       c = t.slots[0];
@@ -236,11 +264,66 @@ function renderLegend() {
   } else if (state.colorMode === 'format') {
     items = state.highlight.map((fi, k) => [meta.formats[fi], t.slots[k]]);
     if (items.length < 3) items.push(['Other formats', t.other]);
+  } else if (state.colorMode === 'group') {
+    items = state.slots
+      .map((ref, k) => (ref ? [labelOf(ref), t.slots[k]] : null))
+      .filter(Boolean);
+    if (!state.onlySlots) items.push(['Everything else', t.other]);
   }
   hint.hidden = state.colorMode !== 'format';
+  document.getElementById('slots').hidden = state.colorMode !== 'group';
   box.innerHTML = items
     .map(([label, c]) => `<div><i style="background:${hex(c)}"></i>${label}</div>`)
     .join('');
+}
+
+function labelOf(ref) {
+  return ref.type === 'group' ? meta.groups[ref.id - 1].name : meta.brands[ref.id - 1].name;
+}
+
+function buildSlotPickers() {
+  const opts =
+    '<option value="">— none —</option>' +
+    '<optgroup label="Parent companies">' +
+    meta.groups.map((g, i) =>
+      `<option value="group:${i + 1}">${g.name} (${fmtNum(g.total)})</option>`).join('') +
+    '</optgroup><optgroup label="Individual retailers">' +
+    meta.brands.map((b, i) =>
+      `<option value="brand:${i + 1}">${b.name} (${fmtNum(b.total)})</option>`).join('') +
+    '</optgroup>';
+
+  document.querySelectorAll('#slots select').forEach((sel) => {
+    sel.innerHTML = opts;
+    sel.addEventListener('change', () => {
+      const k = +sel.dataset.slot;
+      const v = sel.value;
+      state.slots[k] = v ? { type: v.split(':')[0], id: +v.split(':')[1] } : null;
+      paintSwatches();
+      renderLegend();
+      refresh(true);
+    });
+  });
+
+  document.getElementById('onlySlots').addEventListener('change', (e) => {
+    state.onlySlots = e.target.checked;
+    renderLegend();
+    refresh(true);
+  });
+}
+
+function paintSwatches() {
+  const t = THEME[state.theme];
+  document.querySelectorAll('#slots [data-swatch]').forEach((el) => {
+    const k = +el.dataset.swatch;
+    el.style.background = state.slots[k] ? hex(t.slots[k]) : 'transparent';
+    el.style.borderColor = state.slots[k] ? 'transparent' : 'var(--line)';
+  });
+}
+
+function setSlot(k, ref) {
+  state.slots[k] = ref;
+  const sel = document.querySelector(`#slots select[data-slot="${k}"]`);
+  if (sel) sel.value = ref ? `${ref.type}:${ref.id}` : '';
 }
 
 function buildFormatList() {
@@ -363,7 +446,8 @@ function setAll(kind, on) {
 function wireControls() {
   document.getElementById('year').addEventListener('input', (e) => {
     state.yearIndex = +e.target.value;
-    refresh(false);
+    // Group membership is year-dependent, so colors move with the slider.
+    refresh(state.colorMode === 'group');
   });
 
   document.getElementById('dotSize').addEventListener('input', (e) => {
@@ -378,6 +462,13 @@ function wireControls() {
     state.colorMode = mode;
     document.querySelectorAll('#colorMode button')
       .forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
+    if (mode === 'group' && !state.slots.some(Boolean)) {
+      // Seed with the comparison that motivated this mode.
+      const gi = (name) => meta.groups.findIndex((g) => g.name === name) + 1;
+      if (gi('Kroger')) setSlot(0, { type: 'group', id: gi('Kroger') });
+      if (gi('Giant Eagle')) setSlot(1, { type: 'group', id: gi('Giant Eagle') });
+      paintSwatches();
+    }
     if (mode === 'format' && !state.highlight.length) {
       // Seed with the formats this project is actually about.
       ['Supermarket', 'Grocery (Large)', 'Dollar Store']
@@ -400,6 +491,7 @@ function wireControls() {
     state.theme = e.target.checked ? 'light' : 'dark';
     document.documentElement.style.background = state.theme === 'light' ? '#fafaf8' : '#0e0e0e';
     paintHighlightButtons();
+    paintSwatches();
     renderLegend();
     refresh(true);
   });
@@ -414,7 +506,7 @@ function wireControls() {
     timer = setInterval(() => {
       state.yearIndex = (state.yearIndex + 1) % meta.years.length;
       document.getElementById('year').value = state.yearIndex;
-      refresh(false);
+      refresh(state.colorMode === 'group');
     }, 750);
   });
 

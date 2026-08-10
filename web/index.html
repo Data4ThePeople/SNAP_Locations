@@ -29,10 +29,22 @@
   <section class="block">
     <span class="lbl">Color by</span>
     <div class="seg" id="colorMode" role="group" aria-label="Color by">
-      <button data-mode="ownership" class="on">Ownership</button>
+      <button data-mode="ownership" class="on">Owner</button>
       <button data-mode="format">Format</button>
+      <button data-mode="group">Retailer</button>
       <button data-mode="single">None</button>
     </div>
+
+    <div id="slots" hidden>
+      <p class="hint">Assign up to 3 retailers or parent companies a color.</p>
+      <label class="slot"><i data-swatch="0"></i><select data-slot="0"></select></label>
+      <label class="slot"><i data-swatch="1"></i><select data-slot="1"></select></label>
+      <label class="slot"><i data-swatch="2"></i><select data-slot="2"></select></label>
+      <label class="only">
+        <input type="checkbox" id="onlySlots"> Show only these on the map
+      </label>
+    </div>
+
     <div id="legend" class="legend"></div>
     <p id="highlightHint" class="hint" hidden>
       Pick up to 3 formats to color. Everything else stays gray.

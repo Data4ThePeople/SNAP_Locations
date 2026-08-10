@@ -1,0 +1,82 @@
+group,brand,states,formats,from_year,until_year
+# Parent-company groups. USDA has no ownership hierarchy, so this is curated.
+#
+# brand       must match a brand in data/brands.csv exactly
+# states      optional pipe-separated filter, e.g. CO|UT|WY
+# formats     optional pipe-separated filter, e.g. Supermarket|Super Store
+# from_year   first year-end the store counts as part of the group (blank = 2006)
+# until_year  last  year-end it counts (blank = 2025)
+#
+# The qualifiers exist because several banners are shared by unrelated
+# companies: "Tom Thumb" is Kroger's Florida convenience chain AND Albertsons'
+# Texas supermarket; "City Market" is Kroger in Colorado and generic elsewhere;
+# "Giant" is Ahold in the mid-Atlantic and a generic convenience name in the
+# Midwest and West.
+#
+# Dates cover the transitions large enough to change the map. Where a deal is
+# not dated here, the brand is treated as belonging to the group for the whole
+# 2006-2025 window.
+
+# --- Kroger -------------------------------------------------------------------
+Kroger,Kroger,,,,
+Kroger,Ralphs,,,,
+Kroger,Fred Meyer,,,,
+Kroger,King Soopers,,,,
+Kroger,Smith's Food and Drug,,,,
+Kroger,Dillons,,,,
+Kroger,QFC,,,,
+Kroger,Fry's Food Stores,,,,
+Kroger,Food 4 Less,,,,
+Kroger,City Market,CO|UT|WY|NM,,,
+Kroger,Harris Teeter,,,2014,
+Kroger,Pick 'n Save,,,2016,
+Kroger,Mariano's,,,2016,
+# Kroger's convenience division, sold to EG Group in April 2018.
+Kroger,Turkey Hill,,,,2017
+Kroger,Loaf 'N Jug,,,,2017
+Kroger,Kwik Shop,,,,2017
+Kroger,Quik Stop,,,,2017
+Kroger,Tom Thumb,FL|AL,Convenience Store,,2017
+
+# --- Albertsons Companies -----------------------------------------------------
+Albertsons Companies,Albertsons,,,,
+Albertsons Companies,Jewel-Osco,,,,
+Albertsons Companies,Acme Markets,,,,
+Albertsons Companies,Shaw's,,,,
+Albertsons Companies,Star Market,,,,
+Albertsons Companies,United Supermarkets,,,,
+Albertsons Companies,Safeway,,,2015,
+Albertsons Companies,Vons,,,2015,
+Albertsons Companies,Randalls,,,2015,
+Albertsons Companies,Carrs,,,2015,
+Albertsons Companies,Haggen,,,2016,
+Albertsons Companies,Tom Thumb,TX,Supermarket|Super Store,,
+
+# --- Ahold Delhaize -----------------------------------------------------------
+Ahold Delhaize,Food Lion,,,,
+Ahold Delhaize,Stop & Shop,,,,
+Ahold Delhaize,Hannaford,,,,
+Ahold Delhaize,Giant Food,,,,
+Ahold Delhaize,Giant,PA|MD|VA|WV|DC,Supermarket|Super Store|Grocery (Large),,
+
+# --- Southeastern Grocers -----------------------------------------------------
+Southeastern Grocers,Winn-Dixie,,,,
+Southeastern Grocers,BI-LO,,,,
+Southeastern Grocers,Harveys,,,,
+
+# --- Walmart ------------------------------------------------------------------
+Walmart Inc.,Walmart,,,,
+Walmart Inc.,Sam's Club,,,,
+
+# --- Dollar Tree Inc. ---------------------------------------------------------
+Dollar Tree Inc.,Dollar Tree,,,,
+Dollar Tree Inc.,Family Dollar,,,2016,
+
+# --- single-company groups worth having as one click --------------------------
+Giant Eagle,Giant Eagle,,,,
+Publix,Publix,,,,
+H-E-B,H-E-B,,,,
+Meijer,Meijer,,,,
+Costco,Costco,,,,
+Target,Target,,,,
+Aldi,Aldi,,,,

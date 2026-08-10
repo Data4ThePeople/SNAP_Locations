@@ -168,6 +168,34 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 
 .hint { margin: 8px 0 0; font-size: 11px; color: var(--ink-3); }
 
+/* ---------- color slots ---------- */
+.slot { display: flex; align-items: center; gap: 7px; margin-top: 6px; }
+.slot i {
+  flex: none;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+}
+.slot select {
+  flex: 1;
+  min-width: 0;
+  padding: 4px 6px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+}
+.slot select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.only {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 9px;
+  font-size: 11px; color: var(--ink-2);
+  cursor: pointer;
+}
+.only input { accent-color: var(--accent); }
+
 /* ---------- footer ---------- */
 #panel footer {
   padding: 10px var(--pad) 12px;

@@ -6,14 +6,16 @@ becomes a bit test, so every filter runs client-side with no server.
 
 Nothing is written unless the mask reproduces snapshot() counts for all 20 years.
 """
+import csv
 import json
-import struct
 from datetime import date
 
 import numpy as np
 
 from config import DATA, ROOT, connect
 from snapshot import snapshot
+
+GROUPS_CSV = DATA / "brand_groups.csv"
 
 YEARS = list(range(2006, 2026))
 OUT_DIR = ROOT / "web" / "data"
@@ -45,6 +47,39 @@ GROUP BY ALL
 HAVING year_mask <> 0
 ORDER BY d.record_id
 """
+
+
+def load_group_rules(known_brands):
+    """Read the curated parent-company rules, validating every brand name."""
+    if not GROUPS_CSV.exists():
+        return [], []
+    with open(GROUPS_CSV, newline="", encoding="utf-8") as fh:
+        lines = [ln for ln in fh if not ln.lstrip().startswith("#")]
+    rules, names, unknown = [], [], []
+    for r in csv.DictReader(lines):
+        brand = (r.get("brand") or "").strip()
+        group = (r.get("group") or "").strip()
+        if not brand or not group:
+            continue
+        if brand not in known_brands:
+            unknown.append((group, brand))
+            continue
+        if group not in names:
+            names.append(group)
+        rules.append({
+            "group": group,
+            "brand": brand,
+            "states": [s for s in (r.get("states") or "").split("|") if s],
+            "formats": [f for f in (r.get("formats") or "").split("|") if f],
+            "from": int(r["from_year"]) if (r.get("from_year") or "").strip() else YEARS[0],
+            "until": int(r["until_year"]) if (r.get("until_year") or "").strip() else YEARS[-1],
+        })
+    if unknown:
+        raise SystemExit(
+            "ABORT: brand_groups.csv references brands that do not exist in "
+            "data/brands.csv:\n  " + "\n  ".join(f"{g}: {b!r}" for g, b in unknown)
+        )
+    return rules, names
 
 
 def export() -> None:
@@ -89,10 +124,34 @@ def export() -> None:
     ownership_id = df["ownership"].map(own_index).to_numpy(dtype=np.uint8)
     brand_id = df["brand"].map(lambda b: brand_index.get(b, 0)).to_numpy(dtype=np.uint16)
 
+    # --- parent-company groups ----------------------------------------------
+    # Resolved here rather than in the browser because membership is qualified
+    # by state and format, not just brand name: "Tom Thumb" is Kroger's Florida
+    # convenience chain and Albertsons' Texas supermarket.
+    rules, group_names = load_group_rules(set(brands[1:]))
+    group_id = np.zeros(len(df), dtype=np.uint8)
+    group_from = np.zeros(len(df), dtype=np.uint8)
+    group_until = np.full(len(df), len(YEARS) - 1, dtype=np.uint8)
+    print(f"\nResolving {len(rules)} group rules across {len(group_names)} groups:")
+    for rule in rules:
+        sel = (df["brand"] == rule["brand"]).to_numpy()
+        if rule["states"]:
+            sel &= df["state"].isin(rule["states"]).to_numpy()
+        if rule["formats"]:
+            sel &= df["format"].isin(rule["formats"]).to_numpy()
+        sel &= group_id == 0          # first matching rule wins
+        group_id[sel] = group_names.index(rule["group"]) + 1
+        group_from[sel] = rule["from"] - YEARS[0]
+        group_until[sel] = rule["until"] - YEARS[0]
+    for i, g in enumerate(group_names, start=1):
+        n = int((group_id == i).sum())
+        print(f"  {g:24} {n:>7,} stores")
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     bin_path = OUT_DIR / "points.bin"
     with open(bin_path, "wb") as fh:
-        for arr in (position, format_id, ownership_id, brand_id, masks):
+        for arr in (position, format_id, ownership_id, brand_id, masks,
+                    group_id, group_from, group_until):
             fh.write(arr.tobytes())
     size_mb = bin_path.stat().st_size / 1e6
     print(f"\nwrote {bin_path} ({size_mb:.2f} MB)")
@@ -113,12 +172,27 @@ def export() -> None:
             "latest": int(brand_latest.get(b, 0)),
         })
 
+    group_meta = []
+    for i, g in enumerate(group_names, start=1):
+        members = [r for r in rules if r["group"] == g]
+        group_meta.append({
+            "name": g,
+            "total": int((group_id == i).sum()),
+            "latest": int(((group_id == i) & (masks & latest_bit) != 0).sum()),
+            "members": [
+                {"brand": r["brand"], "from": r["from"], "until": r["until"],
+                 "states": r["states"], "formats": r["formats"]}
+                for r in members
+            ],
+        })
+
     meta = {
         "count": len(df),
         "years": YEARS,
         "formats": formats,
         "ownership": OWNERSHIP,
         "brands": brand_meta,
+        "groups": group_meta,
         "per_year_totals": per_year,
         "unbranded": {
             "independent": int(((brand_id == 0) & (ownership_id == own_index["independent"])).sum()),
