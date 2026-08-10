@@ -66,16 +66,31 @@ def _crosswalk():
         lines = [ln for ln in fh if not ln.lstrip().startswith("#")]
     for r in csv.DictReader(lines):
         pattern = (r.get("pattern") or "").strip().upper()
-        if pattern:
-            rows.append((
-                pattern,
-                (r.get("brand") or "").strip() or None,
-                (r.get("chain_category") or "").strip(),
-                [s for s in (r.get("states") or "").split("|") if s],
-                [t for t in (r.get("store_types") or "").split("|") if t],
-            ))
+        if not pattern:
+            continue
+        category = (r.get("chain_category") or "").strip()
+        # Banners appear mid-name constantly — "Waynesburg Giant Eagle",
+        # "Iversons Piggly Wiggly" — so matching defaults to anywhere in the
+        # name. Generic and fuel-brand patterns stay anchored: they are ordinary
+        # words, and matching them anywhere would swallow half the independents.
+        default = "prefix" if category in ("generic", "fuel_branded") else "any"
+        rows.append((
+            pattern,
+            (r.get("brand") or "").strip() or None,
+            category,
+            [s for s in (r.get("states") or "").split("|") if s],
+            [t for t in (r.get("store_types") or "").split("|") if t],
+            (r.get("match") or "").strip().lower() or default,
+        ))
     rows.sort(key=lambda t: -len(t[0]))
     return rows
+
+
+def _hit(name_norm: str, pattern: str, mode: str) -> bool:
+    """Word-boundary match: 'GIANT' never matches inside 'GIANTS DELI'."""
+    if mode == "prefix":
+        return name_norm == pattern or name_norm.startswith(pattern + " ")
+    return f" {name_norm} ".find(f" {pattern} ") >= 0
 
 
 @functools.lru_cache(maxsize=None)
@@ -85,10 +100,7 @@ def candidates(name_norm: str):
     Longest wins, so specific banners beat generic ones: CONVENIENT FOOD MART
     resolves to the franchise, while a bare FOOD MART stays generic.
     """
-    return tuple(
-        r for r in _crosswalk()
-        if name_norm == r[0] or name_norm.startswith(r[0] + " ")
-    )
+    return tuple(r for r in _crosswalk() if _hit(name_norm, r[0], r[5]))
 
 
 def resolve(name_norm: str, state: str = None, store_type: str = None):
@@ -99,7 +111,7 @@ def resolve(name_norm: str, state: str = None, store_type: str = None):
     so a pattern can be restricted to the states or store types where the
     chain actually operates. Unqualified rules match everywhere.
     """
-    for pattern, brand, category, states, types in candidates(name_norm):
+    for pattern, brand, category, states, types, _mode in candidates(name_norm):
         if states and state not in states:
             continue
         if types and store_type not in types:

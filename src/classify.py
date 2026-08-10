@@ -48,6 +48,12 @@ CHAIN_CATEGORIES = {
 }
 UNKNOWN_CATEGORIES = {"fuel_branded", "generic"}
 
+# Voluntary alliances and co-ops: the storefront carries a shared banner but the
+# store is independently owned. IGA is literally the Independent Grocers
+# Alliance, so counting its members as chain would invert the axis for them.
+# The brand is still recorded; only the ownership call differs.
+BANNER_CATEGORIES = {"banner"}
+
 # An unresolved name held by at most this many stores nationally is treated as
 # independent. Small local operators legitimately run a handful of locations; a
 # name above this that escaped the crosswalk is more likely a regional chain, so
@@ -83,6 +89,8 @@ def classify() -> None:
         cat = row["chain_category"]
         if cat in CHAIN_CATEGORIES:
             return "chain"
+        if cat in BANNER_CATEGORIES:
+            return "independent"
         if cat in UNKNOWN_CATEGORIES:
             return "unknown"
         if not row["name_norm"]:
