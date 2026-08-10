@@ -87,6 +87,8 @@ async function load() {
 
   state.formatOn = new Uint8Array(meta.formats.length).fill(1);
   state.brandOn = new Uint8Array(meta.brands.length + 1).fill(1);
+  document.getElementById('brandSearch').placeholder =
+    `Search ${meta.brands.length} retailers…`;
 
   selfCheck();
   buildFormatList();

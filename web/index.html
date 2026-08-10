@@ -70,17 +70,6 @@
     <div id="formats" class="list scroll-sm"></div>
   </section>
 
-  <section class="block grow">
-    <div class="row-between">
-      <span class="lbl">Retailer</span>
-      <span class="mini-actions">
-        <button data-all="brand">All</button><button data-none="brand">None</button>
-      </span>
-    </div>
-    <input type="search" id="brandSearch" placeholder="Search 283 retailers…" autocomplete="off">
-    <div id="brands" class="list scroll-lg"></div>
-  </section>
-
   <footer>
     <label class="theme">
       <input type="checkbox" id="light"> Light basemap
@@ -98,6 +87,19 @@
 </aside>
 
 <main id="map"></main>
+
+<aside id="panel-right">
+  <header>
+    <div class="row-between">
+      <h2>Retailer</h2>
+      <span class="mini-actions">
+        <button data-all="brand">All</button><button data-none="brand">None</button>
+      </span>
+    </div>
+    <input type="search" id="brandSearch" placeholder="Search retailers…" autocomplete="off">
+  </header>
+  <div id="brands" class="list scroll-lg"></div>
+</aside>
 <div id="loading">Loading 611,202 stores…</div>
 <div id="tooltip" hidden></div>
 
