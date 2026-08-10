@@ -152,7 +152,6 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 
 /* ---------- lists ---------- */
 .list { margin-top: 8px; overflow-y: auto; overscroll-behavior: contain; }
-.scroll-sm { max-height: 150px; flex: 0 0 auto; }
 .scroll-lg { flex: 1 1 0; min-height: 60px; }
 
 .item {
@@ -284,8 +283,9 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 #tooltip b { display: block; color: var(--ink); margin-bottom: 2px; }
 #tooltip span { color: var(--ink-3); }
 
-/* The left panel no longer holds a growing section, so pin the footer down. */
-#panel > footer { margin-top: auto; }
+/* The store-format block absorbs the left panel's slack, so all 18 formats show
+   without scrolling when there is room. It was capped at 150px, which left a
+   band of dead space above the footer. */
 
 /* Narrow: map on top, the two panels side by side beneath it. */
 @media (max-width: 1000px) {
