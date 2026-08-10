@@ -109,6 +109,9 @@ def main():
                + meta["unbranded"]["independent_by_year"][i]
                + meta["unbranded"]["unknown_by_year"][i])
         check(f"{yr} brands + unbranded", tot, meta["per_year_totals"][str(yr)])
+        # The format list is a second partition of the same stores.
+        check(f"{yr} formats", sum(f[i] for f in meta["format_by_year"]),
+              meta["per_year_totals"][str(yr)])
     # A group's per-year count must equal what the binary says for that year.
     gnames0 = [g["name"] for g in meta["groups"]]
     gi = gnames0.index("Kroger")

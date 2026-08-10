@@ -467,6 +467,7 @@ function buildFormatList() {
       <input type="checkbox" data-fmt="${i}" checked>
       <span class="nm">${f}</span>
       <button class="hl" data-hlfmt="${i}" title="Highlight this format" hidden></button>
+      <span class="n" data-count="format:${i}"></span>
     </label>`).join('');
 
   box.addEventListener('change', (e) => {
@@ -531,6 +532,7 @@ function renderPanelCounts() {
     let n;
     if (kind === 'brand') n = meta.brands[+key - 1].by_year[y];
     else if (kind === 'group') n = meta.groups[+key].by_year[y];
+    else if (kind === 'format') n = meta.format_by_year[+key][y];
     else n = meta.unbranded[`${key}_by_year`][y];
     el.textContent = fmtNum(n);
     el.classList.toggle('zero', n === 0);
