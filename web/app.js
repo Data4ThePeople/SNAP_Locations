@@ -35,6 +35,7 @@ const state = {
   formatOn: null,      // Uint8Array
   brandOn: null,       // Uint8Array, index 0 unused
   unbranded: [0, 1, 1], // by ownership id: [chain(unused), independent, unknown]
+  dotSize: 1.6,
   visible: 0,
 };
 
@@ -178,9 +179,11 @@ function pointLayer() {
     dataComparator: () => false,
     _dataDiff: () => [{ startRow: 0, endRow: N }],
     radiusUnits: 'meters',
-    getRadius: 90,
-    radiusMinPixels: 1.1,
-    radiusMaxPixels: 7,
+    getRadius: 110,
+    radiusScale: state.dotSize,
+    radiusMinPixels: 1.5 * state.dotSize,
+    // Capped low, dots stayed pinpricks however far you zoomed in.
+    radiusMaxPixels: 44,
     opacity: 0.85,
     pickable: true,
     extensions: [new deck.DataFilterExtension({ filterSize: 1 })],
@@ -359,6 +362,12 @@ function wireControls() {
   document.getElementById('year').addEventListener('input', (e) => {
     state.yearIndex = +e.target.value;
     refresh(false);
+  });
+
+  document.getElementById('dotSize').addEventListener('input', (e) => {
+    state.dotSize = +e.target.value;
+    dataVersion++;
+    deckgl.setProps({ layers: [basemapLayer(), pointLayer()] });
   });
 
   document.getElementById('colorMode').addEventListener('click', (e) => {
