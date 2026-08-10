@@ -305,9 +305,6 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
   }
 }
 
-/* A banner whose parent did not own it in the selected year. */
-.item.child.out .nm { color: var(--ink-3); text-decoration: line-through; }
-.item.child.out .yr { color: var(--accent); }
 .yr {
   flex: none;
   font-size: 10px;
@@ -332,3 +329,6 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 
 /* A retailer with no stores in the selected year. */
 .item .n.zero { opacity: .4; }
+
+/* A banner that belonged to a parent company in other years. */
+.yr.was { color: var(--ink-3); border-style: dashed; }

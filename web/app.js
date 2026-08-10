@@ -114,7 +114,8 @@ async function load() {
 
   selfCheck();
   buildFormatList();
-  buildBrandList();
+  renderBrandList();
+  wireBrandList();
   buildSlotPickers();
   wireControls();
   initDeck();
@@ -299,7 +300,6 @@ function refresh(recolorToo) {
   dataVersion++;
   deckgl.setProps({ layers: [basemapLayer(), pointLayer()] });
   renderCount();
-  syncOwnershipYears();
   renderPanelCounts();
 }
 
@@ -478,13 +478,8 @@ function renderPanelCounts() {
   });
 }
 
-/** Dim banners that the selected year puts outside their parent's ownership. */
-function syncOwnershipYears() {
-  const y = state.yearIndex;
-  document.querySelectorAll('.item.child[data-from]').forEach((el) => {
-    el.classList.toggle('out', y < +el.dataset.from || y > +el.dataset.until);
-  });
-}
+
+
 
 /** Recompute each parent row's checkbox from its members: on / off / mixed. */
 function syncParents() {
@@ -496,36 +491,59 @@ function syncParents() {
   });
 }
 
-function buildBrandList() {
+/** Render the retailer list for the selected year.
+ *
+ * Grouping is year-aware: a banner sits under a parent only in the years that
+ * parent owned it. Turkey Hill is under Kroger through 2017 and moves to the
+ * convenience section afterwards. It is never hidden — those 255 stores still
+ * exist in 2025, just under different ownership — so the map keeps showing them
+ * while the Kroger checkbox stops claiming them.
+ */
+function renderBrandList() {
   const box = document.getElementById('brands');
+  const scroll = box.scrollTop;
   const byName = new Map(meta.brands.map((b, i) => [b.name, { ...b, id: i + 1 }]));
+  const y0 = meta.years[0];
+  const yLast = meta.years[meta.years.length - 1];
+  const yr = meta.years[state.yearIndex];
+
+  const label = (r) => (r.from > y0 && r.until < yLast ? `${r.from}\u2013${r.until}`
+    : r.from > y0 ? `from ${r.from}` : `to ${r.until}`);
+  const bounded = (r) => r.from > y0 || r.until < yLast;
 
   // A brand can sit under two parents — Tom Thumb is Kroger in FL/AL and
   // Albertsons in TX — but it is one filterable brand, so it is listed once
-  // under the first parent and marked.
+  // under the first parent that owns it this year, and marked.
   const parentsOf = new Map();
   meta.groups.forEach((g) => g.members.forEach((m) => {
     if (!parentsOf.has(m.brand)) parentsOf.set(m.brand, []);
     if (!parentsOf.get(m.brand).includes(g.name)) parentsOf.get(m.brand).push(g.name);
   }));
 
-  // These carry data-name like every other row so the search filter hides them
-  // too; without it they sat pinned above the results looking like matches.
   let html = `
     <div class="group">Unbranded</div>
-    <label class="item" data-name="independent unbranded"><input type="checkbox" data-unb="1" checked>
+    <label class="item" data-name="independent unbranded"><input type="checkbox" data-unb="1">
       <span class="nm">Independent (unbranded)</span>
       <span class="n" data-count="unb:independent"></span></label>
-    <label class="item" data-name="unknown"><input type="checkbox" data-unb="2" checked>
+    <label class="item" data-name="unknown"><input type="checkbox" data-unb="2">
       <span class="nm">Unknown</span>
       <span class="n" data-count="unb:unknown"></span></label>
     <div class="group">Parent companies</div>`;
 
   const claimed = new Set();
+  const former = new Map();   // brand id -> "Kroger to 2017", for the rest list
   for (const g of [...meta.groups].sort((a, b) => b.total - a.total)) {
-    const members = [...new Map(
+    const ruleOf = (name) => g.members.find((x) => x.brand === name) || {};
+    const all = [...new Map(
       g.members.map((m) => byName.get(m.brand)).filter(Boolean).map((m) => [m.id, m])
     ).values()].filter((m) => !claimed.has(m.id));
+
+    const members = [];
+    for (const m of all) {
+      const r = ruleOf(m.name);
+      if (r.from <= yr && yr <= r.until) members.push(m);
+      else if (!former.has(m.id)) former.set(m.id, `${g.name} ${label(r)}`);
+    }
     if (!members.length) continue;
     members.sort((a, b) => b.total - a.total);
 
@@ -533,35 +551,26 @@ function buildBrandList() {
     const names = [g.name, ...members.map((m) => m.name)].join(' ').toLowerCase();
     html += `
       <label class="item parent" data-name="${names}">
-        <input type="checkbox" data-parent="${ids}" checked>
+        <input type="checkbox" data-parent="${ids}">
         <span class="nm">${g.name}</span>
         <span class="n" data-count="group:${meta.groups.indexOf(g)}"></span>
       </label>`;
     for (const m of members) {
       claimed.add(m.id);
+      const r = ruleOf(m.name);
       const also = (parentsOf.get(m.name) || []).filter((p) => p !== g.name);
-      // Ownership moves: Harris Teeter joins Kroger in 2014, Quik Stop leaves
-      // after 2017. Carry the window so the row can dim when the selected year
-      // falls outside it.
-      const rule = g.members.find((x) => x.brand === m.name) || {};
-      const y0 = meta.years[0];
-      const bounded = rule.from > y0 || rule.until < meta.years[meta.years.length - 1];
-      const range = rule.from > y0 && rule.until < meta.years[meta.years.length - 1]
-        ? `${rule.from}–${rule.until}`
-        : rule.from > y0 ? `from ${rule.from}` : `to ${rule.until}`;
       html += `
         <label class="item child" data-name="${m.name.toLowerCase()}"
-               data-from="${rule.from - y0}" data-until="${rule.until - y0}"
                ${also.length ? `title="Also part of ${also.join(', ')}"` : ''}>
-          <input type="checkbox" data-brand="${m.id}" checked>
-          <span class="nm">${m.name}${also.length ? ' †' : ''}</span>
-          ${bounded ? `<span class="yr">${range}</span>` : ''}
+          <input type="checkbox" data-brand="${m.id}">
+          <span class="nm">${m.name}${also.length ? ' \u2020' : ''}</span>
+          ${bounded(r) ? `<span class="yr">${label(r)}</span>` : ''}
           <span class="n" data-count="brand:${m.id}"></span>
         </label>`;
     }
   }
 
-  // Everything with no parent company, still grouped by what kind of store it is.
+  // Everything not under a parent this year, grouped by what kind of store it is.
   const rest = {};
   meta.brands.forEach((b, i) => {
     if (!claimed.has(i + 1)) (rest[b.category] ||= []).push({ ...b, id: i + 1 });
@@ -572,17 +581,32 @@ function buildBrandList() {
     list.sort((a, b) => b.total - a.total);
     html += `<div class="group">${CATEGORY_LABEL[cat]}</div>` + list.map((b) => `
       <label class="item" data-name="${b.name.toLowerCase()}">
-        <input type="checkbox" data-brand="${b.id}" checked>
+        <input type="checkbox" data-brand="${b.id}">
         <span class="nm">${b.name}</span>
+        ${former.has(b.id) ? `<span class="yr was">${former.get(b.id)}</span>` : ''}
         <span class="n" data-count="brand:${b.id}"></span>
       </label>`).join('');
   }
   box.innerHTML = html;
 
+  // state is the source of truth across rebuilds, not the DOM.
+  box.querySelectorAll('[data-brand]').forEach((cb) => {
+    cb.checked = !!state.brandOn[cb.dataset.brand];
+  });
+  box.querySelectorAll('[data-unb]').forEach((cb) => {
+    cb.checked = !!state.unbranded[cb.dataset.unb];
+  });
+  syncParents();
+  box.scrollTop = scroll;
+}
+
+function wireBrandList() {
+  const box = document.getElementById('brands');
   box.addEventListener('change', (e) => {
     const { brand, unb, parent } = e.target.dataset;
     if (parent !== undefined) {
       const on = e.target.checked ? 1 : 0;
+      // data-parent only lists the banners this parent owned in this year.
       parent.split(',').forEach((id) => {
         state.brandOn[id] = on;
         const cb = box.querySelector(`[data-brand="${id}"]`);
@@ -636,6 +660,8 @@ function setAll(kind, on) {
 function wireControls() {
   document.getElementById('year').addEventListener('input', (e) => {
     state.yearIndex = +e.target.value;
+    // Ownership changes hands across the timeline, so the grouping is rebuilt.
+    renderBrandList();
     // Group membership is year-dependent, so colors move with the slider.
     refresh(state.colorMode === 'group');
   });
@@ -700,6 +726,7 @@ function wireControls() {
     timer = setInterval(() => {
       state.yearIndex = (state.yearIndex + 1) % meta.years.length;
       document.getElementById('year').value = state.yearIndex;
+      renderBrandList();
       refresh(state.colorMode === 'group');
     }, 750);
   });
