@@ -5,10 +5,12 @@ Interactive map of SNAP-authorized retailers, 2006–2025.
 ```bash
 python src/export_map.py          # builds web/data/points.bin + meta.json
 python src/verify_map.py          # decodes the binary and checks it against the DB
-python -m http.server 8765 -d web # then open http://127.0.0.1:8765
+python web/serve.py               # then open http://127.0.0.1:8765
 ```
 
-A plain file server is enough — there is no build step and no backend. `index.html`
+`serve.py` is a plain file server that sends `no-store`; use it rather than
+`python -m http.server`, which lets the browser cache app.js so edits appear
+not to take effect. There is no build step and no backend. `index.html`
 loads a single pinned dependency (deck.gl UMD) from unpkg; the basemap is CARTO
 raster tiles, which need no API key.
 
