@@ -259,3 +259,28 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
   #panel { width: 100%; inset: auto 0 0 0; height: 52%; border-right: none; border-top: 1px solid var(--line); }
   #map { inset: 0 0 52% 0; }
 }
+
+/* A banner whose parent did not own it in the selected year. */
+.item.child.out .nm { color: var(--ink-3); text-decoration: line-through; }
+.item.child.out .yr { color: var(--accent); }
+.yr {
+  flex: none;
+  font-size: 10px;
+  color: var(--ink-3);
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+}
+
+/* ---------- region jump ---------- */
+.regions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+.regions button {
+  padding: 3px 7px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: var(--ink-2);
+  cursor: pointer;
+  font: inherit; font-size: 11px;
+}
+.regions button:hover { color: var(--ink); border-color: var(--accent); }

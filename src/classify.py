@@ -58,19 +58,23 @@ INDEPENDENT_MAX_LOCATIONS = 4
 def classify() -> None:
     con = connect()
     df = con.execute(
-        "SELECT record_id, store_name, store_type_usda FROM dim_store"
+        "SELECT record_id, store_name, store_type_usda, state FROM dim_store"
     ).df()
     print(f"Classifying {len(df):,} stores")
 
     df["name_norm"] = df["store_name"].fillna("").map(normalize)
+    print(f"  {df['name_norm'].nunique():,} distinct normalized names")
 
-    # Resolve once per distinct normalized name, not once per store.
-    distinct = df["name_norm"].unique()
-    print(f"  {len(distinct):,} distinct normalized names")
-    lookup = {n: resolve(n) for n in distinct}
-
-    df["brand"] = df["name_norm"].map(lambda n: lookup[n][0])
-    df["chain_category"] = df["name_norm"].map(lambda n: lookup[n][1])
+    # Resolution is per store because some rules are qualified by state or
+    # store type — "Metro Market" is Kroger's in Wisconsin and unrelated
+    # convenience stores in California. The pattern match itself is cached per
+    # distinct name inside brands.candidates().
+    resolved = [
+        resolve(n, s, t)
+        for n, s, t in zip(df["name_norm"], df["state"], df["store_type_usda"])
+    ]
+    df["brand"] = [r[0] for r in resolved]
+    df["chain_category"] = [r[1] for r in resolved]
 
     freq = df["name_norm"].value_counts()
     df["name_freq"] = df["name_norm"].map(freq)

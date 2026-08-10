@@ -100,27 +100,31 @@ def main():
     kro = gnames.index("Kroger") + 1
     yi = lambda y: y - years[0]
 
-    # Kroger in 2025: the 13 grocery banners, minus the convenience division
-    # sold to EG Group in 2018.
-    in_group_25 = (group_id == kro) & (group_from <= yi(2025)) & (group_until >= yi(2025))
-    kro25 = int((in_group_25 & ((year_mask & bit25) != 0)).sum())
-    db25 = con.execute("""
-        SELECT count(DISTINCT d.record_id) FROM dim_store d JOIN fact_spell f USING(record_id)
-        WHERE d.brand IN ('Kroger','Harris Teeter','Ralphs','Fred Meyer','Fry''s Food Stores',
-                          'King Soopers','Food 4 Less','Smith''s Food and Drug','Pick ''n Save',
-                          'Dillons','QFC','Mariano''s')
-          AND NOT d.geocode_missing AND NOT f.date_anomaly
-          AND f.auth_date <= DATE '2025-12-31'
-          AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
-    """).fetchone()[0]
-    citymkt = con.execute("""
-        SELECT count(DISTINCT d.record_id) FROM dim_store d JOIN fact_spell f USING(record_id)
-        WHERE d.brand = 'City Market' AND d.state IN ('CO','UT','WY','NM')
-          AND NOT d.geocode_missing AND NOT f.date_anomaly
-          AND f.auth_date <= DATE '2025-12-31'
-          AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
-    """).fetchone()[0]
-    check("Kroger group, 2025", kro25, db25 + citymkt)
+    # Rebuild each group's 2025 membership straight from the database, applying
+    # the same state/format/year rules, and compare against the binary.
+    for gname in ("Kroger", "Albertsons Companies", "Ahold Delhaize"):
+        gidx = gnames.index(gname) + 1
+        want = set()
+        for m in meta["groups"][gidx - 1]["members"]:
+            if not (m["from"] <= 2025 <= m["until"]):
+                continue
+            sql = """
+                SELECT DISTINCT d.record_id FROM dim_store d JOIN fact_spell f USING(record_id)
+                WHERE d.brand = ? AND NOT d.geocode_missing AND NOT f.date_anomaly
+                  AND f.auth_date <= DATE '2025-12-31'
+                  AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
+            """
+            params = [m["brand"]]
+            if m["states"]:
+                sql += f" AND d.state IN ({','.join('?' * len(m['states']))})"
+                params += m["states"]
+            if m["formats"]:
+                sql += f" AND d.format IN ({','.join('?' * len(m['formats']))})"
+                params += m["formats"]
+            want |= {r[0] for r in con.execute(sql, params).fetchall()}
+        got = int((((group_id == gidx) & (group_from <= yi(2025))
+                    & (group_until >= yi(2025))) & ((year_mask & bit25) != 0)).sum())
+        check(f"{gname} group, 2025", got, len(want))
 
     # Time-varying membership: Harris Teeter joins in 2014, so 2013 must exclude it.
     ht = [b["name"] for b in meta["brands"]].index("Harris Teeter") + 1

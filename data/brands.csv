@@ -1,4 +1,4 @@
-pattern,brand,chain_category
+pattern,brand,chain_category,states,store_types
 # Curated brand crosswalk for SNAP retailer names.
 # pattern       normalized store name; matched as equality or longest prefix,
 #               so DOLLAR GENERAL absorbs DOLLAR GENERAL STORE / MARKET.
@@ -55,7 +55,7 @@ WINN DIXIE,Winn-Dixie,grocery
 HARRIS TEETER,Harris Teeter,grocery
 GIANT EAGLE,Giant Eagle,grocery
 GIANT FOOD,Giant Food,grocery
-GIANT,Giant,grocery
+GIANT,Giant,grocery,PA|MD|VA|WV|DC,Supermarket|Super Store|Large Grocery Store
 STOP AND SHOP,Stop & Shop,grocery
 HANNAFORD,Hannaford,grocery
 SHAWS,Shaw's,grocery
@@ -109,7 +109,7 @@ SUPERIOR GROCERS,Superior Grocers,grocery
 99 RANCH,99 Ranch Market,grocery
 SUPER 1 FOODS,Super 1 Foods,grocery
 FAMILY FARE,Family Fare,grocery
-LOWES FOOD,Lowes Foods,grocery
+LOWES FOOD,Lowes Foods,grocery,NC|SC|VA,
 FOOD GIANT,Food Giant,grocery
 FOOD DEPOT,Food Depot,grocery
 CASH SAVER,Cash Saver,grocery
@@ -154,7 +154,17 @@ REASORS,Reasor's,grocery
 BUEHLERS,Buehler's,grocery
 HEINENS,Heinen's,grocery
 FOOD TOWN,Food Town,grocery
-CITY MARKET,City Market,grocery
+CITY MARKET,City Market,grocery,CO|UT|WY|NM,
+# Kroger's smaller regional banners. Patterns are deliberately narrow:
+# BAKERS alone would swallow Bakersfield Grocery Outlet and Baker's IGA, and
+# JAYC only ever matches Jaycees/Jaycee stores, so neither is used.
+BAKERS SUPERMARKET,Baker's,grocery
+RULER,Ruler Foods,grocery
+RULERS,Ruler Foods,grocery
+GERBES,Gerbes,grocery
+JAY C,JayC,grocery
+PAY LESS,Pay Less Super Markets,grocery,IN,
+METRO MARKET,Metro Market,grocery,WI,
 # --- convenience store chains -----------------------------------------------
 7 ELEVEN,7-Eleven,convenience
 SEVEN ELEVEN,7-Eleven,convenience
@@ -312,7 +322,7 @@ SHOP N SAVE,Shop 'n Save,grocery
 APPLE MARKET,Apple Market,grocery
 STAR MARKET,Star Market,grocery
 FOOD WORLD,Food World,grocery
-LOWES,Lowes Foods,grocery
+LOWES,Lowes Foods,grocery,NC|SC|VA,
 CARRS,Carrs,grocery
 RANDALLS,Randalls,grocery
 KANGAROO EXPRESS,Kangaroo Express,convenience

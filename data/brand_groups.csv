@@ -31,6 +31,14 @@ Kroger,City Market,CO|UT|WY|NM,,,
 Kroger,Harris Teeter,,,2014,
 Kroger,Pick 'n Save,,,2016,
 Kroger,Mariano's,,,2016,
+Kroger,Ruler Foods,,,,
+Kroger,Gerbes,MO,,,
+Kroger,JayC,IN,,,
+Kroger,Baker's,NE|IA,,,
+# Pay Less and Metro Market are shared names: Kroger's are in Indiana and
+# Wisconsin, the rest are unrelated independents.
+Kroger,Pay Less Super Markets,IN,,,
+Kroger,Metro Market,WI,,2016,
 # Kroger's convenience division, sold to EG Group in April 2018.
 Kroger,Turkey Hill,,,,2017
 Kroger,Loaf 'N Jug,,,,2017

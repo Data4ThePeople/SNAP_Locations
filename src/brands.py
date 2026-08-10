@@ -71,20 +71,40 @@ def _crosswalk():
                 pattern,
                 (r.get("brand") or "").strip() or None,
                 (r.get("chain_category") or "").strip(),
+                [s for s in (r.get("states") or "").split("|") if s],
+                [t for t in (r.get("store_types") or "").split("|") if t],
             ))
     rows.sort(key=lambda t: -len(t[0]))
     return rows
 
 
-def resolve(name_norm: str):
-    """Return (brand, chain_category) for a normalized name, or (None, None).
+@functools.lru_cache(maxsize=None)
+def candidates(name_norm: str):
+    """Rules whose pattern matches this name, longest pattern first.
 
-    Longest pattern wins, so specific banners beat generic ones: CONVENIENT
-    FOOD MART resolves to the franchise, while a bare FOOD MART stays generic.
+    Longest wins, so specific banners beat generic ones: CONVENIENT FOOD MART
+    resolves to the franchise, while a bare FOOD MART stays generic.
     """
-    for pattern, brand, category in _crosswalk():
-        if name_norm == pattern or name_norm.startswith(pattern + " "):
-            return brand, category
+    return tuple(
+        r for r in _crosswalk()
+        if name_norm == r[0] or name_norm.startswith(r[0] + " ")
+    )
+
+
+def resolve(name_norm: str, state: str = None, store_type: str = None):
+    """Return (brand, chain_category), honoring any state/store-type qualifiers.
+
+    Several banners are shared by unrelated companies — "Metro Market" is
+    Kroger's in Wisconsin and independent convenience stores in California —
+    so a pattern can be restricted to the states or store types where the
+    chain actually operates. Unqualified rules match everywhere.
+    """
+    for pattern, brand, category, states, types in candidates(name_norm):
+        if states and state not in states:
+            continue
+        if types and store_type not in types:
+            continue
+        return brand, category
     return None, None
 
 

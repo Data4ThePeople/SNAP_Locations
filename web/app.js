@@ -161,13 +161,35 @@ function recolor() {
 
 // ---------------------------------------------------------------- deck
 
+// Alaska, Hawaii and the territories are all in the data and on the basemap —
+// they just sit outside a lower-48 viewport, so they need a way to be reached.
+const REGIONS = {
+  conus: { longitude: -96, latitude: 38.5, zoom: 3.6 },
+  ak: { longitude: -150, latitude: 63.5, zoom: 3.3 },
+  hi: { longitude: -157.3, latitude: 20.6, zoom: 6.1 },
+  vi: { longitude: -64.85, latitude: 18.0, zoom: 8.6 },
+  pac: { longitude: 144.8, latitude: 13.5, zoom: 8.0 },
+};
+
 function initDeck() {
   deckgl = new deck.Deck({
     parent: document.getElementById('map'),
-    initialViewState: { longitude: -96, latitude: 38.5, zoom: 3.7, minZoom: 2, maxZoom: 16 },
+    initialViewState: { ...REGIONS.conus, minZoom: 1, maxZoom: 16 },
     controller: true,
     layers: [],
     onHover: showTooltip,
+  });
+}
+
+function flyTo(key) {
+  deckgl.setProps({
+    initialViewState: {
+      ...REGIONS[key],
+      minZoom: 1,
+      maxZoom: 16,
+      transitionDuration: 900,
+      transitionInterpolator: new deck.FlyToInterpolator(),
+    },
   });
 }
 
@@ -226,6 +248,7 @@ function refresh(recolorToo) {
   dataVersion++;
   deckgl.setProps({ layers: [basemapLayer(), pointLayer()] });
   renderCount();
+  syncOwnershipYears();
 }
 
 // ---------------------------------------------------------------- tooltip
@@ -385,6 +408,14 @@ const CATEGORY_LABEL = {
   variety: 'Variety & closeout', specialty: 'Specialty & delivery',
 };
 
+/** Dim banners that the selected year puts outside their parent's ownership. */
+function syncOwnershipYears() {
+  const y = state.yearIndex;
+  document.querySelectorAll('.item.child[data-from]').forEach((el) => {
+    el.classList.toggle('out', y < +el.dataset.from || y > +el.dataset.until);
+  });
+}
+
 /** Recompute each parent row's checkbox from its members: on / off / mixed. */
 function syncParents() {
   document.querySelectorAll('[data-parent]').forEach((cb) => {
@@ -439,11 +470,22 @@ function buildBrandList() {
     for (const m of members) {
       claimed.add(m.id);
       const also = (parentsOf.get(m.name) || []).filter((p) => p !== g.name);
+      // Ownership moves: Harris Teeter joins Kroger in 2014, Quik Stop leaves
+      // after 2017. Carry the window so the row can dim when the selected year
+      // falls outside it.
+      const rule = g.members.find((x) => x.brand === m.name) || {};
+      const y0 = meta.years[0];
+      const bounded = rule.from > y0 || rule.until < meta.years[meta.years.length - 1];
+      const range = rule.from > y0 && rule.until < meta.years[meta.years.length - 1]
+        ? `${rule.from}–${rule.until}`
+        : rule.from > y0 ? `from ${rule.from}` : `to ${rule.until}`;
       html += `
         <label class="item child" data-name="${m.name.toLowerCase()}"
+               data-from="${rule.from - y0}" data-until="${rule.until - y0}"
                ${also.length ? `title="Also part of ${also.join(', ')}"` : ''}>
           <input type="checkbox" data-brand="${m.id}" checked>
           <span class="nm">${m.name}${also.length ? ' †' : ''}</span>
+          ${bounded ? `<span class="yr">${range}</span>` : ''}
           <span class="n">${fmtNum(m.total)}</span>
         </label>`;
     }
@@ -526,6 +568,10 @@ function wireControls() {
     state.yearIndex = +e.target.value;
     // Group membership is year-dependent, so colors move with the slider.
     refresh(state.colorMode === 'group');
+  });
+
+  document.getElementById('regions').addEventListener('click', (e) => {
+    if (e.target.dataset.region) flyTo(e.target.dataset.region);
   });
 
   document.getElementById('dotSize').addEventListener('input', (e) => {
