@@ -38,6 +38,8 @@ const state = {
   slots: [null, null, null], // each: {type:'group'|'brand', id} or null
   onlySlots: false,
   dotSize: 1.6,
+  region: 'conus',
+  userMoved: false,
   visible: 0,
 };
 
@@ -165,30 +167,57 @@ function recolor() {
 
 // Alaska, Hawaii and the territories are all in the data and on the basemap —
 // they just sit outside a lower-48 viewport, so they need a way to be reached.
+// Stored as bounds, not a fixed center and zoom: the map sits between two
+// panels, so its aspect ratio depends on the window and a hardcoded zoom either
+// clips the coasts or strands the country in empty ocean.
 const REGIONS = {
-  conus: { longitude: -96, latitude: 38.5, zoom: 3.6 },
-  ak: { longitude: -150, latitude: 63.5, zoom: 3.3 },
-  hi: { longitude: -157.3, latitude: 20.6, zoom: 6.1 },
-  vi: { longitude: -64.85, latitude: 18.0, zoom: 8.6 },
-  pac: { longitude: 144.8, latitude: 13.5, zoom: 8.0 },
+  conus: [[-124.8, 24.4], [-66.9, 49.4]],
+  ak: [[-172.5, 51.0], [-129.5, 71.5]],
+  hi: [[-160.3, 18.8], [-154.7, 22.3]],
+  vi: [[-65.15, 17.6], [-64.5, 18.5]],
+  pac: [[144.55, 13.2], [145.05, 13.7]],
 };
+
+function viewFor(key) {
+  const el = document.getElementById('map');
+  const width = Math.max(el.clientWidth || 800, 120);
+  const height = Math.max(el.clientHeight || 600, 120);
+  const padding = Math.max(12, Math.min(40, Math.min(width, height) * 0.05));
+  const { longitude, latitude, zoom } =
+    new deck.WebMercatorViewport({ width, height }).fitBounds(REGIONS[key], { padding });
+  return { longitude, latitude, zoom, minZoom: 1, maxZoom: 16 };
+}
 
 function initDeck() {
   deckgl = new deck.Deck({
     parent: document.getElementById('map'),
-    initialViewState: { ...REGIONS.conus, minZoom: 1, maxZoom: 16 },
+    initialViewState: viewFor('conus'),
     controller: true,
     layers: [],
     onHover: showTooltip,
+    // Once the user pans or zooms, stop refitting on resize — their view wins.
+    onViewStateChange: ({ interactionState }) => {
+      if (interactionState && (interactionState.isDragging || interactionState.isZooming)) {
+        state.userMoved = true;
+      }
+    },
+  });
+
+  let t = null;
+  addEventListener('resize', () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      if (!state.userMoved) deckgl.setProps({ initialViewState: viewFor(state.region) });
+    }, 150);
   });
 }
 
 function flyTo(key) {
+  state.region = key;
+  state.userMoved = false;
   deckgl.setProps({
     initialViewState: {
-      ...REGIONS[key],
-      minZoom: 1,
-      maxZoom: 16,
+      ...viewFor(key),
       transitionDuration: 900,
       transitionInterpolator: new deck.FlyToInterpolator(),
     },
