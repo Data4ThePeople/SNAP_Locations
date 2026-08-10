@@ -5,7 +5,7 @@ rows resolve to 661,456 distinct Record IDs, with 37,941 IDs carrying multiple
 rows (up to 7) for lapses and reinstatements. Store name and store type never
 vary within a Record ID, so the store dimension is well defined.
 """
-from config import CSV_PATH, SENTINEL_AUTH_DATE, connect
+from config import CSV_PATH, IN_US_SQL, SENTINEL_AUTH_DATE, connect
 
 # One row per spell, typed and trimmed. The CSV pads many fields with spaces.
 TYPED_SQL = """
@@ -53,7 +53,7 @@ FROM raw_hist
 
 # Canonical attributes come from the most recent spell, so a store that moved or
 # was re-registered carries its latest known address.
-STORE_SQL = """
+STORE_SQL = f"""
 CREATE OR REPLACE TABLE dim_store AS
 WITH ranked AS (
     SELECT *, ROW_NUMBER() OVER (
@@ -90,6 +90,10 @@ SELECT
     s.open_ended,
     (r.latitude IS NULL OR r.longitude IS NULL
      OR r.latitude = 0 OR r.longitude = 0)        AS geocode_missing,
+    -- Coordinates that land outside every US/territory box are wrong, not remote.
+    (r.latitude IS NOT NULL AND r.longitude IS NOT NULL
+     AND r.latitude <> 0 AND r.longitude <> 0
+     AND NOT {IN_US_SQL.replace(chr(10), " ")})                             AS geocode_offshore,
     -- Classification columns; populated by classify.py.
     CAST(NULL AS VARCHAR)                         AS format,
     CAST(NULL AS VARCHAR)                         AS ownership,
@@ -125,13 +129,15 @@ def load() -> None:
             (SELECT count(*) FROM fact_spell WHERE auth_date_unknown),
             (SELECT count(*) FROM fact_spell WHERE date_anomaly),
             (SELECT count(*) FROM dim_store  WHERE geocode_missing),
+            (SELECT count(*) FROM dim_store  WHERE geocode_offshore),
             (SELECT count(*) FROM raw_hist   WHERE auth_date IS NULL)
         """
     ).fetchone()
     print(f"\n  auth_date_unknown (1930 sentinel) {flags[0]:>7,}")
     print(f"  date_anomaly (end < auth)         {flags[1]:>7,}")
     print(f"  geocode_missing                   {flags[2]:>7,}")
-    print(f"  unparseable auth_date             {flags[3]:>7,}")
+    print(f"  geocode_offshore (bad coordinates) {flags[3]:>6,}")
+    print(f"  unparseable auth_date             {flags[4]:>7,}")
     con.close()
 
 

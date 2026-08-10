@@ -44,8 +44,16 @@ def main():
     group_until = np.frombuffer(buf, np.uint8, n, n * 18)
 
     lon, lat = position[0::2], position[1::2]
-    check("all longitudes in [-180,180]", bool(np.all((lon >= -180) & (lon <= 180))), True)
-    check("all latitudes in [-90,90]", bool(np.all((lat >= -90) & (lat <= 90))), True)
+    # Every point must land somewhere SNAP or NAP operates. The source geocodes
+    # 38 Guam stores into Jerusalem and the Philippines, a "China, Texas" Dollar
+    # General into Tibet, and a California Big Lots into Venezuela.
+    boxes = [(-125.1, -66.8, 24.3, 49.5), (-179.9, -129.0, 51.0, 71.5),
+             (-160.5, -154.6, 18.8, 22.4), (-68.0, -64.5, 17.6, 18.6),
+             (144.5, 146.2, 13.2, 20.6), (-171.2, -169.3, -14.6, -13.9)]
+    inside = np.zeros(len(lon), dtype=bool)
+    for w, e, s, nth in boxes:
+        inside |= (lon >= w) & (lon <= e) & (lat >= s) & (lat <= nth)
+    check("points outside every US/territory box", int((~inside).sum()), 0)
     check("format ids within domain", int(format_id.max()), len(meta["formats"]) - 1)
     check("ownership ids within domain", int(ownership_id.max()), len(meta["ownership"]) - 1)
     check("brand ids within domain", int(brand_id.max()), len(meta["brands"]))
@@ -73,7 +81,7 @@ def main():
     con = connect(read_only=True)
     db = con.execute("""
         SELECT count(DISTINCT d.record_id) FROM dim_store d JOIN fact_spell f USING(record_id)
-        WHERE d.brand IN ('Kroger','Giant Eagle') AND NOT d.geocode_missing AND NOT f.date_anomaly
+        WHERE d.brand IN ('Kroger','Giant Eagle') AND NOT d.geocode_missing AND NOT d.geocode_offshore AND NOT f.date_anomaly
           AND f.auth_date <= DATE '2025-12-31'
           AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
     """).fetchone()[0]
@@ -89,7 +97,7 @@ def main():
         i = meta["formats"].index(fmt)
         dbn = con.execute("""
             SELECT count(DISTINCT d.record_id) FROM dim_store d JOIN fact_spell f USING(record_id)
-            WHERE d.format = ? AND NOT d.geocode_missing AND NOT f.date_anomaly
+            WHERE d.format = ? AND NOT d.geocode_missing AND NOT d.geocode_offshore AND NOT f.date_anomaly
               AND f.auth_date <= DATE '2025-12-31'
               AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
         """, [fmt]).fetchone()[0]
@@ -126,7 +134,7 @@ def main():
                 continue
             sql = """
                 SELECT DISTINCT d.record_id FROM dim_store d JOIN fact_spell f USING(record_id)
-                WHERE d.brand = ? AND NOT d.geocode_missing AND NOT f.date_anomaly
+                WHERE d.brand = ? AND NOT d.geocode_missing AND NOT d.geocode_offshore AND NOT f.date_anomaly
                   AND f.auth_date <= DATE '2025-12-31'
                   AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
             """

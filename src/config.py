@@ -28,6 +28,19 @@ DATA_CUTOFF = date(2025, 12, 31)
 # USDA uses 1930-01-01 as a sentinel for "authorization date unknown".
 SENTINEL_AUTH_DATE = date(1930, 1, 1)
 
+# Boxes covering everywhere SNAP or NAP actually operates. A point outside all
+# of them is a geocoding failure, not a location: the file puts 38 Guam stores
+# in Jerusalem, France and the Philippines, a Dollar General in "China, Texas"
+# in Tibet, and a Big Lots in Santa Margarita, California in Venezuela.
+IN_US_SQL = """(
+   (longitude BETWEEN -125.1 AND -66.8  AND latitude BETWEEN  24.3 AND 49.5)
+OR (longitude BETWEEN -179.9 AND -129.0 AND latitude BETWEEN  51.0 AND 71.5)
+OR (longitude BETWEEN -160.5 AND -154.6 AND latitude BETWEEN  18.8 AND 22.4)
+OR (longitude BETWEEN  -68.0 AND  -64.5 AND latitude BETWEEN  17.6 AND 18.6)
+OR (longitude BETWEEN  144.5 AND  146.2 AND latitude BETWEEN  13.2 AND 20.6)
+OR (longitude BETWEEN -171.2 AND -169.3 AND latitude BETWEEN -14.6 AND -13.9)
+)"""
+
 
 def connect(read_only: bool = False):
     """Open the project DuckDB database."""
