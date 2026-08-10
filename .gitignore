@@ -1,0 +1,19 @@
+.venv/
+.idea/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+
+# Manually-downloaded copies of the source archive.
+Input/
+
+# Derived — rebuild with `python src/pipeline.py`
+data/snap.duckdb
+data/snap.duckdb.wal
+data/raw/hist.csv
+
+# The source zip is 23MB; keep it out of git and re-fetch when needed.
+data/raw/*.zip
+
+# data/brands.csv is deliberately NOT ignored — it is hand-curated source.

@@ -1,0 +1,427 @@
+pattern,brand,chain_category
+# Curated brand crosswalk for SNAP retailer names.
+# pattern       normalized store name; matched as equality or longest prefix,
+#               so DOLLAR GENERAL absorbs DOLLAR GENERAL STORE / MARKET.
+# chain_category dollar|drug|mass|club|grocery|convenience|variety|fuel_branded|generic
+#               fuel_branded and generic resolve to ownership = unknown; see
+#               src/classify.py for why.
+#
+# --- dollar stores (broken out as their own format) --------------------------
+DOLLAR GENERAL,Dollar General,dollar
+DOLLARTREE,Dollar Tree,dollar
+DOLLAR TREE,Dollar Tree,dollar
+FAMILY DOLLAR,Family Dollar,dollar
+99 CENTS ONLY,99 Cents Only,dollar
+DOLLAR EXPRESS,Dollar Express,dollar
+DOLLAR ZONE,Dollar Zone,dollar
+# --- drug stores -------------------------------------------------------------
+WALGREENS,Walgreens,drug
+WALGREEN,Walgreens,drug
+CVS,CVS,drug
+RITE AID,Rite Aid,drug
+DUANE READE,Duane Reade,drug
+KINNEY DRUGS,Kinney Drugs,drug
+DISCOUNT DRUG MART,Discount Drug Mart,drug
+# --- mass merchants ----------------------------------------------------------
+WALMART,Walmart,mass
+WAL MART,Walmart,mass
+TARGET,Target,mass
+MEIJER,Meijer,mass
+FRED MEYER,Fred Meyer,mass
+# --- warehouse clubs ---------------------------------------------------------
+COSTCO,Costco,club
+SAMS CLUB,Sam's Club,club
+BJS WHOLESALE CLUB,BJ's Wholesale Club,club
+B JS WHOLESALE CLUB,BJ's Wholesale Club,club
+# --- variety / closeout ------------------------------------------------------
+BIG LOTS,Big Lots,variety
+OCEAN STATE JOB LOT,Ocean State Job Lot,variety
+BI MART,Bi-Mart,variety
+ROSES,Roses,variety
+# --- supermarkets and grocery banners ---------------------------------------
+KROGER,Kroger,grocery
+PUBLIX,Publix,grocery
+ALBERTSONS,Albertsons,grocery
+SAFEWAY,Safeway,grocery
+FOOD LION,Food Lion,grocery
+ALDI,Aldi,grocery
+LIDL,Lidl,grocery
+TRADER JOES,Trader Joe's,grocery
+WHOLE FOODS,Whole Foods Market,grocery
+WEGMANS,Wegmans,grocery
+HEB,H-E-B,grocery
+H E B,H-E-B,grocery
+WINN DIXIE,Winn-Dixie,grocery
+HARRIS TEETER,Harris Teeter,grocery
+GIANT EAGLE,Giant Eagle,grocery
+GIANT FOOD,Giant Food,grocery
+GIANT,Giant,grocery
+STOP AND SHOP,Stop & Shop,grocery
+HANNAFORD,Hannaford,grocery
+SHAWS,Shaw's,grocery
+ACME,Acme Markets,grocery
+JEWEL,Jewel-Osco,grocery
+VONS,Vons,grocery
+RALPHS,Ralphs,grocery
+FRYS,Fry's Food Stores,grocery
+KING SOOPERS,King Soopers,grocery
+SMITHS FOOD,Smith's Food and Drug,grocery
+DILLON,Dillons,grocery
+QFC,QFC,grocery
+PICK N SAVE,Pick 'n Save,grocery
+MARIANOS,Mariano's,grocery
+HY VEE,Hy-Vee,grocery
+HYVEE,Hy-Vee,grocery
+SCHNUCKS,Schnucks,grocery
+WINCO FOODS,WinCo Foods,grocery
+SPROUTS,Sprouts Farmers Market,grocery
+FRESH MARKET,The Fresh Market,grocery
+SAVE A LOT,Save A Lot,grocery
+GROCERY OUTLET,Grocery Outlet,grocery
+FOOD 4 LESS,Food 4 Less,grocery
+FOODMAXX,FoodMaxx,grocery
+FOOD MAXX,FoodMaxx,grocery
+LUCKY,Lucky,grocery
+SAVE MART,Save Mart,grocery
+STATER BROS,Stater Bros,grocery
+RALEYS,Raley's,grocery
+WEIS MARKETS,Weis Markets,grocery
+TOPS MARKETS,Tops Markets,grocery
+PRICE CHOPPER,Price Chopper,grocery
+SHOPRITE,ShopRite,grocery
+INGLES,Ingles Markets,grocery
+FOOD CITY,Food City,grocery
+PIGGLY WIGGLY,Piggly Wiggly,grocery
+BROOKSHIRE,Brookshire's,grocery
+UNITED SUPERMARKET,United Supermarkets,grocery
+FAREWAY,Fareway,grocery
+HARPS,Harps Food Stores,grocery
+MARKET BASKET,Market Basket,grocery
+BIG Y,Big Y,grocery
+CUB FOODS,Cub Foods,grocery
+FESTIVAL FOODS,Festival Foods,grocery
+ROUSES,Rouses Market,grocery
+FIESTA MART,Fiesta Mart,grocery
+CARDENAS,Cardenas Markets,grocery
+VALLARTA,Vallarta Supermarkets,grocery
+EL SUPER,El Super,grocery
+SUPERIOR GROCERS,Superior Grocers,grocery
+99 RANCH,99 Ranch Market,grocery
+SUPER 1 FOODS,Super 1 Foods,grocery
+FAMILY FARE,Family Fare,grocery
+LOWES FOOD,Lowes Foods,grocery
+FOOD GIANT,Food Giant,grocery
+FOOD DEPOT,Food Depot,grocery
+CASH SAVER,Cash Saver,grocery
+MARCS,Marc's,grocery
+BASHAS,Bashas',grocery
+LA MICHOACANA MEAT MARKET,La Michoacana Meat Market,grocery
+MOTHERS NUTRITIONAL CENTER,Mother's Nutritional Center,grocery
+SMART AND FINAL,Smart & Final,grocery
+SPROUTS FARMERS MARKET,Sprouts Farmers Market,grocery
+HOUCHENS,Houchens,grocery
+BRAUMS,Braum's,grocery
+UNITED DAIRY FARMERS,United Dairy Farmers,grocery
+NATURAL GROCERS,Natural Grocers,grocery
+EARTH FARE,Earth Fare,grocery
+PRICE RITE,Price Rite,grocery
+KEY FOOD,Key Food,grocery
+C TOWN,C-Town,grocery
+CTOWN,C-Town,grocery
+BRAVO SUPERMARKET,Bravo Supermarkets,grocery
+FOODTOWN,Foodtown,grocery
+ASSOCIATED SUPERMARKET,Associated Supermarket,grocery
+IGA,IGA,grocery
+FOOD BASICS,Food Basics,grocery
+SEDANOS,Sedano's,grocery
+PRESIDENTE SUPERMARKET,Presidente Supermarket,grocery
+NORTHGATE MARKET,Northgate Market,grocery
+JONS MARKETPLACE,Jons Marketplace,grocery
+STATER BROTHERS,Stater Bros,grocery
+COBORNS,Coborn's,grocery
+DIERBERGS,Dierbergs,grocery
+GELSONS,Gelson's,grocery
+DEMOULAS,DeMoulas Market Basket,grocery
+REDNERS,Redner's,grocery
+SHOPPERS FOOD,Shoppers Food,grocery
+FOOD BAZAAR,Food Bazaar,grocery
+COMPARE FOODS,Compare Foods,grocery
+FRESH THYME,Fresh Thyme,grocery
+LUNDS AND BYERLYS,Lunds & Byerlys,grocery
+BALLS FOOD,Ball's Food Stores,grocery
+HOMELAND,Homeland,grocery
+REASORS,Reasor's,grocery
+BUEHLERS,Buehler's,grocery
+HEINENS,Heinen's,grocery
+FOOD TOWN,Food Town,grocery
+CITY MARKET,City Market,grocery
+# --- convenience store chains -----------------------------------------------
+7 ELEVEN,7-Eleven,convenience
+SEVEN ELEVEN,7-Eleven,convenience
+CIRCLE K,Circle K,convenience
+SPEEDWAY,Speedway,convenience
+QUIKTRIP,QuikTrip,convenience
+QUIK TRIP,QuikTrip,convenience
+CASEYS,Casey's,convenience
+MURPHY USA,Murphy USA,convenience
+MURPHY EXPRESS,Murphy Express,convenience
+MAVERIK,Maverik,convenience
+SHEETZ,Sheetz,convenience
+WAWA,Wawa,convenience
+KWIK TRIP,Kwik Trip,convenience
+KWIK STAR,Kwik Star,convenience
+PILOT TRAVEL CENTER,Pilot,convenience
+PILOT FLYING J,Pilot Flying J,convenience
+FLYING J,Flying J,convenience
+CUMBERLAND FARMS,Cumberland Farms,convenience
+LOVES TRAVEL,Love's Travel Stops,convenience
+LOVES COUNTRY,Love's Travel Stops,convenience
+STRIPES,Stripes,convenience
+ALLSUPS,Allsup's,convenience
+HOLIDAY STATIONSTORE,Holiday Stationstores,convenience
+RACETRAC,RaceTrac,convenience
+RACE TRAC,RaceTrac,convenience
+RACEWAY,RaceWay,convenience
+ROYAL FARMS,Royal Farms,convenience
+STEWARTS SHOP,Stewart's Shops,convenience
+THORNTONS,Thorntons,convenience
+ROCKET,Rocket,convenience
+REBEL,Rebel,convenience
+REFUEL,Refuel,convenience
+TURKEY HILL,Turkey Hill,convenience
+GETGO,GetGo,convenience
+MAPCO,Mapco,convenience
+TOM THUMB,Tom Thumb,convenience
+YESWAY,Yesway,convenience
+PLAID PANTRY,Plaid Pantry,convenience
+RUTTERS,Rutter's,convenience
+SPINX,Spinx,convenience
+PARKERS,Parker's,convenience
+WEIGELS,Weigel's,convenience
+CROSBYS,Crosby's,convenience
+FIVESTAR,FiveStar,convenience
+KWIK SHOP,Kwik Shop,convenience
+KWIK FILL,Kwik Fill,convenience
+JACKSONS FOOD,Jacksons Food Stores,convenience
+PAR MAR,Par Mar Stores,convenience
+CEFCO,CEFCO,convenience
+E Z MART,E-Z Mart,convenience
+EZ MART,E-Z Mart,convenience
+FAS MART,Fas Mart,convenience
+SCOTCHMAN,Scotchman,convenience
+LITTLE GENERAL,Little General,convenience
+STINKER,Stinker Stores,convenience
+TOOTN TOTUM,Toot'n Totum,convenience
+APLUS,A-Plus,convenience
+DOUBLE QUICK,Double Quick,convenience
+ROAD RANGER,Road Ranger,convenience
+DASH IN,Dash In,convenience
+MINIT MART,Minit Mart,convenience
+FAMILY EXPRESS,Family Express,convenience
+COUNTRY FAIR,Country Fair,convenience
+TWICE DAILY,Twice Daily,convenience
+QUICK CHEK,QuickChek,convenience
+QUICKCHEK,QuickChek,convenience
+HIGHS OF BALTIMORE,High's,convenience
+HONEY FARMS,Honey Farms,convenience
+SUNSTOP,Sunstop,convenience
+ONCUE,OnCue,convenience
+CLARKS PUMP N SHOP,Clark's Pump-N-Shop,convenience
+DANDY MINI MART,Dandy Mini Mart,convenience
+VILLAGE PANTRY,Village Pantry,convenience
+BELLSTORES,BellStores,convenience
+WESCO,Wesco,convenience
+RICKERS,Ricker's,convenience
+GOOD 2 GO,Good 2 Go,convenience
+SPRINT MART,Sprint Mart,convenience
+ARCO AMPM,ampm,convenience
+ARCO AM PM,ampm,convenience
+AMPM,ampm,convenience
+LOAF N JUG,Loaf 'N Jug,convenience
+HUCKS,Huck's,convenience
+KENT KWIK,Kent Kwik,convenience
+DUCK THRU,Duck Thru,convenience
+JET FOOD STORE,Jet Food Stores,convenience
+TIMEWISE,TimeWise,convenience
+BFS FOODS,BFS Foods,convenience
+FLASH FOODS,Flash Foods,convenience
+HAN DEE HUGOS,Han-Dee Hugo's,convenience
+TERRIBLES,Terrible's,convenience
+SUDDEN SERVICE,Sudden Service,convenience
+BREAK TIME,Break Time,convenience
+BRAKE TIME,Brake Time,convenience
+CONVENIENT FOOD MART,Convenient Food Mart,convenience
+MINUTEMAN FOOD MART,Minuteman Food Mart,convenience
+KRIST FOOD MART,Krist Food Mart,convenience
+JOES KWIK MART,Joe's Kwik Marts,convenience
+JORDANS KWIK STOP,Jordan's Kwik Stop,convenience
+ROADRUNNER MARKET,Roadrunner Markets,convenience
+GATE SERVICE STATION,GATE,convenience
+STAR STOP,Star Stop,convenience
+QUIK STOP MARKET,Quik Stop,convenience
+SPEEDEE MART,Speedee Mart,convenience
+S AND G STORE,S&G Stores,convenience
+PUMP AND PANTRY,Pump & Pantry,convenience
+COLBEA ENTERPRISES,Colbea Enterprises,convenience
+MIDWEST PETROLEUM,Midwest Petroleum,convenience
+CERTIFIED OIL,Certified Oil,convenience
+HOLIDAY OIL,Holiday Oil,convenience
+BIG D OIL,Big D Oil,convenience
+G AND M OIL,G&M Oil,convenience
+H AND S ENERGY,H&S Energy,convenience
+PAPA MURPHYS,Papa Murphy's,convenience
+KUM AND GO,Kum & Go,convenience
+ENMARKET,Enmarket,convenience
+WILSON FARMS,Wilson Farms,convenience
+UNI MART,Uni-Mart,convenience
+SAMS MART,Sam's Mart,convenience
+HOP IN,Hop In,convenience
+LIL CRICKET,Lil Cricket,convenience
+SPEEDY STOP,Speedy Stop,convenience
+FLASH MARKET,Flash Market,convenience
+QUICK PANTRY,Quick Pantry,convenience
+ALTA,Alta Convenience,convenience
+G AND M,G&M Oil,convenience
+JOES KWIK MARTS,Joe's Kwik Marts,convenience
+# --- defunct / acquired chains (matter for the historical map versions) ------
+KMART,Kmart,mass
+BIG KMART,Kmart,mass
+K MART,Kmart,mass
+SHOPKO,Shopko,mass
+PAMIDA,Pamida,mass
+ALCO,ALCO,variety
+FREDS,Fred's,variety
+ECKERD,Eckerd,drug
+LONGS,Longs Drugs,drug
+OSCO,Osco Drug,drug
+SAV ON,Sav-On,drug
+BI LO,BI-LO,grocery
+PATHMARK,Pathmark,grocery
+A AND P,A&P,grocery
+DOMINICKS,Dominick's,grocery
+SWEETBAY,Sweetbay,grocery
+HAGGEN,Haggen,grocery
+FRESH AND EASY,Fresh & Easy,grocery
+GENUARDIS,Genuardi's,grocery
+FARMER JACK,Farmer Jack,grocery
+SUPER FRESH,SuperFresh,grocery
+WALDBAUMS,Waldbaum's,grocery
+GRISTEDES,Gristedes,grocery
+HARVEYS SUPERMARKET,Harveys,grocery
+SHOP N SAVE,Shop 'n Save,grocery
+APPLE MARKET,Apple Market,grocery
+STAR MARKET,Star Market,grocery
+FOOD WORLD,Food World,grocery
+LOWES,Lowes Foods,grocery
+CARRS,Carrs,grocery
+RANDALLS,Randalls,grocery
+KANGAROO EXPRESS,Kangaroo Express,convenience
+SUPERAMERICA,SuperAmerica,convenience
+WHITE HEN PANTRY,White Hen Pantry,convenience
+DAIRY MART,Dairy Mart,convenience
+# --- national specialty / delivery chains ------------------------------------
+FLOWERS BAKERY,Flowers Bakery Outlet,specialty
+BIMBO BAKERIES,Bimbo Bakeries,specialty
+WONDER HOSTESS,Wonder/Hostess Bakery Outlet,specialty
+ENTENMANNS,Entenmann's,specialty
+LITTLE DEBBIE,Little Debbie,specialty
+SARA LEE,Sara Lee Bakery Outlet,specialty
+SCHWANS,Schwan's Home Service,specialty
+PAPA MURPHY,Papa Murphy's,specialty
+# --- fuel brands: the banner says nothing about who owns the store -----------
+SHELL,,fuel_branded
+BP,,fuel_branded
+CITGO,,fuel_branded
+SUNOCO,,fuel_branded
+MOBIL,,fuel_branded
+EXXON,,fuel_branded
+CHEVRON,,fuel_branded
+TEXACO,,fuel_branded
+ARCO,,fuel_branded
+MARATHON,,fuel_branded
+VALERO,,fuel_branded
+PHILLIPS 66,,fuel_branded
+CONOCO,,fuel_branded
+SINCLAIR,,fuel_branded
+GULF,,fuel_branded
+# --- generic names shared by unrelated independents --------------------------
+STORE,,generic
+MARKET,,generic
+GROCERY,,generic
+SUPERMARKET,,generic
+FOOD MART,,generic
+FOOD STORE,,generic
+FOOD MARKET,,generic
+MINI MART,,generic
+MINI MARKET,,generic
+QUICK STOP,,generic
+QUIK STOP,,generic
+QUICK MART,,generic
+QUIK MART,,generic
+FAST STOP,,generic
+FAST MARKET,,generic
+FAST MART,,generic
+GO MART,,generic
+ONE STOP,,generic
+SHORT STOP,,generic
+STOP N GO,,generic
+STOP AND GO,,generic
+STOP N SHOP,,generic
+STOP N SAVE,,generic
+SHOP N GO,,generic
+SHOP AND SAVE,,generic
+CORNER STORE,,generic
+CORNER MARKET,,generic
+CORNER MART,,generic
+CORNER PANTRY,,generic
+CORNER DELI,,generic
+EXPRESS MART,,generic
+EXPRESS STOP,,generic
+EXPRESS LANE,,generic
+SPEEDY MART,,generic
+VILLAGE MARKET,,generic
+MAIN STREET MARKET,,generic
+COUNTRY STORE,,generic
+COUNTRY MARKET,,generic
+HANDY MART,,generic
+HANDI STOP,,generic
+JIFFY MART,,generic
+PIT STOP,,generic
+GRAB N GO,,generic
+GIT N GO,,generic
+HOT SPOT,,generic
+TIGER MART,,generic
+QUALITY MART,,generic
+ABC STORE,,generic
+QUICK TRACK,,generic
+RSTORE,,generic
+SUPER STOP,,generic
+CORNER STOP,,generic
+QUICK SHOP,,generic
+KWIK STOP,,generic
+KWIK MART,,generic
+FAMILY MARKET,,generic
+ASIAN MARKET,,generic
+STAR FOOD MART,,generic
+SUNSHINE FOOD MART,,generic
+DISCOUNT FOOD MART,,generic
+EXPRESS FOOD MART,,generic
+COUNTRY CORNER,,generic
+SAMS FOOD STORE,,generic
+PITT STOP,,generic
+DISCOUNT GROCERY,,generic
+FARMERS MARKET,,generic
+COMMUNITY MARKET,,generic
+NEIGHBORHOOD MARKET,,generic
+GENERAL STORE,,generic
+DELI,,generic
+DELI AND GROCERY,,generic
+SMOKE SHOP,,generic
+LIQUOR,,generic
+GAS AND GO,,generic
+PANTRY,,generic
+TRADING POST,,generic
+SUPERETTE,,generic
+MERCADO,,generic
+CARNICERIA,,generic
+TIENDA,,generic
