@@ -13,7 +13,13 @@ data/raw/hist.csv
 # The source zip is 23MB; keep it out of git and re-fetch when needed.
 data/raw/*.zip
 
-# Map payload (9.78MB) — regenerate with `python src/export_map.py`.
+# Standalone bundle (8.4MB) — rebuild with `python src/build_standalone.py`.
+dist/
+
+# Cached deck.gl runtime for the standalone build.
+data/vendor/
+
+# Map payload (11.6MB) — regenerate with `python src/export_map.py`.
 # Commit deliberately only when deploying to GitHub Pages.
 web/data/
 

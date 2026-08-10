@@ -63,11 +63,31 @@ let groupId, groupFrom, groupUntil;
 
 // ---------------------------------------------------------------- load
 
-async function load() {
-  const [m, buf] = await Promise.all([
+/** Inflate the gzip+base64 payload the standalone build embeds. */
+async function inflate(b64) {
+  if (typeof DecompressionStream === 'undefined') {
+    throw new Error('This browser has no DecompressionStream; run the served version instead.');
+  }
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Response(stream).arrayBuffer();
+}
+
+/** Embedded payload when running as a single file, fetched otherwise. */
+async function loadPayload() {
+  if (window.__SNAP__) {
+    return [window.__SNAP__.meta, await inflate(window.__SNAP__.points)];
+  }
+  return Promise.all([
     fetch('data/meta.json').then((r) => r.json()),
     fetch('data/points.bin').then((r) => r.arrayBuffer()),
   ]);
+}
+
+async function load() {
+  const [m, buf] = await loadPayload();
   meta = m;
   N = meta.count;
 

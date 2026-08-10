@@ -6,7 +6,21 @@ Interactive map of SNAP-authorized retailers, 2006–2025.
 python src/export_map.py          # builds web/data/points.bin + meta.json
 python src/verify_map.py          # decodes the binary and checks it against the DB
 python web/serve.py               # then open http://127.0.0.1:8765
+
+python src/build_standalone.py    # -> dist/snap-map.html, one shareable file
 ```
+
+## Single-file build
+
+`build_standalone.py` inlines the CSS, the app, the deck.gl runtime and the
+whole dataset into **dist/snap-map.html (8.4 MB)**. Double-click it — no server,
+nothing alongside it. The data is gzipped before base64 (7.1 MB rather than the
+15.5 MB base64 alone would cost) and inflated in-page with `DecompressionStream`,
+which needs Chrome 80+, Safari 16.4+ or Firefox 113+.
+
+The one thing that cannot be inlined is the **basemap**: CARTO tiles come from
+the network. Offline, every dot and control still works — the map just draws on
+a blank background.
 
 `serve.py` is a plain file server that sends `no-store`; use it rather than
 `python -m http.server`, which lets the browser cache app.js so edits appear
