@@ -5,9 +5,6 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 
-# Manually-downloaded copies of the source archive.
-Input/
-
 # Derived — rebuild with `python src/pipeline.py`
 data/snap.duckdb
 data/snap.duckdb.wal
