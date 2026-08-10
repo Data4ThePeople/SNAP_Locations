@@ -280,6 +280,7 @@ function refresh(recolorToo) {
   deckgl.setProps({ layers: [basemapLayer(), pointLayer()] });
   renderCount();
   syncOwnershipYears();
+  renderPanelCounts();
 }
 
 // ---------------------------------------------------------------- tooltip
@@ -439,6 +440,24 @@ const CATEGORY_LABEL = {
   variety: 'Variety & closeout', specialty: 'Specialty & delivery',
 };
 
+/** Rewrite every count in the retailer panel for the selected year.
+ *
+ * These used to be all-time totals sitting next to a year-filtered map, which
+ * read as a mismatch: 311,131 independents beside 88,229 shown on screen.
+ */
+function renderPanelCounts() {
+  const y = state.yearIndex;
+  document.querySelectorAll('[data-count]').forEach((el) => {
+    const [kind, key] = el.dataset.count.split(':');
+    let n;
+    if (kind === 'brand') n = meta.brands[+key - 1].by_year[y];
+    else if (kind === 'group') n = meta.groups[+key].by_year[y];
+    else n = meta.unbranded[`${key}_by_year`][y];
+    el.textContent = fmtNum(n);
+    el.classList.toggle('zero', n === 0);
+  });
+}
+
 /** Dim banners that the selected year puts outside their parent's ownership. */
 function syncOwnershipYears() {
   const y = state.yearIndex;
@@ -476,10 +495,10 @@ function buildBrandList() {
     <div class="group">Unbranded</div>
     <label class="item" data-name="independent unbranded"><input type="checkbox" data-unb="1" checked>
       <span class="nm">Independent (unbranded)</span>
-      <span class="n">${fmtNum(meta.unbranded.independent)}</span></label>
+      <span class="n" data-count="unb:independent"></span></label>
     <label class="item" data-name="unknown"><input type="checkbox" data-unb="2" checked>
       <span class="nm">Unknown</span>
-      <span class="n">${fmtNum(meta.unbranded.unknown)}</span></label>
+      <span class="n" data-count="unb:unknown"></span></label>
     <div class="group">Parent companies</div>`;
 
   const claimed = new Set();
@@ -496,7 +515,7 @@ function buildBrandList() {
       <label class="item parent" data-name="${names}">
         <input type="checkbox" data-parent="${ids}" checked>
         <span class="nm">${g.name}</span>
-        <span class="n">${fmtNum(g.total)}</span>
+        <span class="n" data-count="group:${meta.groups.indexOf(g)}"></span>
       </label>`;
     for (const m of members) {
       claimed.add(m.id);
@@ -517,7 +536,7 @@ function buildBrandList() {
           <input type="checkbox" data-brand="${m.id}" checked>
           <span class="nm">${m.name}${also.length ? ' †' : ''}</span>
           ${bounded ? `<span class="yr">${range}</span>` : ''}
-          <span class="n">${fmtNum(m.total)}</span>
+          <span class="n" data-count="brand:${m.id}"></span>
         </label>`;
     }
   }
@@ -535,7 +554,7 @@ function buildBrandList() {
       <label class="item" data-name="${b.name.toLowerCase()}">
         <input type="checkbox" data-brand="${b.id}" checked>
         <span class="nm">${b.name}</span>
-        <span class="n">${fmtNum(b.total)}</span>
+        <span class="n" data-count="brand:${b.id}"></span>
       </label>`).join('');
   }
   box.innerHTML = html;

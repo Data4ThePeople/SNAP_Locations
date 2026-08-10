@@ -94,7 +94,23 @@ def main():
               AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
         """, [fmt]).fetchone()[0]
         check(fmt, int((active25 & (format_id == i)).sum()), dbn)
-    print("\n7. Parent-company groups")
+    print("\n7. Per-year panel counts reconcile to the year total")
+    for yr in (2006, 2015, years[-1]):
+        i = yr - years[0]
+        tot = (sum(b["by_year"][i] for b in meta["brands"])
+               + meta["unbranded"]["independent_by_year"][i]
+               + meta["unbranded"]["unknown_by_year"][i])
+        check(f"{yr} brands + unbranded", tot, meta["per_year_totals"][str(yr)])
+    # A group's per-year count must equal what the binary says for that year.
+    gnames0 = [g["name"] for g in meta["groups"]]
+    gi = gnames0.index("Kroger")
+    i25 = 2025 - years[0]
+    live = (year_mask & bit25) != 0
+    got = int((live & (group_id == gi + 1)
+               & (group_from <= i25) & (group_until >= i25)).sum())
+    check("Kroger group by_year[2025]", meta["groups"][gi]["by_year"][i25], got)
+
+    print("\n8. Parent-company groups")
     gnames = [g["name"] for g in meta["groups"]]
     check("group ids within domain", int(group_id.max()), len(gnames))
     kro = gnames.index("Kroger") + 1

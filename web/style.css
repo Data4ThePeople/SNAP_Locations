@@ -329,3 +329,6 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
   font: inherit; font-size: 11px;
 }
 .regions button:hover { color: var(--ink); border-color: var(--accent); }
+
+/* A retailer with no stores in the selected year. */
+.item .n.zero { opacity: .4; }

@@ -156,20 +156,35 @@ def export() -> None:
     size_mb = bin_path.stat().st_size / 1e6
     print(f"\nwrote {bin_path} ({size_mb:.2f} MB)")
 
-    # Per-brand counts for the checkbox list: total, and active in the latest year.
+    # Per-year counts for every row in the retailer panel. Without these the
+    # panel shows all-time totals next to a year-filtered map, which reads as a
+    # mismatch — 311,131 independents beside 88,229 on screen.
     latest_bit = 1 << (len(YEARS) - 1)
-    latest = df[(masks & latest_bit) != 0]
-    brand_latest = latest["brand"].value_counts()
+    n_brands = len(brands)
+    n_groups = len(group_names) + 1
+    brand_by_year = np.zeros((n_brands, len(YEARS)), dtype=np.int64)
+    group_by_year = np.zeros((n_groups, len(YEARS)), dtype=np.int64)
+    unb_by_year = {"independent": [], "unknown": []}
+    for i in range(len(YEARS)):
+        live = ((masks >> i) & 1).astype(bool)
+        brand_by_year[:, i] = np.bincount(brand_id[live], minlength=n_brands)
+        in_window = live & (group_from <= i) & (group_until >= i)
+        group_by_year[:, i] = np.bincount(group_id[in_window], minlength=n_groups)
+        nob = live & (brand_id == 0)
+        for key in ("independent", "unknown"):
+            unb_by_year[key].append(int((nob & (ownership_id == own_index[key])).sum()))
+
+    categories = dict(con.execute(
+        "SELECT brand, any_value(chain_category) FROM dim_store "
+        "WHERE brand IS NOT NULL GROUP BY brand").fetchall())
     brand_meta = []
-    for b in brands[1:]:
-        row = df[df["brand"] == b].iloc[0]
+    for bi, b in enumerate(brands[1:], start=1):
         brand_meta.append({
             "name": b,
-            "category": con.execute(
-                "SELECT any_value(chain_category) FROM dim_store WHERE brand = ?", [b]
-            ).fetchone()[0],
+            "category": categories.get(b),
             "total": int(brand_counts[b]),
-            "latest": int(brand_latest.get(b, 0)),
+            "latest": int(brand_by_year[bi, -1]),
+            "by_year": brand_by_year[bi].tolist(),
         })
 
     group_meta = []
@@ -178,7 +193,8 @@ def export() -> None:
         group_meta.append({
             "name": g,
             "total": int((group_id == i).sum()),
-            "latest": int(((group_id == i) & (masks & latest_bit) != 0).sum()),
+            "latest": int(group_by_year[i, -1]),
+            "by_year": group_by_year[i].tolist(),
             "members": [
                 {"brand": r["brand"], "from": r["from"], "until": r["until"],
                  "states": r["states"], "formats": r["formats"]}
@@ -197,6 +213,8 @@ def export() -> None:
         "unbranded": {
             "independent": int(((brand_id == 0) & (ownership_id == own_index["independent"])).sum()),
             "unknown": int(((brand_id == 0) & (ownership_id == own_index["unknown"])).sum()),
+            "independent_by_year": unb_by_year["independent"],
+            "unknown_by_year": unb_by_year["unknown"],
         },
         "notes": {
             "semantics": "A store is included for year Y if authorized on Dec 31 of Y.",
