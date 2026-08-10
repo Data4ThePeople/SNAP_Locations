@@ -33,7 +33,18 @@ html, body {
   background: var(--panel);
   border-right: 1px solid var(--line);
   z-index: 2;
+  /* Without this the sections overflowed each other and the brand list
+     collided with the footer. */
+  overflow: hidden;
 }
+
+/* Everything is fixed-height except the retailer block, which absorbs the
+   slack; min-height:0 lets it shrink so its inner list scrolls instead of
+   pushing the footer out of the panel. */
+#panel > header,
+#panel > .block,
+#panel > footer { flex: 0 0 auto; }
+#panel > .block.grow { flex: 1 1 0; min-height: 0; }
 
 #panel header { padding: var(--pad) var(--pad) 8px; }
 #panel h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: .2px; }
@@ -111,9 +122,9 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
 
 /* ---------- lists ---------- */
-.list { margin-top: 8px; overflow-y: auto; }
-.scroll-sm { max-height: 168px; }
-.scroll-lg { flex: 1; min-height: 90px; }
+.list { margin-top: 8px; overflow-y: auto; overscroll-behavior: contain; }
+.scroll-sm { max-height: 150px; flex: 0 0 auto; }
+.scroll-lg { flex: 1 1 0; min-height: 60px; }
 
 .item {
   display: flex;
@@ -158,11 +169,29 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 .hint { margin: 8px 0 0; font-size: 11px; color: var(--ink-3); }
 
 /* ---------- footer ---------- */
-#panel footer { padding: 10px var(--pad) 12px; border-top: 1px solid var(--line); }
+#panel footer {
+  padding: 10px var(--pad) 12px;
+  border-top: 1px solid var(--line);
+  max-height: 38vh;
+  overflow-y: auto;
+}
 .theme { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink-2); cursor: pointer; }
 .theme input { accent-color: var(--accent); }
 .note { margin: 8px 0 0; font-size: 10px; line-height: 1.4; color: var(--ink-3); }
 .note strong { color: var(--ink-2); }
+
+/* Collapsed by default — the full caveat is long enough to squeeze the
+   retailer list on a short window. */
+.caveat { margin-top: 8px; }
+.caveat summary {
+  font-size: 10px;
+  color: var(--ink-3);
+  cursor: pointer;
+  list-style: none;
+}
+.caveat summary::before { content: '▸ '; }
+.caveat[open] summary::before { content: '▾ '; }
+.caveat summary:hover { color: var(--ink-2); }
 
 /* ---------- overlays ---------- */
 #loading {

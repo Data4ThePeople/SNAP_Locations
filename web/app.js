@@ -307,12 +307,14 @@ function buildBrandList() {
   const groups = {};
   meta.brands.forEach((b, i) => (groups[b.category] ||= []).push({ ...b, id: i + 1 }));
 
+  // These carry data-name like every other row so the search filter hides them
+  // too; without it they sat pinned above the results looking like matches.
   let html = `
     <div class="group">Unbranded</div>
-    <label class="item"><input type="checkbox" data-unb="1" checked>
+    <label class="item" data-name="independent unbranded"><input type="checkbox" data-unb="1" checked>
       <span class="nm">Independent (unbranded)</span>
       <span class="n">${fmtNum(meta.unbranded.independent)}</span></label>
-    <label class="item"><input type="checkbox" data-unb="2" checked>
+    <label class="item" data-name="unknown"><input type="checkbox" data-unb="2" checked>
       <span class="nm">Unknown</span>
       <span class="n">${fmtNum(meta.unbranded.unknown)}</span></label>`;
 
