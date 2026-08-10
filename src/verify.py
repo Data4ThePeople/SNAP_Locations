@@ -104,6 +104,16 @@ def main():
           q("SELECT count(*) FROM dim_store WHERE geocode_offshore"), 40)
     check("Guam stores among them",
           q("SELECT count(*) FROM dim_store WHERE geocode_offshore AND state = 'GU'"), 38)
+    # Inside the US but in the wrong state: a Dime Box, Texas grocery placed in
+    # Pennsylvania, a Manitowish Waters, Wisconsin market placed in Minnesota.
+    check("stores whose coordinates land in another state",
+          q("SELECT count(*) FROM dim_store WHERE state_mismatch"), 6)
+    # Legitimate edge geography a bare bounding box would have caught.
+    check("Adak / Montauk / Booker style edge cases spared",
+          q("SELECT count(*) FROM dim_store WHERE state_mismatch AND ("
+            "city ILIKE '%Montauk%' OR city ILIKE '%Booker%' OR city ILIKE '%Adak%' "
+            "OR city ILIKE '%Big River%' OR city ILIKE '%Ewing%')"), 0)
+    check("mappable stores", q("SELECT count(*) FROM dim_store WHERE mappable"), 656_868)
     check("unclassified stores (format IS NULL)", q("SELECT count(*) FROM dim_store WHERE format IS NULL"), 0)
 
     con.close()

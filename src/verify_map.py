@@ -81,7 +81,7 @@ def main():
     con = connect(read_only=True)
     db = con.execute("""
         SELECT count(DISTINCT d.record_id) FROM dim_store d JOIN fact_spell f USING(record_id)
-        WHERE d.brand IN ('Kroger','Giant Eagle') AND NOT d.geocode_missing AND NOT d.geocode_offshore AND NOT f.date_anomaly
+        WHERE d.brand IN ('Kroger','Giant Eagle') AND d.mappable AND NOT f.date_anomaly
           AND f.auth_date <= DATE '2025-12-31'
           AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
     """).fetchone()[0]
@@ -97,7 +97,7 @@ def main():
         i = meta["formats"].index(fmt)
         dbn = con.execute("""
             SELECT count(DISTINCT d.record_id) FROM dim_store d JOIN fact_spell f USING(record_id)
-            WHERE d.format = ? AND NOT d.geocode_missing AND NOT d.geocode_offshore AND NOT f.date_anomaly
+            WHERE d.format = ? AND d.mappable AND NOT f.date_anomaly
               AND f.auth_date <= DATE '2025-12-31'
               AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
         """, [fmt]).fetchone()[0]
@@ -134,7 +134,7 @@ def main():
                 continue
             sql = """
                 SELECT DISTINCT d.record_id FROM dim_store d JOIN fact_spell f USING(record_id)
-                WHERE d.brand = ? AND NOT d.geocode_missing AND NOT d.geocode_offshore AND NOT f.date_anomaly
+                WHERE d.brand = ? AND d.mappable AND NOT f.date_anomaly
                   AND f.auth_date <= DATE '2025-12-31'
                   AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
             """

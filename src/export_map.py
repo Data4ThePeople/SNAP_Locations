@@ -42,7 +42,7 @@ SELECT
     ], (a, b) -> a | b) AS INTEGER)) AS year_mask
 FROM dim_store d
 JOIN fact_spell f USING (record_id)
-WHERE NOT f.date_anomaly AND NOT d.geocode_missing AND NOT d.geocode_offshore
+WHERE NOT f.date_anomaly AND d.mappable
 GROUP BY ALL
 HAVING year_mask <> 0
 ORDER BY d.record_id
@@ -95,7 +95,7 @@ def export() -> None:
     for i, yr in enumerate(YEARS):
         from_mask = int(((masks >> i) & 1).sum())
         snap = snapshot(date(yr, 12, 31), con=con)
-        direct = int((~snap["geocode_missing"] & ~snap["geocode_offshore"]).sum())
+        direct = int(snap["mappable"].sum())
         per_year[yr] = from_mask
         flag = "OK" if from_mask == direct else "MISMATCH"
         if yr % 5 == 1 or yr in (YEARS[0], YEARS[-1]):

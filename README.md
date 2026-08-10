@@ -99,7 +99,12 @@ category, not a chain-supermarket one.
 - **Snapshots before 2006 are refused.** The archive only contains retailers
   authorized within the last 20 years, so earlier dates are incomplete by
   construction.
-- **0.65% of stores lack coordinates** (`geocode_missing`); filter before mapping.
+- **Geocoding is not clean.** Three flags gate what is mappable:
+  `geocode_missing` (4,542 with no coordinates), `geocode_offshore` (40 placed
+  outside the US entirely — 38 Guam stores in Jerusalem and the Philippines, a
+  "China, Texas" Dollar General in Tibet), and `state_mismatch` (6 inside the US
+  but in the wrong state, like a Dime Box, Texas grocery in Pennsylvania). Use
+  the `mappable` column — 656,868 of 661,456 stores.
 - **Do not deduplicate by address.** 145,993 addresses carry multiple records.
   Some are successors at one storefront, but others are genuinely concurrent —
   1979 W 25th St, Cleveland has 144 records because it is the West Side Market.

@@ -99,10 +99,49 @@ SELECT
     CAST(NULL AS VARCHAR)                         AS ownership,
     CAST(NULL AS VARCHAR)                         AS brand,
     CAST(NULL AS BOOLEAN)                         AS is_dollar_store,
-    CAST(NULL AS VARCHAR)                         AS name_norm
+    CAST(NULL AS VARCHAR)                         AS name_norm,
+    -- Set by STATE_CHECK_SQL below.
+    CAST(NULL AS BOOLEAN)                         AS state_mismatch,
+    CAST(NULL AS BOOLEAN)                         AS mappable
 FROM ranked r
 JOIN spells s USING (record_id)
 WHERE r.rn = 1
+"""
+
+
+# Coordinates can be inside the US and still wrong: a Texas store geocoded to
+# Pennsylvania. Each state's envelope comes from its own stores (0.1%/99.9%
+# quantiles, so a few bad points cannot define it), and a store is flagged only
+# when it sits well outside its own state AND inside another state's envelope.
+# That second condition is what spares legitimate edge geography — Adak in the
+# far Aleutians, Montauk on Long Island's tip, Booker on the Oklahoma line —
+# which a bare bounding box would flag.
+STATE_BUFFER_DEG = 0.75
+STATE_CHECK_SQL = f"""
+CREATE OR REPLACE TEMP TABLE _env AS
+SELECT state,
+       quantile_cont(longitude, 0.001) w, quantile_cont(longitude, 0.999) e,
+       quantile_cont(latitude , 0.001) s, quantile_cont(latitude , 0.999) n
+FROM dim_store
+WHERE NOT geocode_missing AND NOT geocode_offshore
+GROUP BY state HAVING count(*) >= 50;
+
+UPDATE dim_store SET state_mismatch = FALSE;
+
+UPDATE dim_store d SET state_mismatch = TRUE
+FROM _env own
+WHERE own.state = d.state
+  AND NOT d.geocode_missing AND NOT d.geocode_offshore
+  AND (d.longitude < own.w - {STATE_BUFFER_DEG} OR d.longitude > own.e + {STATE_BUFFER_DEG}
+    OR d.latitude  < own.s - {STATE_BUFFER_DEG} OR d.latitude  > own.n + {STATE_BUFFER_DEG})
+  AND EXISTS (
+      SELECT 1 FROM _env o
+      WHERE o.state <> d.state
+        AND d.longitude BETWEEN o.w AND o.e
+        AND d.latitude  BETWEEN o.s AND o.n);
+
+UPDATE dim_store SET mappable =
+    NOT geocode_missing AND NOT geocode_offshore AND NOT state_mismatch;
 """
 
 
@@ -115,6 +154,7 @@ def load() -> None:
     con.execute(TYPED_SQL, [str(CSV_PATH)])
     con.execute(SPELL_SQL)
     con.execute(STORE_SQL)
+    con.execute(STATE_CHECK_SQL)
 
     rows = con.execute("SELECT count(*) FROM raw_hist").fetchone()[0]
     spells = con.execute("SELECT count(*) FROM fact_spell").fetchone()[0]
@@ -130,6 +170,7 @@ def load() -> None:
             (SELECT count(*) FROM fact_spell WHERE date_anomaly),
             (SELECT count(*) FROM dim_store  WHERE geocode_missing),
             (SELECT count(*) FROM dim_store  WHERE geocode_offshore),
+            (SELECT count(*) FROM dim_store  WHERE state_mismatch),
             (SELECT count(*) FROM raw_hist   WHERE auth_date IS NULL)
         """
     ).fetchone()
@@ -137,7 +178,8 @@ def load() -> None:
     print(f"  date_anomaly (end < auth)         {flags[1]:>7,}")
     print(f"  geocode_missing                   {flags[2]:>7,}")
     print(f"  geocode_offshore (bad coordinates) {flags[3]:>6,}")
-    print(f"  unparseable auth_date             {flags[4]:>7,}")
+    print(f"  state_mismatch (wrong state)      {flags[4]:>7,}")
+    print(f"  unparseable auth_date             {flags[5]:>7,}")
     con.close()
 
 
