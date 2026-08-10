@@ -332,3 +332,34 @@ input[type=search]:focus { outline: 2px solid var(--accent); outline-offset: -1p
 
 /* A banner that belonged to a parent company in other years. */
 .yr.was { color: var(--ink-3); border-style: dashed; }
+
+/* ---------- map controls ---------- */
+#mapctl {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;               /* above deck's canvas */
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+#mapctl button {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(23, 23, 26, .92);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--ink-2);
+  cursor: pointer;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  backdrop-filter: blur(3px);
+}
+#mapctl button:hover { color: var(--ink); border-color: var(--accent); }
+#mapctl button:active { background: var(--accent); color: #fff; }
+/* Separate the view actions from the zoom pair. */
+#mapctl button[data-ctl="fit"] { margin-top: 6px; }

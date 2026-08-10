@@ -40,6 +40,7 @@ const state = {
   dotSize: 1.6,
   region: 'conus',
   userMoved: false,
+  view: null,
   visible: 0,
 };
 
@@ -209,15 +210,70 @@ function viewFor(key) {
   return { longitude, latitude, zoom, minZoom: 1, maxZoom: 16 };
 }
 
+const MIN_ZOOM = 1;
+const MAX_ZOOM = 16;
+
+/** Move the camera, keeping whatever the user has not explicitly changed. */
+function setView(patch, { moved = true, ms = 300 } = {}) {
+  state.view = { ...state.view, ...patch };
+  state.userMoved = moved;
+  deckgl.setProps({
+    initialViewState: {
+      ...state.view,
+      minZoom: MIN_ZOOM,
+      maxZoom: MAX_ZOOM,
+      transitionDuration: ms,
+      transitionInterpolator: ms ? new deck.FlyToInterpolator() : undefined,
+    },
+  });
+}
+
+function zoomBy(delta) {
+  const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, (state.view.zoom || 3) + delta));
+  setView({ zoom }, { ms: 200 });
+}
+
+/** Frame whatever is currently on screen — the payoff of filtering hard. */
+function fitToSelection() {
+  let minX = 181, minY = 91, maxX = -181, maxY = -91, n = 0;
+  for (let i = 0; i < N; i++) {
+    if (!filterValue[i]) continue;
+    const x = position[i * 2], y = position[i * 2 + 1];
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+    n++;
+  }
+  if (!n) return;
+  // fitBounds cannot solve a zero-area box, which one store or a single town is.
+  if (maxX - minX < 0.05) { minX -= 0.025; maxX += 0.025; }
+  if (maxY - minY < 0.05) { minY -= 0.025; maxY += 0.025; }
+  const el = document.getElementById('map');
+  const width = Math.max(el.clientWidth, 120);
+  const height = Math.max(el.clientHeight, 120);
+  const { longitude, latitude, zoom } = new deck.WebMercatorViewport({ width, height })
+    .fitBounds([[minX, minY], [maxX, maxY]], { padding: 40 });
+  setView({ longitude, latitude, zoom: Math.min(zoom, MAX_ZOOM), bearing: 0, pitch: 0 });
+}
+
+function resetView() {
+  // Also clears any rotation or tilt picked up from a right-drag.
+  state.view = { ...viewFor(state.region), bearing: 0, pitch: 0 };
+  setView({}, { moved: false, ms: 600 });
+}
+
 function initDeck() {
+  state.view = viewFor('conus');
   deckgl = new deck.Deck({
     parent: document.getElementById('map'),
-    initialViewState: viewFor('conus'),
+    initialViewState: state.view,
     controller: true,
     layers: [],
     onHover: showTooltip,
     // Once the user pans or zooms, stop refitting on resize — their view wins.
-    onViewStateChange: ({ interactionState }) => {
+    onViewStateChange: ({ viewState, interactionState }) => {
+      state.view = viewState;
       if (interactionState && (interactionState.isDragging || interactionState.isZooming)) {
         state.userMoved = true;
       }
@@ -228,7 +284,9 @@ function initDeck() {
   addEventListener('resize', () => {
     clearTimeout(t);
     t = setTimeout(() => {
-      if (!state.userMoved) deckgl.setProps({ initialViewState: viewFor(state.region) });
+      if (state.userMoved) return;
+      state.view = { ...viewFor(state.region), bearing: 0, pitch: 0 };
+      deckgl.setProps({ initialViewState: state.view });
     }, 150);
   });
 }
@@ -236,9 +294,10 @@ function initDeck() {
 function flyTo(key) {
   state.region = key;
   state.userMoved = false;
+  state.view = { ...viewFor(key), bearing: 0, pitch: 0 };
   deckgl.setProps({
     initialViewState: {
-      ...viewFor(key),
+      ...state.view,
       transitionDuration: 900,
       transitionInterpolator: new deck.FlyToInterpolator(),
     },
@@ -664,6 +723,19 @@ function wireControls() {
     renderBrandList();
     // Group membership is year-dependent, so colors move with the slider.
     refresh(state.colorMode === 'group');
+  });
+
+  document.getElementById('mapctl').addEventListener('click', (e) => {
+    const ctl = e.target.dataset.ctl;
+    if (!ctl) return;
+    if (ctl === 'in') zoomBy(1);
+    else if (ctl === 'out') zoomBy(-1);
+    else if (ctl === 'fit') fitToSelection();
+    else if (ctl === 'home') resetView();
+    else if (ctl === 'full') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen?.();
+    }
   });
 
   document.getElementById('regions').addEventListener('click', (e) => {
