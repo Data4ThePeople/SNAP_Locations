@@ -130,6 +130,53 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None):
     return path
 
 
+def ledger_png(path, items, width=6.6, accent=1):
+    """The headline figures band, as an image.
+
+    Mirrors the report's ledger treatment: a heavy rule above, hairlines between
+    columns, the number in accent mono and its caption beneath in soft ink. Kept
+    as a figure so the stat block can be dropped into a layout like any chart.
+    """
+    import textwrap
+
+    n = len(items)
+    # Wrap to the column, not a guessed character count: at 8pt a monospace glyph
+    # is about 0.6em wide, so a third-width column holds far fewer than 34 and the
+    # caption would otherwise run into the divider rule.
+    label_pt = 8
+    col_in = width / n - 0.34
+    chars = max(14, int(col_in / (label_pt * 0.60 / 72)))
+    wrapped = [textwrap.wrap(i["label"], chars)[:3] for i in items]
+    lines = max(len(w) for w in wrapped)
+
+    # Laid out in inches, not axis fractions: with fractions the caption's last
+    # line drifted into the bottom rule as soon as a label needed three lines.
+    LINE_H, NUM_TOP, BOTTOM_PAD = 0.145, 0.44, 0.18
+    height = NUM_TOP + LINE_H * lines + BOTTOM_PAD
+    fig = plt.figure(figsize=(width, height), dpi=DPI, facecolor=PAPER)
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.set_axis_off()
+    ax.set_xlim(0, width)
+    ax.set_ylim(0, height)
+    col = width / n
+
+    ax.plot([0, width], [height - 0.03, height - 0.03], color=INK, lw=2, clip_on=False)
+    ax.plot([0, width], [0.05, 0.05], color=RULE, lw=1, clip_on=False)
+    for i in range(1, n):
+        ax.plot([i * col, i * col], [0.08, height - 0.08], color=RULE, lw=1, clip_on=False)
+
+    for i, (item, lab) in enumerate(zip(items, wrapped)):
+        x = i * col + 0.12
+        ax.text(x, height - NUM_TOP, item["value"], ha="left", va="baseline",
+                fontsize=25, family=MONO, color=S[accent - 1])
+        for k, ln in enumerate(lab):
+            ax.text(x, height - NUM_TOP - 0.14 - k * LINE_H, ln, ha="left", va="top",
+                    fontsize=8, family=MONO, color=INK_SOFT)
+    fig.savefig(path, facecolor=PAPER, bbox_inches="tight", pad_inches=0.12)
+    plt.close(fig)
+    return path
+
+
 def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None):
     """A table as an image, so it can be dropped into a layout like any figure."""
     n = len(rows)

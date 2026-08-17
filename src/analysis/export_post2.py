@@ -29,6 +29,17 @@ def main():
              "Supermarket", "Super Store"]
 
     print("figures:")
+    fig(0, "key-figures",
+        "Headline figures.",
+        figures.ledger_png,
+        [{"value": f"{arc['pct_fall']}%",
+          "label": f"fall in authorized small grocers, {arc['peak_year']} peak to "
+                   f"{arc['trough_year']} trough"},
+         {"value": f"{100*(dr['new_after']/dr['new_before']-1):+.0f}%",
+          "label": "change in new small-grocery authorizations per year"},
+         {"value": f"{100*rc['share_of_exits']:.1f}%",
+          "label": "of exits are explained by reclassification"}])
+
     fig(1, "small-grocery-arc",
         "Small grocery stores with an active SNAP authorization on 31 December of each year.",
         figures.line_png, yrs,
@@ -89,13 +100,15 @@ def main():
 **{100*(dr['new_after']/dr['new_before']-1):+.0f}%** change in new small-grocery authorizations per year.
 **{100*rc['share_of_exits']:.1f}%** of exits are explained by reclassification.
 
+![Headline figures](images/00-key-figures.png)
+
 ---
 
 Between {arc['peak_year']} and {arc['trough_year']}, the number of small grocery stores authorized to
 accept SNAP fell from {arc['peak']:,} to {arc['trough']:,} — a drop of {abs(arc['pct_fall'])}%. It has
 since flattened rather than recovered, sitting at {arc['latest']:,} at the end of {arc['latest_year']}.
 
-![{figs[0]['caption']}](images/{figs[0]['file']})
+![{figs[1]['caption']}](images/{figs[1]['file']})
 
 That is a big number, and "the death of the small grocer" is the obvious way to read it. Before
 accepting that, it is worth testing the explanations that would produce the same chart without any
@@ -106,9 +119,9 @@ store dying.
 If shoppers were simply abandoning grocery stores for superstores, every grocery format would sag.
 None of the others do.
 
-![{figs[1]['caption']}](images/{figs[1]['file']})
-
 ![{figs[2]['caption']}](images/{figs[2]['file']})
+
+![{figs[3]['caption']}](images/{figs[3]['file']})
 
 Medium grocery ended **{ctx['Grocery (Medium)']['change_pct']:+.0f}%**, superstores
 **{ctx['Super Store']['change_pct']:+.0f}%**, supermarkets
@@ -128,7 +141,7 @@ store show up at the same address. Among {rc['successor_pairs']:,} successor pai
 **{rc['same_name_diff_type']:,}** share the name and differ in type — {100*rc['share_of_pairs']:.1f}%
 of pairs, and **{100*rc['share_of_exits']:.1f}% of all exits**.
 
-![{figs[3]['caption']}](images/{figs[3]['file']})
+![{figs[4]['caption']}](images/{figs[4]['file']})
 
 Reclassification is real and it is small. What the table does show is churn: the most common successor
 at a departed small grocer's address is a convenience store, and the second most common is another
@@ -140,7 +153,7 @@ and a different classification.
 This is the part that surprised me. If small grocers were dying, departures should spike. They did
 not — the number leaving each year is *lower* now than in 2008. What collapsed was arrivals.
 
-![{figs[4]['caption']}](images/{figs[4]['file']})
+![{figs[5]['caption']}](images/{figs[5]['file']})
 
 New authorizations fell from {dr['new_before']:,.0f} a year in 2009–2013 to {dr['new_after']:,.0f} in
 2016–2020, a drop of **{100*(dr['new_after']/dr['new_before']-1):.0f}%**. Departures over the same
@@ -168,7 +181,7 @@ ended.
 
 We know the second thing happens, because some stores do it and come back:
 
-![{figs[5]['caption']}](images/{figs[5]['file']})
+![{figs[6]['caption']}](images/{figs[6]['file']})
 
 **{100*lap['Grocery (Small)']['rate']:.1f}%** of small grocers have gone unauthorized and returned,
 median gap {lap['Grocery (Small)']['median_gap_days']} days. Those stores were plainly open the whole
@@ -186,7 +199,7 @@ headline is the one at the top of this page: they left SNAP.
 The decline is not evenly spread. New York lost more small grocers than any other state, by a wide
 margin.
 
-![{figs[6]['caption']}](images/{figs[6]['file']})
+![{figs[7]['caption']}](images/{figs[7]['file']})
 
 New York went from {st[0]['then']:,} to {st[0]['now']:,}, a fall of {abs(st[0]['pct']):.0f}%. A state
 with that many small groceries is a state of bodegas and corner stores, and it absorbed the largest

@@ -31,6 +31,16 @@ def main():
     vol = {v["format"]: v for v in d["volatility"]}
 
     print("figures:")
+    fig(0, "key-figures",
+        "Headline figures.",
+        figures.ledger_png,
+        [{"value": f"{100*ds['rate']:.0f}%",
+          "label": "of dollar stores authorized 2008-2012 are still authorized today"},
+         {"value": f"{100*sg['rate']:.1f}%",
+          "label": "of small grocers from the same cohort still are"},
+         {"value": f"{z[-1]['dollar_only']:,}",
+          "label": "ZIP codes have a dollar store and no grocery of any size"}])
+
     fig(1, "cohort-retention",
         "Share of the 2008–2012 entry cohort still authorized at the end of 2025.",
         figures.hbar_png,
@@ -113,15 +123,17 @@ def main():
 **{100*sg['rate']:.1f}%** of small grocers from the same cohort still are.
 **{z[-1]['dollar_only']:,}** ZIP codes have a dollar store and no grocery of any size.
 
+![Headline figures](images/00-key-figures.png)
+
 ---
 
 Everyone knows dollar stores grew. The more revealing question is what happened to the stores that
 were already there. Take every retailer that entered the SNAP program between 2008 and 2012, and ask
 how many are still in it at the end of 2025.
 
-![{figs[0]['caption']}](images/{figs[0]['file']})
+![{figs[2]['caption']}](images/{figs[2]['file']})
 
-*{figs[0]['caption']} Counts are stores, not authorization spells, so a store that lapsed and
+*{figs[2]['caption']} Counts are stores, not authorization spells, so a store that lapsed and
 returned is counted once.*
 
 Small grocery is the extreme: {sg['still_open']:,} of {sg['cohort']:,} are still in the program. A
@@ -139,7 +151,7 @@ Two things narrow it, and they point in opposite directions for chains and for i
 
 **For the dollar chains, authorization is effectively a store census.**
 
-![{figs[1]['caption']}](images/{figs[1]['file']})
+![{figs[2]['caption']}](images/{figs[2]['file']})
 
 Essentially every Dollar General and Dollar Tree in the country accepts SNAP. So for these retailers
 the authorization record really is a store count, and an ending really does mean a closed store. That
@@ -148,9 +160,9 @@ is what licenses closure language for them — but only for them.
 **For independents, the opposite caution applies.** Some stores drop out of the program and come
 back, which proves they were open the whole time.
 
-![{figs[2]['caption']}](images/{figs[2]['file']})
+![{figs[3]['caption']}](images/{figs[3]['file']})
 
-*{figs[2]['caption']} Median gaps run from 9 days for superstores to 85 for convenience stores.*
+*{figs[3]['caption']} Median gaps run from 9 days for superstores to 85 for convenience stores.*
 
 A small grocer is **{d['lapse_gap']['multiple']}× more likely** than a dollar store to have dropped
 out and returned. And that {g_rate:.0f}% is only a floor: it counts stores that came back. Any store
@@ -166,43 +178,43 @@ The story is usually told as dollar stores opening aggressively, and they do ope
 that measure they are not even unusual. Supermarket openings vary less from year to year than dollar
 store openings do. What is distinctive is the other side of the ledger.
 
-![{figs[3]['caption']}](images/{figs[3]['file']})
+![{figs[4]['caption']}](images/{figs[4]['file']})
 
-*{figs[3]['caption']} Small grocery cycled through more than three times its own population; dollar
+*{figs[4]['caption']} Small grocery cycled through more than three times its own population; dollar
 stores shed about one store in seven.*
 
 Roughly {d['metronome']['mean_new']:,.0f} new dollar store authorizations a year against about
 {d['metronome']['mean_closed']:,.0f} endings produces a line that only goes one way.
 
-![{figs[4]['caption']}](images/{figs[4]['file']})
+![{figs[5]['caption']}](images/{figs[5]['file']})
 
-*{figs[4]['caption']} The two lines cross for the first time in 2024.*
+*{figs[5]['caption']} The two lines cross for the first time in 2024.*
 
 Set against the grocery formats, the result is stark. Dollar stores passed every individual grocery
 format years ago and are now the second most common type of SNAP retailer in the country, behind only
 convenience stores.
 
-![{figs[5]['caption']}](images/{figs[5]['file']})
+![{figs[6]['caption']}](images/{figs[6]['file']})
 
 ## 2024 breaks the pattern
 
 Endings jumped from a few hundred a year to **{fl['departed'][yrs.index(2024)]:,}** in 2024. This is
 the one place we can check the data against events that were independently reported.
 
-![{figs[6]['caption']}](images/{figs[6]['file']})
+![{figs[7]['caption']}](images/{figs[7]['file']})
 
 Dollar Tree spent 2024 closing Family Dollar locations, and 99 Cents Only liquidated entirely that
 spring. Both appear here on schedule, which is a useful confidence check: when something verifiable
 happens in retail, these records see it.
 
-![{figs[7]['caption']}](images/{figs[7]['file']})
+![{figs[8]['caption']}](images/{figs[8]['file']})
 
 ## Where it matters
 
 Growth in aggregate is not the same as growth where it counts. The sharper question is how often a
 dollar store is the *only* option.
 
-![{figs[8]['caption']}](images/{figs[8]['file']})
+![{figs[9]['caption']}](images/{figs[9]['file']})
 
 In 2008 that described {z[0]['dollar_only']:,} ZIP codes. By 2024 it described
 **{z[-1]['dollar_only']:,}** — {100*z[-1]['dollar_only']/z[-1]['with_dollar']:.0f}% of every ZIP code
