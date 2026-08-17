@@ -38,9 +38,9 @@ def main():
          {"value": f"{ow['Super Store']['chain']['rate']:.0f}%",
           "label": "survival for a chain store — about the same whether it is the "
                    "largest format or the smallest"},
-         {"value": f"{gr['Super Store']['mult']}x",
-          "label": f"super store growth since 2006, against the dollar store's "
-                   f"{gr['Dollar Store']['mult']}x"}])
+         {"value": f"{gr['Super Store']['pct']:+}%",
+          "label": f"change in super store numbers since 2006, against the dollar "
+                   f"store's {gr['Dollar Store']['pct']:+}%"}])
 
     # Rule one. Ladder order is the finding, so it is never re-sorted by value.
     fig(1, "size-ladder",
@@ -89,16 +89,16 @@ def main():
                 if g["thin"] or s["thin"]:
                     continue
                 out.append({"name": f"{SHORT[f]} ({o[:5] if o == 'chain' else 'indep'})",
-                            "x": g["mult"], "y": s["rate"],
+                            "x": g["pct"], "y": s["rate"],
                             "slot": 1 if o == "chain" else 3})
         return out
     fig(3, "growth-vs-survival",
         "Growth against survival, by store type and ownership. Only pairs with "
         f"at least {d['min_n']} stores on both measures are plotted.",
         figures.scatter_png, pts(),
-        xlabel="growth: 2025 stores as a multiple of 2006", xsuffix="x",
+        xlabel="change in store numbers, 2006 to 2025", xsuffix="%",
         ylabel="still authorized in 2025", ysuffix="%",
-        quadrant={"x": 1.0}, width=7.2, height=4.6,
+        quadrant={"x": 0}, width=7.2, height=4.6,
         title="Only one format did both",
         note="Points left of the dashed line have fewer stores than in 2006.")
 
@@ -114,7 +114,7 @@ at the end of 2025.*
 
 **{sg['rate']}%** of small groceries authorized in {d['cohort']} are still authorized, against {ss['rate']:.0f}% of super stores.
 **{ssc['rate']:.0f}%** survival for a chain store — about the same whether it is the largest format or the smallest.
-**{gr['Super Store']['mult']}x** super store growth since 2006, against the dollar store's {gr['Dollar Store']['mult']}x.
+**{gr['Super Store']['pct']:+}%** change in super store numbers since 2006, against the dollar store's {gr['Dollar Store']['pct']:+}%.
 
 ![Headline figures](images/00-key-figures.png)
 
@@ -162,8 +162,9 @@ Neither format was breaking rule one. Neither was subject to it.
 ## Staying power is not the same as growing
 
 Rule one said the super store was the safest place to be. That is true, and it is also the whole of
-what being large bought you. The super store grew **{gr['Super Store']['mult']}x** since 2006. Dollar
-stores grew **{gr['Dollar Store']['mult']}x**. Supermarkets managed {gr['Supermarket']['mult']}x.
+what being large bought you. Super store numbers are up **{gr['Super Store']['pct']:+}%** since 2006.
+Dollar stores are up **{gr['Dollar Store']['pct']:+}%**. Supermarkets managed {gr['Supermarket']['pct']:+}%,
+and small groceries fell {abs(gr['Grocery (Small)']['pct'])}%.
 
 So there are two different things a format can be good at, and they come apart. Put them on the same
 chart — growth across the bottom, survival up the side — and split every format by ownership.
@@ -173,17 +174,19 @@ chart — growth across the bottom, survival up the side — and split every for
 Read it in three passes.
 
 **Chains sit above and to the right of their own independents, every time.** Super stores:
-{go['Super Store']['chain']['mult']}x and {ow['Super Store']['chain']['rate']}% for the chains, against
-{go['Super Store']['independent']['mult']}x and {ow['Super Store']['independent']['rate']}% for the
-independents. Supermarkets: {go['Supermarket']['chain']['mult']}x and
-{ow['Supermarket']['chain']['rate']}% against {go['Supermarket']['independent']['mult']}x and
-{ow['Supermarket']['independent']['rate']}%. Convenience stores:
-{go['Convenience Store']['chain']['mult']}x and {ow['Convenience Store']['chain']['rate']}% against
-{go['Convenience Store']['independent']['mult']}x and {ow['Convenience Store']['independent']['rate']}%.
-In every format where both can be measured, the chains grew faster **and** lasted longer.
+{go['Super Store']['chain']['pct']:+}% and {ow['Super Store']['chain']['rate']}% survival for the chains,
+against {go['Super Store']['independent']['pct']:+}% and
+{ow['Super Store']['independent']['rate']}% for the independents. Supermarkets:
+{go['Supermarket']['chain']['pct']:+}% and {ow['Supermarket']['chain']['rate']}% against
+{go['Supermarket']['independent']['pct']:+}% and {ow['Supermarket']['independent']['rate']}%.
+Convenience stores: {go['Convenience Store']['chain']['pct']:+}% and
+{ow['Convenience Store']['chain']['rate']}% against
+{go['Convenience Store']['independent']['pct']:+}% and
+{ow['Convenience Store']['independent']['rate']}%. In every format where both can be measured, the
+chains grew faster **and** lasted longer.
 
-**Fast growth does not buy staying power.** Convenience chains grew
-{go['Convenience Store']['chain']['mult']}x, second only to dollar stores — and barely half of them,
+**Fast growth does not buy staying power.** Convenience chains added
+{go['Convenience Store']['chain']['pct']:+}%, second only to dollar stores — and barely half of them,
 {ow['Convenience Store']['chain']['rate']}%, were still authorized thirteen years on. That is Day 3 in a
 single point: the format kept expanding while the businesses inside it turned over.
 
@@ -203,7 +206,7 @@ store in the data, right down the size order.
 authorization as reliably as a super store.
 
 And on the second measure, growth, being a chain is the only thing that helped at all. Size did nothing
-for it: the largest format in the country grew {gr['Super Store']['mult']}x in twenty years.
+for it: the largest format in the country added {gr['Super Store']['pct']}% in twenty years.
 
 Put it together and you can see the shape of the last two decades. The stores that went away were small
 and independent — they had neither advantage. The large format had size, and used it to stay put rather

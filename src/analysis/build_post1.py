@@ -47,6 +47,7 @@ def main():
     stock = ctx["Dollar Store"]["stock"]
     yrs = ctx["Dollar Store"]["years"]
     growth = stock[-1] / stock[0]
+    growth_pct = round(100 * (growth - 1))
     lap_sg = next(r for r in lap if r["format"] == "Grocery (Small)")
     # Measured in post1_dollar.py and asserted there, so the scale argument in
     # the closing section cannot drift from the data it rests on.
@@ -96,7 +97,7 @@ records · {d['headline']['dollar_2025']:,} dollar stores authorized at the end 
 {d['headline']['all_grocery_2025']:,} grocery stores of every size</p>
 
 <div class="ledger">
-  <div><b>{growth:.1f}×</b><span>growth in SNAP-authorized dollar stores since {yrs[0]}</span></div>
+  <div><b>{growth_pct:+}%</b><span>change in SNAP-authorized dollar stores since {yrs[0]}</span></div>
   <div><b>{100*ds['rate']:.0f}%</b><span>of dollar stores authorized in 2008–2012 are still
     authorized today</span></div>
   <div><b>{100*z[-1]['dollar_only']/z[-1]['with_dollar']:.0f}%</b><span>of ZIP codes with a dollar

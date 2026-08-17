@@ -117,10 +117,14 @@ def main():
               AND s.auth_date <= make_date({y}, 12, 31)
               AND (s.end_date IS NULL OR s.end_date >= make_date({y}, 12, 31))
             """).fetchone()[0] for y in YEARS]
+        # Reported as percent change, not as a multiple. "1.00x" reads as up-100%
+        # to plenty of readers when it means unchanged; "+0%" cannot be misread.
+        # The multiple is kept for ordering comparisons in the checks below.
         growth[f] = {"years": YEARS, "stock": [int(x) for x in stock],
                      "first": int(stock[0]), "latest": int(stock[-1]),
-                     "mult": round(stock[-1] / stock[0], 2) if stock[0] else None}
-        print(f"   {f:<20} {stock[0]:>7,} -> {stock[-1]:>7,}   {growth[f]['mult']}x")
+                     "mult": round(stock[-1] / stock[0], 2) if stock[0] else None,
+                     "pct": round(100 * (stock[-1] / stock[0] - 1)) if stock[0] else None}
+        print(f"   {f:<20} {stock[0]:>7,} -> {stock[-1]:>7,}   {growth[f]['pct']:+}%")
 
     print("\n4. Growth by ownership — do chains grow faster as well as last longer?")
     growth_own = {}
@@ -136,12 +140,15 @@ def main():
             growth_own[f][o] = {
                 "first": int(a), "latest": int(b),
                 "mult": round(b / a, 2) if a else None,
+                "pct": round(100 * (b / a - 1)) if a else None,
                 # A multiple off a tiny 2006 base is not a growth rate. The same
                 # floor that governs survival cells governs these.
                 "thin": a < MIN_N or b < MIN_N}
         c, i = growth_own[f]["chain"], growth_own[f]["independent"]
-        print(f"   {f:<20} chain {str(c['mult']):>5}x (n={c['first']:>6,})   "
-              f"independent {str(i['mult']):>5}x (n={i['first']:>6,})")
+        cp = f"{c['pct']:+}%" if c["pct"] is not None else "--"
+        ip = f"{i['pct']:+}%" if i["pct"] is not None else "--"
+        print(f"   {f:<20} chain {cp:>7} (n={c['first']:>6,})   "
+              f"independent {ip:>7} (n={i['first']:>6,})")
 
     print("\n5. Checks")
     # The ladder must actually be a ladder, or the whole piece is wrong.

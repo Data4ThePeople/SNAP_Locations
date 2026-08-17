@@ -54,15 +54,15 @@ def main():
     # and the point stays identifiable to a colourblind reader.
     scatter_pts = [
         {"name": f"{SHORT[f]} ({'chain' if o == 'chain' else 'indep'})",
-         "x": go[f][o]["mult"], "y": ow[f][o]["rate"],
+         "x": go[f][o]["pct"], "y": ow[f][o]["rate"],
          "slot": 1 if o == "chain" else 3}
         for f in L + B for o in ("chain", "independent")
         if not go[f][o]["thin"] and not ow[f][o]["thin"]]
     c_growth = charts.scatter_chart(
         scatter_pts,
-        x_label="growth: 2025 stores as a multiple of 2006", x_suffix="x",
+        x_label="change in store numbers, 2006 to 2025", x_suffix="%",
         y_label="still authorized in 2025", y_suffix="%",
-        quadrant={"x": 1.0}, title="Only one format did both",
+        quadrant={"x": 0}, title="Only one format did both",
         note="Points left of the dashed line have fewer stores than in 2006.")
 
     ss, sg = sv["Super Store"], sv["Grocery (Small)"]
@@ -84,8 +84,8 @@ records · survival measured on the {d['cohort']} cohort, checked again at the e
     against {ss['rate']:.0f}% of super stores</span></div>
   <div><b>{ssc['rate']:.0f}%</b><span>survival for a chain store — about the same whether it is the
     largest format or the smallest</span></div>
-  <div><b>{gr['Super Store']['mult']}x</b><span>super store growth since 2006, against the dollar
-    store's {gr['Dollar Store']['mult']}x</span></div>
+  <div><b>{gr['Super Store']['pct']:+}%</b><span>change in super store numbers since 2006, against
+    the dollar store's {gr['Dollar Store']['pct']:+}%</span></div>
 </div>
 
 <p>The last three days each followed one small format. Small groceries went away. Dollar stores grew
@@ -137,9 +137,9 @@ stores that endured were the fuel chains, at 78.7%; the single-owner ones manage
 <h2>Staying power is not the same as growing</h2>
 
 <p>Rule one said the super store was the safest place to be. That is true, and it is also the whole of
-what being large bought you. The super store grew <strong>{gr['Super Store']['mult']}x</strong> since
-2006. Dollar stores grew <strong>{gr['Dollar Store']['mult']}x</strong>. Supermarkets managed
-{gr['Supermarket']['mult']}x.</p>
+what being large bought you. Super store numbers are up <strong>{gr['Super Store']['pct']:+}%</strong>
+since 2006. Dollar stores are up <strong>{gr['Dollar Store']['pct']:+}%</strong>. Supermarkets managed
+{gr['Supermarket']['pct']:+}%, and small groceries fell {abs(gr['Grocery (Small)']['pct'])}%.</p>
 
 <p>So there are two different things a format can be good at, and they come apart. Put them on the same
 chart — growth across the bottom, survival up the side — and split every format by ownership.</p>
@@ -151,18 +151,19 @@ chart — growth across the bottom, survival up the side — and split every for
 <p>Read it in three passes.</p>
 
 <p><strong>Chains sit above and to the right of their own independents, every time.</strong> Super
-stores: {go['Super Store']['chain']['mult']}x and {ow['Super Store']['chain']['rate']}% for the chains,
-against {go['Super Store']['independent']['mult']}x and {ow['Super Store']['independent']['rate']}% for
-the independents. Supermarkets: {go['Supermarket']['chain']['mult']}x and
-{ow['Supermarket']['chain']['rate']}% against {go['Supermarket']['independent']['mult']}x and
-{ow['Supermarket']['independent']['rate']}%. Convenience stores:
-{go['Convenience Store']['chain']['mult']}x and {ow['Convenience Store']['chain']['rate']}% against
-{go['Convenience Store']['independent']['mult']}x and
+stores: {go['Super Store']['chain']['pct']:+}% and {ow['Super Store']['chain']['rate']}% survival for
+the chains, against {go['Super Store']['independent']['pct']:+}% and
+{ow['Super Store']['independent']['rate']}% for the independents. Supermarkets:
+{go['Supermarket']['chain']['pct']:+}% and {ow['Supermarket']['chain']['rate']}% against
+{go['Supermarket']['independent']['pct']:+}% and {ow['Supermarket']['independent']['rate']}%.
+Convenience stores: {go['Convenience Store']['chain']['pct']:+}% and
+{ow['Convenience Store']['chain']['rate']}% against
+{go['Convenience Store']['independent']['pct']:+}% and
 {ow['Convenience Store']['independent']['rate']}%. In every format where both can be measured, the
 chains grew faster <strong>and</strong> lasted longer.</p>
 
-<p><strong>Fast growth does not buy staying power.</strong> Convenience chains grew
-{go['Convenience Store']['chain']['mult']}x, second only to dollar stores — and barely half of them,
+<p><strong>Fast growth does not buy staying power.</strong> Convenience chains added
+{go['Convenience Store']['chain']['pct']:+}%, second only to dollar stores — and barely half of them,
 {ow['Convenience Store']['chain']['rate']}%, were still authorized thirteen years on. That is Day 3 in a
 single point: the format kept expanding while the businesses inside it turned over.</p>
 
@@ -182,7 +183,7 @@ every independent store in the data, right down the size order.</p>
 held its authorization as reliably as a super store.</p>
 
 <p>And on the second measure, growth, being a chain is the only thing that helped at all. Size did
-nothing for it: the largest format in the country grew {gr['Super Store']['mult']}x in twenty years.</p>
+nothing for it: the largest format in the country added {gr['Super Store']['pct']}% in twenty years.</p>
 
 <p>Put it together and you can see the shape of the last two decades. The stores that went away were
 small and independent — they had neither advantage. The large format had size, and used it to stay put

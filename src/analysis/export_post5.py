@@ -22,6 +22,9 @@ def main():
     f_ff = _fs["chains that sell fuel"]["rate"]
     f_do = _fs["dollar stores"]["rate"]
     f_mult = d6["stock_change"]["chains that sell fuel"]["multiple"]
+    _f = d6["stock_change"]["chains that sell fuel"]
+    f_pct = round(100 * (_f["y2025"] / _f["y2006"] - 1))
+    dollar_pct = round(100 * (d["arc"]["dollar"][-1] / d["arc"]["dollar"][0] - 1))
     f_unb = _fs["single-owner stores"]["rate"]
     _mu = d6["fuel_margin"]["companies"]["Murphy USA"]
     f_pre, f_post = _mu["pre_mean"], _mu["post_mean"]
@@ -52,8 +55,8 @@ def main():
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
         [{"value": f"{grp['lost']:,}",
           "label": "ZIP codes lost their last SNAP-authorized chain pharmacy since 2021"},
-         {"value": f"{ac['dollar_multiple']}x",
-          "label": "growth in dollar stores in those same ZIP codes since 2006"},
+         {"value": f"{dollar_pct:+}%",
+          "label": "change in dollar stores in those same ZIP codes since 2006"},
          {"value": f"{den['lost_no_grocery']['median_pop']:,}",
           "label": "median population of those that now have no grocery at all"}])
 
@@ -115,7 +118,7 @@ def main():
 *SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The last in this series.*
 
 **{grp['lost']:,}** ZIP codes lost their last SNAP-authorized chain pharmacy since 2021.
-**{ac['dollar_multiple']}×** growth in dollar stores in those same ZIP codes since 2006.
+**{dollar_pct:+}%** change in dollar stores in those same ZIP codes since 2006.
 **{den['lost_no_grocery']['median_pop']:,}** median population of those that now have no grocery at all.
 
 ![Headline figures](images/00-key-figures.png)
@@ -130,7 +133,7 @@ They are not unrelated in the places where they land. Take the **{grp['lost']:,}
 
 ![{figs["twenty-year-arc"]['caption']}](images/{figs["twenty-year-arc"]['file']})
 
-Dollar stores went from {arc['dollar'][0]:,} to {arc['dollar'][-1]:,} — **{ac['dollar_multiple']}×**.
+Dollar stores went from {arc['dollar'][0]:,} to {arc['dollar'][-1]:,} — **{dollar_pct:+}%**.
 Grocery of every size went from {arc['groc'][0]:,} to {arc['groc'][-1]:,}, down
 {abs(ac['groc_pct']):.0f}%. Pharmacies peaked at {ac['drug_peak']:,} in {ac['drug_peak_year']} and are
 now at zero. In 2006 these places had roughly ten times as many grocery stores as dollar stores. Today
@@ -179,7 +182,7 @@ control. One in eight has fewer than five thousand.
 
 That is the thread. **A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar store needs neither.** Its whole model is a small box, few staff, a narrow range, and no fresh food to spoil. That is exactly why it works in a town of six thousand where a grocery store cannot.
 
-And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. **{f_ff}% of convenience chains that sell fuel** from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do}%. That is a gap of well under one point. Those chains also grew {f_mult}× over the twenty years. So naming only dollar stores would leave out half the answer.
+And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. **{f_ff}% of convenience chains that sell fuel** from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do}%. That is a gap of well under one point. Those chains also added {f_pct:+}% over the twenty years. So naming only dollar stores would leave out half the answer.
 
 Read that way, the pieces in this series stop being coincidences. They become one story told from several angles.
 
