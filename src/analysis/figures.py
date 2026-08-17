@@ -196,6 +196,106 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
     return path
 
 
+def scatter_png(path, points, xlabel="", ylabel="", width=6.6, height=4.2,
+                xsuffix="", ysuffix="", quadrant=None, title="", subtitle="",
+                note=""):
+    """`points` = [{name, x, y, slot}] with direct labels on every mark.
+
+    Two measures that a bar chart can only show one at a time. Every point is
+    labelled, so identity never rests on colour alone and no legend is needed.
+
+    `quadrant` = {"x": v, "y": v} draws faint reference lines, for when the
+    interesting thing is which corner a point sits in rather than its exact
+    coordinates.
+    """
+    fig, ax = plt.subplots(figsize=(width, height), dpi=DPI, facecolor=PAPER)
+    _style(ax)
+    ax.grid(color=RULE, lw=1, zorder=0)
+    ax.set_axisbelow(True)
+
+    if quadrant:
+        for axis, v in (("x", quadrant.get("x")), ("y", quadrant.get("y"))):
+            if v is None:
+                continue
+            (ax.axvline if axis == "x" else ax.axhline)(
+                v, color=INK_SOFT, lw=1, ls=(0, (3, 3)), zorder=1)
+
+    xs = [p["x"] for p in points]
+    ys = [p["y"] for p in points]
+    padx = (max(xs) - min(xs)) * 0.16 or 1
+    pady = (max(ys) - min(ys)) * 0.16 or 1
+    # Right padding is wider than left: labels sit to the right of their mark by
+    # default, and the rightmost point needs room for its whole label or it has
+    # to flip sides and read as detached.
+    # A percentage cannot go below zero, and an axis that offers "-8%" as a tick
+    # invites the reader to think the scale means something it does not. Where
+    # every value is non-negative, the axis floor is too.
+    ax.set_xlim(max(0, min(xs) - padx) if min(xs) >= 0 else min(xs) - padx,
+                max(xs) + padx * 3.2)
+    ax.set_ylim(max(0, min(ys) - pady) if min(ys) >= 0 else min(ys) - pady,
+                max(ys) + pady)
+
+    for pt in points:
+        ax.plot([pt["x"]], [pt["y"]], "o", color=S[pt["slot"] - 1], ms=9,
+                mec=PAPER, mew=1.5, zorder=4)
+
+    # Label placement in DISPLAY space, because the two axes are on different
+    # scales and a nudge expressed in data units is a different distance
+    # vertically than horizontally. Each label takes the first candidate offset
+    # whose measured box clears every box already placed and stays inside the
+    # axes; anything pushed off its mark gets a leader line, since a label that
+    # floats free of its dot is worse than no label.
+    fig.canvas.draw()
+    box = ax.get_window_extent()
+    CANDIDATES = [(13, 0), (13, 13), (13, -13), (-13, 0), (-13, 13), (-13, -13),
+                  (13, 26), (13, -26), (-13, 26), (-13, -26)]
+    placed = []
+    for pt in sorted(points, key=lambda q: (-q["y"], q["x"])):
+        px, py = ax.transData.transform((pt["x"], pt["y"]))
+        w = _text_px(fig, pt["name"], family=MONO, fontsize=8)
+        h = 11.0
+        chosen = None
+        for dx, dy in CANDIDATES:
+            x0 = px + dx if dx > 0 else px + dx - w
+            y0 = py + dy - h / 2
+            if x0 < box.x0 or x0 + w > box.x1 or y0 < box.y0 or y0 + h > box.y1:
+                continue
+            if any(not (x0 + w + 4 < q[0] or x0 > q[0] + q[2] + 4
+                        or y0 + h + 2 < q[1] or y0 > q[1] + q[3] + 2) for q in placed):
+                continue
+            chosen = (dx, dy, x0, y0)
+            break
+        if chosen is None:                       # nothing clear — take the default
+            dx, dy = CANDIDATES[0]
+            chosen = (dx, dy, px + dx, py + dy - h / 2)
+        dx, dy, x0, y0 = chosen
+        placed.append((x0, y0, w, h))
+        if abs(dy) > 4:
+            ax.annotate("", (pt["x"], pt["y"]), xycoords="data",
+                        textcoords="offset points", xytext=(dx * 0.62, dy),
+                        arrowprops=dict(arrowstyle="-", color=RULE, lw=0.9,
+                                        shrinkA=0, shrinkB=3), zorder=2,
+                        annotation_clip=False)
+        ax.annotate(pt["name"], (pt["x"], pt["y"]), textcoords="offset points",
+                    xytext=(dx, dy), va="center", ha="left" if dx > 0 else "right",
+                    fontsize=8, family=MONO, color=INK_MID, zorder=5,
+                    annotation_clip=False)
+
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}{xsuffix}"))
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}{ysuffix}"))
+    if xlabel:
+        ax.set_xlabel(xlabel, fontsize=8, family=MONO, color=INK_SOFT, labelpad=7)
+    _titles(fig, ax, title, ylabel or subtitle)
+    if note:
+        ax.annotate(note, (0, 0), xycoords="axes fraction",
+                    textcoords="offset points", xytext=(0, -34), ha="left",
+                    va="top", fontsize=7, family=MONO, color=INK_SOFT,
+                    annotation_clip=False)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
 def ledger_png(path, items, width=8.6, accent=None):
     """The headline figures band, as an image.
 
