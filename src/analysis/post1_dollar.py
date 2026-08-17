@@ -128,6 +128,59 @@ def main():
     fam = int(spike[spike.brand == "Family Dollar"].n.sum())
     check("2024 closures are Family Dollar dominated", fam, 1_000, tol=600)
 
+    # ------------------------------------------------- 4b. what an ended authorization means
+    # The dataset records authorizations, not storefronts, so an ending could be a
+    # closure or a store dropping EBT. Two things bound that ambiguity, and they
+    # point opposite ways for chains and independents.
+    print("\n4b. Does an ended authorization mean a closed store?")
+    print("     (a) chains: is SNAP authorization effectively a store census?")
+    reported = {  # each company's own reported US store count
+        "Dollar General": (20_942, "company report, Feb 2026"),
+        "Dollar Tree": (9_000, "company release, 'surpassed 9,000'"),
+        "Family Dollar": (7_600, "trade press, early 2025"),
+    }
+    census = []
+    for b, (rep, src) in reported.items():
+        n = con.execute("SELECT sum(n) FROM stock WHERE yr=2025 AND brand=?", [b]).fetchone()[0]
+        census.append({"brand": b, "authorized": int(n or 0), "reported": rep,
+                       "ratio": round((n or 0) / rep, 3), "source": src})
+        print(f"         {b:16} authorized {int(n or 0):>7,}  reported {rep:>7,}"
+              f"  ratio {(n or 0)/rep:.2f}")
+    out["chain_census"] = census
+    check("Dollar General authorizations match its own store count",
+          census[0]["authorized"], census[0]["reported"], tol=400)
+
+    # (b) A store that lapses and returns was demonstrably open while unauthorized.
+    print("\n     (b) stores that lapsed and came back — open, but not authorized:")
+    lap = con.execute("""
+        WITH gaps AS (
+          SELECT p.record_id, p.format, f.end_date,
+                 lead(f.auth_date) OVER (PARTITION BY p.record_id ORDER BY f.auth_date) AS next_auth
+          FROM panel p JOIN fact_spell f USING(record_id) WHERE NOT f.date_anomaly),
+        lapsed AS (
+          SELECT record_id, format, min(datediff('day', end_date, next_auth)) AS gap
+          FROM gaps WHERE next_auth IS NOT NULL AND end_date IS NOT NULL
+            AND next_auth > end_date GROUP BY 1, 2)
+        SELECT p.format, count(DISTINCT p.record_id) stores,
+               count(DISTINCT l.record_id) lapsed, median(l.gap) med_gap
+        FROM panel p LEFT JOIN lapsed l USING(record_id)
+        WHERE p.format IN ('Dollar Store','Supermarket','Super Store','Convenience Store',
+                           'Grocery (Small)','Grocery (Medium)','Grocery (Large)')
+        GROUP BY 1 ORDER BY 3.0 / count(DISTINCT p.record_id) DESC
+    """).df()
+    out["lapse"] = [{"format": r.format, "stores": int(r.stores), "lapsed": int(r.lapsed),
+                     "rate": round(r.lapsed / r.stores, 4),
+                     "median_gap_days": int(r.med_gap or 0)} for r in lap.itertuples()]
+    for r in out["lapse"]:
+        print(f"         {r['format']:28} {r['lapsed']:>6,} of {r['stores']:>7,}"
+              f"  {100*r['rate']:>5.1f}%  median gap {r['median_gap_days']:>3} days")
+    d_lap = next(r for r in out["lapse"] if r["format"] == "Dollar Store")
+    g_lap = next(r for r in out["lapse"] if r["format"] == "Grocery (Small)")
+    out["lapse_gap"] = {"dollar": d_lap["rate"], "small_grocery": g_lap["rate"],
+                        "multiple": round(g_lap["rate"] / d_lap["rate"], 1)}
+    print(f"\n         A small grocer is {g_lap['rate']/d_lap['rate']:.1f}x more likely than a"
+          f" dollar store to have gone unauthorized and come back.")
+
     # ---------------------------------------------------------------- 5. dollar-only places
     print("\n5. Places with a dollar store but no grocery of any size")
     zips, counties = [], []
