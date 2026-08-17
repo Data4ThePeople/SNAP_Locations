@@ -239,6 +239,29 @@ def main():
           f"({100*d25/allg:.0f}%)")
 
     OUT.mkdir(parents=True, exist_ok=True)
+    # Who owns these formats. The post's answer to "why did dollar stores keep
+    # their authorizations" rests on this, so it is measured rather than asserted:
+    # a chain absorbs a fixed compliance cost, a single owner pays it alone.
+    print("\n9. Ownership mix, the basis for the scale argument")
+    mix = {}
+    for fmt in ("Dollar Store", "Grocery (Small)", "Convenience Store"):
+        rows = dict(con.execute(
+            "SELECT ownership, count(*) FROM dim_store WHERE mappable AND format = ? "
+            "GROUP BY 1", [fmt]).fetchall())
+        tot = sum(rows.values())
+        mix[fmt] = {"total": int(tot),
+                    **{k: round(100 * v / tot, 1) for k, v in rows.items()}}
+        parts = "  ".join(f"{k} {100*v/tot:.0f}%"
+                          for k, v in sorted(rows.items(), key=lambda r: -r[1]))
+        print(f"     {fmt:<20} {tot:>8,}   {parts}")
+    out["ownership_mix"] = mix
+    check("every dollar store belongs to a chain",
+          int(mix["Dollar Store"].get("chain", 0) == 100.0), 1)
+    check("small grocers are overwhelmingly independent",
+          int(mix["Grocery (Small)"].get("independent", 0) > 75), 1)
+    check("convenience is majority independent, unlike dollar stores",
+          int(mix["Convenience Store"].get("independent", 0) > 50), 1)
+
     (OUT / "post1.json").write_text(json.dumps(out, indent=1))
     print(f"\nwrote {OUT / 'post1.json'}")
     if FAILURES:

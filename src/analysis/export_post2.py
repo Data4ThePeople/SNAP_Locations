@@ -1,4 +1,8 @@
-"""Assemble reports/post2/ — markdown text, PNG figures, and the HTML archive."""
+"""Assemble reports/post2/ — markdown text, PNG figures, and the HTML archive.
+
+Four figures, matching build_post2.py. See that module's docstring for why the
+ownership split was removed rather than trimmed.
+"""
 import json
 import shutil
 
@@ -9,6 +13,14 @@ SRC = ROOT / "reports" / "data" / "post2.json"
 DIR = ROOT / "reports" / "post2"
 IMG = DIR / "images"
 
+# Super Store is deliberately absent. Its new authorizations fell 36%, but that is
+# Walmart alone — 168 a year to 10 — pausing a supercentre programme that was
+# already built out. A supercentre clears any stocking floor without trying, so
+# the rule cannot be what moved it, and leaving the row in a table about store
+# size invites the reader to think it can. Called out in the limits instead.
+LADDER = ["Small Grocery Store", "Convenience Store", "Combination Grocery/Other",
+          "Medium Grocery Store", "Supermarket", "Large Grocery Store"]
+
 
 def main():
     d = json.loads(SRC.read_text())
@@ -16,261 +28,180 @@ def main():
     figs = {}
 
     def fig(n, slug, caption, fn, *a, **kw):
-        # Keyed by slug rather than list position. With a list, a duplicated
-        # number or an inserted figure shifted every later figs[i] lookup by one
-        # and silently printed the wrong chart under the text — which is exactly
-        # what happened in this series.
         p = IMG / f"{n:02d}-{slug}.png"
         fn(p, *a, **kw)
         figs[slug] = {"file": p.name, "caption": caption}
         print(f"  {p.name}")
 
-    fl, yrs = d["flows"], d["flows"]["years"]
-    arc, dr, rc, ctx = d["arc"], d["drivers"], d["reclass"], d["context"]
-    lap = {r["format"]: r for r in d["lapse"]}
-    st = d["states"]
-    picks = ["Grocery (Small)", "Grocery (Medium)", "Grocery (Large)",
-             "Supermarket", "Super Store"]
+    arc, cb, dr = d["arc"], d["cbp"], d["drivers"]
+    mix, st = d["entry_mix"], d["states"]
+    eu = {r["store_type"]: r for r in d["entry_change_usda"]}
+    lap = next(r for r in d["lapse"] if r["format"] == "Grocery (Small)")
+    yrs = d["flows"]["years"]
+
+    entry_drop = round(100 * (dr["new_after"] / dr["new_before"] - 1))
+    exit_drop = round(100 * (dr["dep_after"] / dr["dep_before"] - 1))
+    med_lo = min(m["medium_share"] for m in mix)
+    med_hi = max(m["medium_share"] for m in mix)
 
     print("figures:")
-    fig(0, "key-figures",
-        "Headline figures.",
-        figures.ledger_png,
-        [{"value": f"{arc['pct_fall']}%",
-          "label": f"fall in authorized small grocers, {arc['peak_year']} peak to "
-                   f"{arc['trough_year']} trough"},
-         {"value": f"{100*(dr['new_after']/dr['new_before']-1):+.0f}%",
-          "label": "change in new small-grocery authorizations per year"},
-         {"value": f"{100*rc['share_of_exits']:.1f}%",
-          "label": "of exits are explained by reclassification"}])
+    fig(0, "key-figures", "Headline figures.", figures.ledger_png,
+        [{"value": f"{abs(cb['cbp_under10_pct']):.0f}%",
+          "label": "fall in small grocery businesses, by the Census Bureau's count"},
+         {"value": f"{abs(cb['snap_small_pct']):.0f}%",
+          "label": "fall in SNAP's own Small Grocery category"},
+         {"value": f"{abs(entry_drop)}%",
+          "label": "fall in small grocers signing up for SNAP each year"}])
 
     fig(1, "small-grocery-arc",
         "Small grocery stores with an active SNAP authorization on 31 December of each year.",
         figures.line_png, yrs,
-        [{"name": "small grocers", "values": fl["stock"], "slot": 4}],
-        ylabel="active small grocery stores",
-        annotate=[{"year": arc["peak_year"], "text": "peak"},
-                  {"year": arc["trough_year"], "text": "trough"}],
-        title="Small grocers halved, then stopped falling", subtitle="stores authorized on 31 December")
+        [{"name": "small grocery stores", "values": d["flows"]["stock"], "slot": 1}],
+        ylabel="stores authorized on 31 December",
+        title="Authorized small grocers fell by nearly half")
 
-    fig(2, "grocery-formats",
-        "Active SNAP authorizations by grocery format, 2006–2025.",
-        figures.line_png, ctx["Grocery (Small)"]["years"],
-        [{"name": f, "values": ctx[f]["stock"], "slot": 4 if f == "Grocery (Small)" else i + 1}
-         for i, f in enumerate(picks)], ylabel="active stores",
-        title="Only the smallest format dropped", subtitle="stores authorized on 31 December")
-
-    fig(3, "format-change-table",
-        "Change in active authorizations by grocery format, 2006 to 2025.",
-        figures.table_png, ["Format", "2006", "2025", "Change"],
-        [[f, f"{ctx[f]['stock'][0]:,}", f"{ctx[f]['stock'][-1]:,}",
-          f"{ctx[f]['change_pct']:+.1f}%"] for f in picks], highlight_row=0,
-        title="Every other grocery size held or grew", subtitle="change in authorized stores, 2006 to 2025")
-
-    fig(4, "successor-formats",
-        "What opened at the address of a departed small grocer, 2012–2022. A shared store "
-        "name is the signature of one business re-registering.",
-        figures.table_png, ["Successor format", "Pairs", "Same name", "Share"],
-        [[t["format"], f"{t['n']:,}", f"{t['same_name']:,}",
-          f"{100*t['same_name']/t['n']:.0f}%"] for t in d["successor_types"]],
-        title="Most replacements are a different business", subtitle="what opened at a departed small grocer's address")
-
-    fig(5, "entries-vs-exits",
-        "New small-grocery authorizations and authorizations ending, per year.",
-        figures.line_png, yrs,
-        [{"name": "new authorizations", "values": fl["new"], "slot": 1},
-         {"name": "authorizations ending", "values": fl["departed"], "slot": 2}],
-        ylabel="stores per year",
-        title="Departures held steady. New sign-ups halved.", subtitle="small grocery stores per year")
-
-    fig(6, "lapsed-and-returned",
-        "Share of each format's stores that lost authorization and later regained it.",
-        figures.hbar_png,
-        [{"label": f, "value": round(100 * lap[f]["rate"], 1),
-          "slot": 4 if f == "Grocery (Small)" else 0}
-         for f in ["Grocery (Medium)", "Convenience Store", "Grocery (Small)",
-                   "Supermarket", "Dollar Store"] if f in lap], suffix="%",
-        title="Some stores drop out and come back", subtitle="share that lost authorization, then regained it")
-
-    fig(7, "states",
-        f"Largest percentage falls in authorized small grocers, {arc['peak_year']} to 2025, "
-        "among states with at least 150 at peak.",
-        figures.hbar_png,
-        [{"label": f"{t['state']}  {t['then']:,}→{t['now']:,}", "value": abs(t["pct"]),
-          "slot": 4 if t["state"] == "NY" else 0} for t in st[:8]], suffix="%",
-        title="New York lost the most, by a wide margin", subtitle="fall in authorized small grocers, 2012 to 2025")
-
-    ecm = {r["format"]: r for r in d["entry_change"]}
-    co, dl = ecm["Combination Grocery/Other"], ecm["Dollar Store"]
-    md, sm = ecm["Grocery (Medium)"], ecm["Supermarket"]
-    fig(8, "entry-change-by-format",
-        "Change in new SNAP authorizations per year, 2012-13 average against 2018-19 average.",
-        figures.hbar_png,
-        [{"label": r["format"], "value": abs(r["pct"]),
-          "slot": 2 if r["format"] == "Combination Grocery/Other"
-                  else (1 if r["format"] == "Dollar Store" else 0)}
-         for r in sorted(d["entry_change"], key=lambda r: r["pct"])], suffix="%",
-        title="Independents fell. The dollar chains did not.", subtitle="change in new sign-ups per year, 2012-13 vs 2018-19")
-
-    cb, mix = d["cbp"], d["entry_mix"]
-    fig(9, "cbp-vs-snap",
-        f"Percentage decline, {cb['base_year']} to {cb['last_year']}. Census establishment counts "
+    fig(2, "census-vs-snap",
+        f"Percentage decline, {cb['base_year']} to {cb['last_year']}. Census business counts "
         "against SNAP authorizations.",
         figures.hbar_png, [
             {"label": "Census, all grocery", "value": abs(cb["cbp_total_pct"]), "slot": 0},
             {"label": "Census, under 5 staff", "value": abs(cb["cbp_under5_pct"]), "slot": 1},
             {"label": "Census, under 10 staff", "value": abs(cb["cbp_under10_pct"]), "slot": 1},
             {"label": "SNAP Small + Medium", "value": abs(cb["snap_small_mid_pct"]), "slot": 3},
-            {"label": "SNAP Small only", "value": abs(cb["snap_small_pct"]), "slot": 2}], suffix="%",
-        title="Census says 22%. SNAP's Small category says 46%.",
-        subtitle="decline 2012 to 2023")
-    fig(10, "classification-shift",
-        "Share of new SNAP grocery authorizations classified Medium rather than Small.",
+            {"label": "SNAP Small only", "value": abs(cb["snap_small_pct"]), "slot": 2}],
+        suffix="%",
+        title="The businesses fell a quarter. SNAP's Small category fell twice that.",
+        subtitle=f"decline {cb['base_year']} to {cb['last_year']}")
+
+    fig(3, "size-ladder",
+        "Change in new SNAP sign-ups per year, 2012-13 average against 2018-19 average, by "
+        "USDA's own store type.",
+        figures.table_png, ["USDA store type", "Change in new sign-ups"],
+        [[t, f"{eu[t]['pct']:+.0f}%"] for t in LADDER if t in eu],
+        title="The fall sorts by store size",
+        subtitle="new sign-ups per year, 2012-13 vs 2018-19")
+
+    fig(4, "states",
+        f"Largest percentage falls in authorized small grocers, {arc['peak_year']} to 2025, "
+        "among states with at least 150 at peak.",
         figures.hbar_png,
-        [{"label": m["period"], "value": m["medium_share"],
-          "slot": 2 if m["period"] == "2018-2021" else 0} for m in mix], suffix="%",
-        title="Census says 22%. SNAP's Small category says 46%.", subtitle="decline 2012 to 2023")
+        [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": abs(r["pct"]),
+          "slot": 2 if r["state"] == "NY" else 0} for r in st[:8]], suffix="%",
+        title="New York lost the most, by a wide margin",
+        subtitle=f"fall in authorized small grocers, {arc['peak_year']} to 2025")
 
-    exit_change = 100 * (dr["exit_rate_after"] / dr["exit_rate_before"] - 1)
-    md = f"""# SNAP shows small grocers down 46%. The census says 22%. Both are right.
+    md = f"""# One in four of the smallest grocery stores is gone
 
-*SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Service authorization records.
+*SNAP-authorized retailers, 2006–2025, checked against Census County Business Patterns.
 {arc['peak']:,} small grocery stores in {arc['peak_year']}, {arc['latest']:,} today.*
 
-**{arc['pct_fall']}%** fall in authorized small grocers, {arc['peak_year']} peak to
-{arc['trough_year']} trough.
-**{100*(dr['new_after']/dr['new_before']-1):+.0f}%** change in new small-grocery authorizations per year.
-**{100*rc['share_of_exits']:.1f}%** of exits are explained by reclassification.
+**{abs(cb['cbp_under10_pct']):.0f}%** fall in the number of small grocery businesses,
+{cb['base_year']} to {cb['last_year']}, by the Census Bureau's count.
+**{abs(cb['snap_small_pct']):.0f}%** fall in SNAP's own Small Grocery category over the same years.
+**{abs(entry_drop)}%** fall in the number of small grocers signing up for SNAP each year.
 
 ![Headline figures](images/00-key-figures.png)
 
 ---
 
-Between {arc['peak_year']} and {arc['trough_year']}, the number of small grocery stores authorized to
-accept SNAP fell from {arc['peak']:,} to {arc['trough']:,} — a drop of {abs(arc['pct_fall'])}%. It has
-since flattened rather than recovered, sitting at {arc['latest']:,} at the end of {arc['latest_year']}.
+Small grocery stores are leaving the SNAP program in large numbers. The obvious way to read that is
+that the neighbourhood grocery store is dying. That turns out to be partly true, and the honest
+version is more useful than the headline.
+
+## How much of the drop is real
+
+Start with what the SNAP records show. Stores authorized as small grocers peaked at {arc['peak']:,}
+in {arc['peak_year']}. They bottomed at {arc['trough']:,} in {arc['trough_year']} and sit at
+{arc['latest']:,} today.
 
 ![{figs["small-grocery-arc"]['caption']}](images/{figs["small-grocery-arc"]['file']})
 
-That is a big drop, and "the death of the small grocer" is the obvious way to read it. But these records only show stores leaving the program. That is not the same as stores closing. Three other things could produce the same chart, so we tested each one.
+That is a fall of **{abs(cb['snap_small_pct']):.0f}%**. Before repeating it, we checked it against a
+source that counts businesses instead of paperwork. The Census Bureau counts every grocery store
+with staff, whether or not it takes EBT.
 
-## It is not grocery in general
+![{figs["census-vs-snap"]['caption']}](images/{figs["census-vs-snap"]['file']})
 
-If shoppers were just switching to superstores, every size of grocery store would sag. None of the others do. Here is each format on the same axis:
+The census says the smallest grocery businesses fell **{abs(cb['cbp_under5_pct'])}%** if you count
+those with under five staff, and **{abs(cb['cbp_under10_pct'])}%** under ten. Not 46%.
 
-![{figs["grocery-formats"]['caption']}](images/{figs["grocery-formats"]['file']})
+The gap is not stores quietly leaving the program. It is USDA's own dividing line moving. Look at
+the fourth bar: **Small and Medium grocery together fell {abs(cb['snap_small_mid_pct'])}%**, within
+a point or two of the census. If small grocers were dropping out of SNAP in numbers, that combined
+figure would have fallen much further than the census too. It did not. Stores were most likely being filed as Medium instead of Small.
 
-The same thing as start-and-end numbers:
+You can watch the line move. For a decade about {med_lo:.0f}% of new grocery stores were filed as
+Medium. In 2018–21 that jumped to **{med_hi:.0f}%**, exactly when USDA started requiring 36 items on
+the shelf at all times. A store carrying that much stock is, in USDA's own words, closer to a
+"moderate selection" than a small one.
 
-![{figs["format-change-table"]['caption']}](images/{figs["format-change-table"]['file']})
+**So the real loss of "small" grocery stores over the past decade and change is probably closer to a quarter.** And a quarter is a lot. Grocery of every size fell only {abs(cb['cbp_total_pct'])}%, so the losses sit almost entirely in the smallest stores — the ones most likely to be the only shop in a small town.
 
-Medium grocery ended **{ctx['Grocery (Medium)']['change_pct']:+.0f}%**, superstores
-**{ctx['Super Store']['change_pct']:+.0f}%**, supermarkets
-**{ctx['Supermarket']['change_pct']:+.0f}%**. Only the smallest format fell. Whatever happened,
-happened to small stores specifically.
+## It happened by stores not opening
 
-## Existing stores were not re-registered under a new type
+The next question is how they went. If small grocers were being pushed out, departures should have
+spiked. They did the opposite.
 
-USDA sorts stores by how much staple food they stock. So a store could move out of "small grocery" without changing at all. We can test that here. A store's type never changes inside its own record. A re-sorted store therefore has to show up as a *new* record at the *same address*. If it also keeps the same name, that is one business signing up again — not a new tenant.
+New small grocers signing up for SNAP fell from about {dr['new_before']:,.0f} a year to
+{dr['new_after']:,.0f} — **{entry_drop}%**. Stores leaving fell {abs(exit_drop)}%. The exit rate
+never spiked. Small grocery did not start dying faster. It stopped being replaced.
 
-Of {rc['exits']:,} small-grocery exits between 2012 and 2022, {rc['with_successor']:,} had another
-store show up at the same address. Among {rc['successor_pairs']:,} successor pairs, just
-**{rc['same_name_diff_type']:,}** share the name and differ in type — {100*rc['share_of_pairs']:.1f}%
-of pairs, and **{100*rc['share_of_exits']:.1f}% of all exits**.
+And the fall sorts by **store size**. These are USDA's own categories, with nothing regrouped by us:
 
-![{figs["successor-formats"]['caption']}](images/{figs["successor-formats"]['file']})
+![{figs["size-ladder"]['caption']}](images/{figs["size-ladder"]['file']})
 
-So signing up again is real, but small. Hold onto that number. A different kind of re-sorting turns up later, and it is much bigger. What the table does show is churn. The most common replacement at a departed small grocer's address is a convenience store. The second most common is another small grocery. The storefront often keeps selling food, just under a new owner and a new label.
+The small formats collapsed. The large ones did not move, and the largest grocery category actually
+grew. That is the shape a stocking requirement would produce: the rule asks for a fixed amount of
+inventory, which is a large demand on a small store and no demand at all on a big one.
 
-## Departures did not spike. Arrivals collapsed.
+**This is a candidate, not a proven cause.** New sign-ups start falling in 2014, before the rule took
+effect, so something else is at work too. And these records carry no field for why an authorization
+ended. We can show the shape and the timing. We cannot show the reason.
 
-This is the part that surprised me. If stores were leaving faster, departures should spike. They did not. The number leaving each year is *lower* now than in 2008. What collapsed was arrivals. Both lines are below:
+## It is not happening evenly
 
-![{figs["entries-vs-exits"]['caption']}](images/{figs["entries-vs-exits"]['file']})
-
-New authorizations fell from {dr['new_before']:,.0f} a year in 2009–2013 to {dr['new_after']:,.0f} in
-2016–2020, a drop of **{100*(dr['new_after']/dr['new_before']-1):.0f}%**. Departures fell {abs(100*(dr['dep_after']/dr['dep_before']-1)):.0f}% over the same period. But the pool of stores was shrinking too. So the *rate* at which any one store left actually rose, from {dr['exit_rate_before']:.0%} to {dr['exit_rate_after']:.0%}.
-
-Both sides moved, but entry is the bigger one. Small grocery did not start leaving faster. It stopped being replaced. These stores have always churned hard, because a corner shop runs on thin margins. For years, enough new ones opened to cover the losses. After 2014 they stopped.
-
-The timing points somewhere specific, but the detail matters. The 2014 Farm Bill told USDA to raise stocking rules. Stores would need seven kinds of food in each staple category instead of three, and fresh food in three categories instead of two. Congress then **blocked** both changes. A May 2017 spending rider (P.L. 115-31, §765) sent USDA back to three and two.
-
-Something quieter did take effect in January 2018. Stores now had to keep **three units of every kind** of staple food in stock. That works out to 36 items on the shelf at all times. USDA also narrowed which foods counted at all. For a big chain that is a shelf plan. For a small store with little space and little cash, it is a permanent bill.
-
-## The bar sorted by owner, not by format
-
-Here is the part that makes the policy story believable, and it is not what I expected. The stocking rules cover every store judged on its inventory. That includes dollar stores and drug stores, not just grocers. So if the rule mattered, its mark should show up across formats. It does. But it follows a different line than you would guess. This chart is the change in new sign-ups per year, by format:
-
-![{figs["entry-change-by-format"]['caption']}](images/{figs["entry-change-by-format"]['file']})
-
-Compare the top and bottom rows. **Combination Grocery/Other** is where USDA files stores that mainly sell general goods. New sign-ups there fell {abs(co['pct']):.0f}%, the steepest of any format. **Dollar stores fell {abs(dl['pct']):.0f}%.** Now the catch. Dollar stores *are* Combination Grocery/Other. USDA files them in that exact category. They only sit on their own line here because we picked them out by brand name.
-
-Same rule. Same USDA category. Opposite results. The independents in that bucket collapsed. The chains inside it barely moved. Medium grocery and supermarkets were nearly untouched, at {abs(md['pct']):.0f}% and {abs(sm['pct']):.0f}%. Those stores already carried deep stock.
-
-That points at the cost of complying, not at the format. For a chain, 36 items on the shelf is a shelf plan. Decide once, send it to twenty thousand stores, and spread the cost of a cooler across all of them. Dollar General was adding coolers in these very years anyway. For one corner store, the same rule means cash tied up in stock and food that may spoil, with nothing to spread it across.
-
-This is still a likely cause, not a proven one. Two things argue for caution. New sign-ups start falling in 2014, before the rule took effect, so something else is at work too. And these records never say why an authorization ended.
-
-## The question these records cannot answer
-
-One explanation survives all three tests. It is also the one this data cannot settle. A store that closes and a store that stays open but drops EBT look exactly the same here. Both are just an authorization that ended.
-
-We know the second thing happens, because some stores do it and come back:
-
-![{figs["lapsed-and-returned"]['caption']}](images/{figs["lapsed-and-returned"]['file']})
-
-**{100*lap['Grocery (Small)']['rate']:.1f}%** of small grocers have gone unauthorized and returned,
-median gap {lap['Grocery (Small)']['median_gap_days']} days. Those stores were plainly open the whole
-time. And that is a floor, not an estimate.
-
-## So we asked a source that counts businesses instead
-
-The Census Bureau counts *business locations* — every grocery store with staff, whether or not it takes EBT. That gives us a clean test. If locations held steady while authorizations halved, stores left the program. If both fell together, stores closed. Here are the two counts side by side:
-
-![{figs["cbp-vs-snap"]['caption']}](images/{figs["cbp-vs-snap"]['file']})
-
-Grocery locations with fewer than five staff fell **{abs(cb['cbp_under5_pct'])}%**. Under ten staff, **{abs(cb['cbp_under10_pct'])}%**. Those businesses are gone, not just out of the program. So a real share of the headline drop is genuine. Grocery of all sizes fell only {abs(cb['cbp_total_pct'])}%, which puts the losses in the smallest stores. The SNAP data said the same thing.
-
-Now look at the two SNAP rows. **Small and Medium grocery together fell {abs(cb['snap_small_mid_pct'])}%.** That is within a point of the census figure. **Small alone fell {abs(cb['snap_small_pct'])}%.** So SNAP is right about small grocery businesses. It is wrong about its own Small category. That can only mean one thing: the line between Small and Medium moved.
-
-## The definition moved, and the same rule moved it
-
-It did move, and you can watch it happen. This chart is the share of new grocery stores USDA filed as Medium rather than Small.
-
-![{figs["classification-shift"]['caption']}](images/{figs["classification-shift"]['file']})
-
-For a decade, about {mix[1]['medium_share']:.0f}% of new grocery sign-ups were filed as Medium. In 2018–21 that jumped to **{mix[3]['medium_share']:.0f}%**. Recall the 2018 rule: 36 items on the shelf at all times. In USDA's own words, a store holding that much stock has a "moderate selection" rather than a small one. The floor for joining the program rose above what "Small" used to mean.
-
-This is not the same thing we tested earlier. Existing stores signing up under a new type is rare, at {100*rc['share_of_exits']:.1f}% of exits. What moved is where the line sits for *new* stores. Both are true, and only the second shows up in the totals.
-
-So the answer comes in three parts. Small grocery really did shrink, by about a quarter. SNAP's own Small category fell twice that far, because the rule that drove part of the shrinking also redrew the category. And the stores that went were mostly the ones too small to absorb a new fixed cost.
-
-## Where it happened
-
-The drop is not spread evenly. New York lost far more small grocers than any other state:
+The decline is concentrated. New York lost more small grocers than any other state, by a wide margin.
 
 ![{figs["states"]['caption']}](images/{figs["states"]['file']})
 
 New York went from {st[0]['then']:,} to {st[0]['now']:,}, a fall of {abs(st[0]['pct']):.0f}%. A state
-with that many small groceries is a state of bodegas and corner stores, and it absorbed the largest
-share of whatever changed.
+with that many small groceries is a state of bodegas and corner stores, and it took the largest share
+of whatever changed.
+
+## What it adds up to
+
+No matter how you count it, the past decade has been hard on small grocery stores. SNAP's own records say the category fell {abs(cb['snap_small_pct']):.0f}%. The census says the businesses fell about a quarter. Either way, thousands of the smallest food stores in the country are gone, and almost none of the loss landed on the big ones.
+
+The best explanation we have is a rule that was meant to help shoppers. Making every SNAP store keep 36 staple items in stock at all times means someone walking in with an EBT card finds real food on the shelf. That is a sensible aim. But it asks the same of a corner store as of a supermarket. A chain writes the shelf plan once and spreads the cost over thousands of stores. A single shop pays it alone, in cash tied up in stock and food that may spoil. We cannot prove that is what happened. The timing and the shape both fit.
+
+There is another small format worth looking at before drawing any conclusions. A dollar store is a small box too: narrow range, few staff, cheap to run. Everything a small grocer is. Did it meet the same fate? Or did it find a way to thrive in a system that rewards size?
+
+**Tomorrow: the dollar store.**
 
 ## Limits
 
-Every figure here counts **authorizations**. "Left SNAP" is the strongest claim the data supports;
-"closed" is not, except where an outside source can corroborate it.
+**"Left SNAP" is the strongest claim these records support.** A store that closes and a store that
+stays open but stops taking EBT look identical here. That is why the census check matters, and why
+the headline number is the census one.
 
-The address test matches exactly on street number, street name, city and state. Stores whose address was typed differently in two records will be missed. So {100*rc['share_of_exits']:.1f}% is a floor, not a full count.
+Some stores do drop out and come back: **{100*lap['rate']:.1f}%** of small grocers lost their
+authorization and later regained it, with a median gap of {lap['median_gap_days']} days. Those stores
+were plainly open the whole time.
 
-The stocking rule is offered as a likely explanation, based on timing and shape. These records carry no reason code, so this source alone cannot confirm it.
+The Census Bureau counts businesses with paid employees. A grocery store run entirely by its owner
+with no payroll is not in that count, so the comparison covers employer businesses only.
+
+One category is left out of that table. New Super Store authorizations also fell, by 36%, but that is Walmart on its own — from about 168 a year to 10 — pausing a supercentre programme that was already close to complete. A store that size meets any stocking requirement without trying, so the rule cannot be what moved it.
+
+The stocking rule is offered as a likely explanation, on timing and shape. These records carry no reason code, so this source alone cannot confirm it.
 
 ---
 
-*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
-usable coordinates; a store counts as active in a year if an authorization covered 31 December. Entries
-and exits count stores, not authorization spells, so a store that lapsed and resumed is not
-double-counted. Code, pipeline and verification:
-[Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
+*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, and Census County Business
+Patterns, NAICS 445110. Analysis uses 656,868 stores with usable coordinates; a store counts as
+active in a year if an authorization covered 31 December. Entries and exits count stores, not
+authorization spells, so a store that lapsed and resumed is not double-counted. Code, pipeline and
+verification: [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """
     (DIR / "post2.md").write_text(md)
     shutil.copy(ROOT / "reports" / "post2.html", DIR / "post2-archive.html")

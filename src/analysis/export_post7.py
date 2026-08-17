@@ -5,6 +5,9 @@ import shutil
 from analysis import figures
 from config import ROOT
 
+LADDER = ["Small Grocery Store", "Convenience Store", "Combination Grocery/Other",
+          "Medium Grocery Store", "Supermarket", "Large Grocery Store"]
+
 SRC = ROOT / "reports" / "data" / "post7.json"
 DIR = ROOT / "reports" / "post7"
 IMG = DIR / "images"
@@ -30,6 +33,7 @@ def main():
     nfa, dg = P["need_for_access"], P["dollar_general"]
     pre, tm = d["precedent"], d["thin_markets"]
     surv = {r["segment"]: r for r in d["survival"]}
+    eu = {r["store_type"]: r for r in d["entry_change_usda"]}
     den, tl = tm["density"], tm["total_loss"]
 
     print("figures:")
@@ -63,20 +67,13 @@ def main():
         title="Last time the rules tightened, new sign-ups fell",
         subtitle="small grocery stores per year")
 
-    fig(3, "survival-by-operator",
-        "Share of convenience stores first authorized 2008-2012 still authorized in 2025, "
-        "by who runs the store.",
-        figures.hbar_png, [
-            {"label": "fuel-forward chains",
-             "value": surv["fuel-forward chains"]["rate"], "slot": 1},
-            {"label": "other convenience chains",
-             "value": surv["other convenience chains"]["rate"], "slot": 0},
-            {"label": "fuel-branded single sites",
-             "value": surv["fuel-branded single sites"]["rate"], "slot": 0},
-            {"label": "no chain behind the store",
-             "value": surv["unbranded convenience"]["rate"], "slot": 2}], suffix="%",
-        title="Scale predicts survival, not format",
-        subtitle="share of 2008-2012 convenience stores still authorized in 2025")
+    fig(3, "size-ladder",
+        "Change in new SNAP sign-ups per year, 2012-13 average against 2018-19 average, by "
+        "USDA's own store type.",
+        figures.table_png, ["USDA store type", "Change in new sign-ups"],
+        [[typ, f"{eu[typ]['pct']:+.0f}%"] for typ in LADDER if typ in eu],
+        title="The fall sorts by how much stock a store carries",
+        subtitle="new sign-ups per year, 2012-13 vs 2018-19")
 
     fig(4, "positions",
         "Who took a public position on the rule.",
@@ -180,11 +177,11 @@ that is, exits did not rise at all. A rule that raises the bar mostly stops the 
 
 ![{figs["entry-vs-exit-2018"]['caption']}](images/{figs["entry-vs-exit-2018"]['file']})
 
-**Second: the losses will fall on single stores, not chains.** A chain spreads a fixed compliance cost
-across thousands of locations. A single store pays it alone. That is the mechanism behind every survival
-gap in this series.
+**Second: the losses will fall on the stores that carry the least stock.** A stocking rule asks for a fixed amount of inventory. That is a large demand on a small store and no demand at all on a big one. When the standard last tightened, the fall sorted by exactly that, in USDA's own categories:
 
-![{figs["survival-by-operator"]['caption']}](images/{figs["survival-by-operator"]['file']})
+![{figs["size-ladder"]['caption']}](images/{figs["size-ladder"]['file']})
+
+It is tempting to shorten this to "chains will be fine, independents will not." The record does not support that cleanly. Inside the one USDA category that holds both, the non-dollar chains fell as far as the independents did — and those chains are Walgreens, CVS, Rite Aid, Big Lots and Fred's, so their fall is tangled up with a bankruptcy and a liquidation. Scale helps a store stay in the program once it is in. It did not decide who stopped signing up.
 
 **Third: the access consequences will concentrate in the places in this series.** Losing one authorized
 store matters little in a city. It matters a great deal in a ZIP code of

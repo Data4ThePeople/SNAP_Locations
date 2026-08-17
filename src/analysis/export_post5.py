@@ -181,7 +181,7 @@ And it is not the only format built that way. The gas station chapter found a se
 
 Read that way, the pieces in this series stop being coincidences. They become one story told from several angles.
 
-- Small grocery's collapse was a collapse in **new stores**. Sign-ups fell {entry_pct}% . The 2018 stocking rule added a fixed cost a chain can absorb and a single store cannot. Inside USDA's own Combination Grocery/Other category, independents fell 64%. The dollar chains in that same category fell 5%.
+- Small grocery's collapse was a collapse in **new stores**. Sign-ups fell {entry_pct}%. The 2018 stocking rule asks every store for a fixed amount of inventory, which is a large demand on a small shop and no demand at all on a big one. In USDA's own categories the fall sorted by exactly that: new sign-ups dropped 58% for small grocers, while the largest grocery category grew 8%.
 - Dollar stores' advantage was never fast opening. It was that **{dollar_surv}% stay** — a format cheap
   enough to survive where others cannot.
 - Fuel-forward convenience chains match that staying power, and after 2020 they gained something dollar

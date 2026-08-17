@@ -209,9 +209,8 @@ def main():
 
     # ------------------------------------------------------- 6b. who the bar actually hit
     # The rule applies to any retailer authorized on inventory (Criterion A), not
-    # to grocery stores specifically. Comparing entry collapse across formats -
-    # and, critically, within USDA's single Combination Grocery/Other category -
-    # shows the sorting variable is chain versus independent, not format.
+    # to grocery stores specifically, so its mark should show up across formats.
+    # It does, and it sorts by how much stock a format already carried.
     print("\n6b. Change in new authorizations, 2012-13 avg vs 2018-19 avg")
     ec = []
     for f in ("Combination Grocery/Other", "Grocery (Small)", "Convenience Store",
@@ -223,12 +222,39 @@ def main():
                    "pct": round(100 * (b / a - 1), 1)})
         print(f"     {f:28} {a:>8,.0f} -> {b:>8,.0f}   {100*(b/a-1):>+6.0f}%")
     out["entry_change"] = ec
-    co = next(r for r in ec if r["format"] == "Combination Grocery/Other")
-    dl = next(r for r in ec if r["format"] == "Dollar Store")
-    print(f"\n     Same USDA category, opposite outcomes: Combination Grocery/Other"
-          f" {co['pct']}% vs dollar chains {dl['pct']}%")
-    check("independents in the shared category fell far more than the chains in it",
-          int(co["pct"] < dl["pct"] - 40), 1)
+
+    # The same cut on USDA's own store types, with nothing broken out by brand.
+    #
+    # An earlier version split this category by owner and reported that
+    # independents collapsed while the chains in it barely moved. That was wrong.
+    # Inside Combination Grocery/Other the non-dollar chains fell 60.5%, almost
+    # exactly as far as the independents' 62.6% — and those chains are Walgreens,
+    # CVS, Rite Aid, Big Lots and Fred's, so the fall is entangled with a
+    # bankruptcy and a liquidation rather than any stocking rule. Only the dollar
+    # chains held up, and post 1 shows they opened at a near-constant rate for
+    # sixteen years regardless of anything. Ownership explains nothing here.
+    #
+    # What survives is a size gradient in USDA's own categories, which needs no
+    # brand list to state and is the version the post now makes.
+    eu = []
+    for typ, a, b in con.execute("""
+        WITH e AS (SELECT store_type_usda t, year(first_auth) yr, count(*) n
+                   FROM panel GROUP BY 1, 2)
+        SELECT t, avg(CASE WHEN yr IN (2012,2013) THEN n END),
+                  avg(CASE WHEN yr IN (2018,2019) THEN n END)
+        FROM e GROUP BY 1
+        HAVING avg(CASE WHEN yr IN (2012,2013) THEN n END) >= 200
+        ORDER BY avg(CASE WHEN yr IN (2018,2019) THEN n END)
+               / avg(CASE WHEN yr IN (2012,2013) THEN n END)""").fetchall():
+        eu.append({"store_type": typ, "before": float(a), "after": float(b),
+                   "pct": round(100 * (b / a - 1), 1)})
+        print(f"     {typ:28} {a:>8,.0f} -> {b:>8,.0f}   {100*(b/a-1):>+6.0f}%")
+    out["entry_change_usda"] = eu
+    by = {r["store_type"]: r["pct"] for r in eu}
+    check("the fall sorts by store size, not by owner",
+          int(by["Small Grocery Store"] < by["Medium Grocery Store"] - 30), 1)
+    check("the largest grocery formats were untouched",
+          int(by["Large Grocery Store"] > -15 and by["Supermarket"] > -15), 1)
 
     # ------------------------------------------------- 7. the external test, now run
     # CBP counts establishments regardless of EBT, so it separates closure from
