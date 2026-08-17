@@ -71,14 +71,7 @@ def main():
           f"{ends[y].get('Walgreens',0):,}", f"{ends[y].get('CVS',0):,}"] for y in end_years],
         highlight_row=len(end_years) - 1)
 
-    fig(6, "independent-pharmacies",
-        "Independently owned pharmacies with an active SNAP authorization, identified by "
-        "store name.",
-        figures.line_png, yrs,
-        [{"name": "independent pharmacies", "values": ind["stock"], "slot": 3}],
-        ylabel="active authorizations")
-
-    fig(7, "states",
+    fig(6, "states",
         "Largest percentage falls in authorized drug stores, 2021 to 2025, among states with "
         "at least 150 in 2021.",
         figures.hbar_png,
@@ -149,30 +142,37 @@ Walgreens had {wal['authorized_2024']:,} SNAP authorizations against roughly {wa
 stores it reported operating — a ratio of {wal['ratio']}. For this chain, authorization is effectively a
 store census, so an ending is a closed store.
 
-## The independents were already going
+## What this data cannot tell you about independent pharmacies
 
-Independent pharmacies are a much smaller population, and their decline started years earlier and never
-reversed.
+It would be natural to ask next how independent pharmacies fared. These records cannot answer that, and
+it is worth being explicit about why rather than reporting a number that looks like an answer.
 
-![{figs[6]['caption']}](images/{figs[6]['file']})
+A pharmacy appears in this dataset only if it is **SNAP-authorized**, which requires stocking staple
+foods. Most independent pharmacies do not. Trade sources put the national count of independent community
+pharmacies near {ind['national_estimate']:,}; this dataset contains **{ind['latest']}** of them — about
+{100*ind['coverage']:.1f}%. The visible ones are the unusual subset that double as food retailers.
 
-They peaked at {ind['peak']} in {ind['peak_year']} and stand at {ind['latest']} — **{ind['pct']}%**.
-Unlike the chains, their fall does overlap the 2018 stocking change, and it kept going. Two cautions:
-these are small absolute numbers, so percentages move easily; and identifying them by store name misses
-any pharmacy trading under its owner's surname, so treat {ind['peak']} as a floor and the direction as
-the finding.
+And they are not spread evenly. New York accounts for **{100*ind['ny_share_latest']:.0f}%** of the 2025
+count, up from {100*ind['ny_share_first']:.0f}% in 2006 — the small pharmacy-plus-bodega is a distinctly
+New York retail form. Worse for any trend claim, the two halves move in opposite directions: New York
+went from {ind['ny'][0]} to {ind['latest_ny']} while the rest of the country went from
+{ind['ex_ny_first']} to {ind['ex_ny_latest']}. A national line through that averages a rise and a fall
+and describes neither.
+
+So there is no independent-pharmacy finding here. What the chains show above is solid because their SNAP
+authorization is close to a store census; for independents, this source is the wrong instrument.
 
 ## Where the stores were
 
 The losses are concentrated, and the map follows Rite Aid's footprint.
 
-![{figs[7]['caption']}](images/{figs[7]['file']})
+![{figs[6]['caption']}](images/{figs[6]['file']})
 
 Pennsylvania — Rite Aid's home state — lost {abs(st[0]['delta']):,} of {st[0]['then']:,},
 {abs(st[0]['pct']):.0f}%. Michigan lost {abs(st[1]['delta']):,}. California lost the most in absolute
 terms.
 
-Nationally, **{z['lost']:,} ZIP codes** that had at least one SNAP-authorized drug store in 2021 had
+Nationally, **{z['lost']:,} ZIP codes** that had at least one SNAP-authorized chain pharmacy in 2021 had
 none by 2025. Only {z['gained']} gained one. That is the part with consequences for people: a pharmacy
 is often where a SNAP household buys food in a neighbourhood with no grocery store, and it is where they
 fill prescriptions.
@@ -189,7 +189,8 @@ footprint. Rite Aid is left out for the opposite reason — its store count was 
 that any single-date comparison is unstable.
 
 A pharmacy's SNAP authorization says nothing about whether it dispenses prescriptions, and nothing here
-measures prescription volume or pharmacy access as such.
+measures prescription volume or pharmacy access as such. The ZIP-code count above covers chain pharmacies
+only, for the coverage reason set out earlier.
 
 ---
 

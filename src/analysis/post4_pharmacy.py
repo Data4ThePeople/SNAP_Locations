@@ -100,24 +100,47 @@ def main():
     out["endings"] = {str(k): v for k, v in ends.items()}
 
     # ------------------------------------------------------------ 4. independents
-    print("\n4. Independent pharmacies (identified by name)")
+    # This dataset cannot measure independent pharmacies. A pharmacy only appears
+    # if it is SNAP-authorized, which requires stocking staple foods, and most do
+    # not — so the visible set is ~1.6% of the national population and half of it
+    # is in New York. Reported as a coverage limit, not a trend.
+    print("\n4. Independent pharmacies: what this data can and cannot see")
     indep = stock("g.seg = 'independent'")
-    ipk = max(indep)
-    out["independent"] = {"years": years, "stock": indep, "peak": ipk,
-                          "peak_year": years[indep.index(ipk)], "latest": indep[-1],
-                          "pct": round(100 * (indep[-1] / ipk - 1), 1)}
-    print(f"     peak {ipk:,} in {years[indep.index(ipk)]}; 2025 {indep[-1]:,}"
-          f" ({out['independent']['pct']}%)")
-    print("     small absolute numbers, and name matching misses any pharmacy named")
-    print("     after its owner, so treat the level as a floor and the trend as the finding")
+    ny = [con.execute(f"""
+        SELECT count(DISTINCT p.record_id) FROM panel p JOIN seg g USING(record_id)
+        JOIN fact_spell f ON f.record_id=p.record_id AND NOT f.date_anomaly
+        WHERE g.seg='independent' AND p.state='NY'
+          AND f.auth_date <= make_date({y},12,31)
+          AND (f.end_date IS NULL OR f.end_date >= make_date({y},12,31))
+    """).fetchone()[0] for y in years]
+    NATIONAL_INDEP = 19_500   # trade estimate of US independent community pharmacies
+    out["independent"] = {
+        "years": years, "stock": indep, "ny": ny,
+        "latest": indep[-1], "latest_ny": ny[-1],
+        "ny_share_latest": round(ny[-1] / indep[-1], 3),
+        "ny_share_first": round(ny[0] / indep[0], 3),
+        "national_estimate": NATIONAL_INDEP,
+        "coverage": round(indep[-1] / NATIONAL_INDEP, 4),
+        "ex_ny_first": indep[0] - ny[0], "ex_ny_latest": indep[-1] - ny[-1],
+        "usable": False,
+    }
+    o = out["independent"]
+    print(f"     visible in SNAP records: {o['latest']:,} of ~{NATIONAL_INDEP:,} nationally"
+          f" ({100*o['coverage']:.1f}%)")
+    print(f"     New York share: {100*o['ny_share_first']:.0f}% (2006) -> "
+          f"{100*o['ny_share_latest']:.0f}% (2025)")
+    print(f"     New York: {ny[0]:,} -> {ny[-1]:,}   everywhere else: "
+          f"{o['ex_ny_first']:,} -> {o['ex_ny_latest']:,}")
+    print("     New York rises while the rest falls, so any national trend line here")
+    print("     averages two opposite movements. Not reported as a finding.")
 
     # ------------------------------------------------------------ 5. pharmacy deserts
-    print("\n5. ZIP codes that lost their last SNAP-authorized drug store")
+    print("\n5. ZIP codes that lost their last SNAP-authorized chain drug store")
     def zips(y):
         return {r[0] for r in con.execute(f"""
             SELECT DISTINCT p.zip_code FROM panel p JOIN seg g USING(record_id)
             JOIN fact_spell f ON f.record_id = p.record_id AND NOT f.date_anomaly
-            WHERE g.seg IN ('chain','independent') AND p.zip_code IS NOT NULL
+            WHERE g.seg = 'chain' AND p.zip_code IS NOT NULL
               AND length(p.zip_code) = 5
               AND f.auth_date <= make_date({y},12,31)
               AND (f.end_date IS NULL OR f.end_date >= make_date({y},12,31))
@@ -151,14 +174,14 @@ def main():
         WITH a AS (SELECT p.state, count(DISTINCT p.record_id) n
                    FROM panel p JOIN seg g USING(record_id) JOIN fact_spell f
                      ON f.record_id=p.record_id AND NOT f.date_anomaly
-                   WHERE g.seg IN ('chain','independent')
+                   WHERE g.seg = 'chain'
                      AND f.auth_date <= DATE '2021-12-31'
                      AND (f.end_date IS NULL OR f.end_date >= DATE '2021-12-31')
                    GROUP BY 1),
         b AS (SELECT p.state, count(DISTINCT p.record_id) n
               FROM panel p JOIN seg g USING(record_id) JOIN fact_spell f
                 ON f.record_id=p.record_id AND NOT f.date_anomaly
-              WHERE g.seg IN ('chain','independent')
+              WHERE g.seg = 'chain'
                 AND f.auth_date <= DATE '2025-12-31'
                 AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
               GROUP BY 1)

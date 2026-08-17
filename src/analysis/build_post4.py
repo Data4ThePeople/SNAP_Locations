@@ -40,9 +40,7 @@ def main():
         f"<td>{ends[y].get('Rite Aid', 0):,}</td><td>{ends[y].get('Walgreens', 0):,}</td>"
         f"<td>{ends[y].get('CVS', 0):,}</td></tr>" for y in end_years)
 
-    c_ind = charts.line_chart(
-        yrs, [{"name": "independent pharmacies", "values": ind["stock"], "slot": 3}],
-        y_label="active authorizations")
+    o = ind
 
     c_st = charts.bar_chart(
         [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": abs(r["pct"]),
@@ -126,19 +124,27 @@ paperwork can be trusted for the cases where no filing exists.</p>
 {wal['reported']:,} US stores it reported operating — a ratio of {wal['ratio']}. For this chain,
 authorization is effectively a store census, so an ending is a closed store.</p>
 
-<h2>The independents were already going</h2>
-<p>Independent pharmacies are a much smaller population, and their decline started years earlier and
-never reversed.</p>
+<h2>What this data cannot tell you about independent pharmacies</h2>
+<p>It would be natural to ask next how independent pharmacies fared. These records cannot answer
+that, and it is worth being explicit about why rather than reporting a number that looks like an
+answer.</p>
 
-<figure>{c_ind}
-<figcaption>Independently owned pharmacies with an active SNAP authorization, identified by store
-name.</figcaption></figure>
+<p>A pharmacy appears in this dataset only if it is <strong>SNAP-authorized</strong>, which requires
+stocking staple foods. Most independent pharmacies do not. Trade sources put the national count of
+independent community pharmacies near {o['national_estimate']:,}; this dataset contains
+<strong>{o['latest']}</strong> of them — about {100*o['coverage']:.1f}%. The visible ones are the
+unusual subset that double as food retailers.</p>
 
-<p>They peaked at {ind['peak']} in {ind['peak_year']} and stand at {ind['latest']} —
-<strong>{ind['pct']}%</strong>. Unlike the chains, their fall does overlap the 2018 stocking change,
-and it kept going. Two cautions: these are small absolute numbers, so percentages move easily; and
-identifying them by store name misses any pharmacy trading under its owner's surname, so treat
-{ind['peak']} as a floor and the direction as the finding.</p>
+<p>And they are not spread evenly. New York accounts for <strong>{100*o['ny_share_latest']:.0f}%</strong>
+of the 2025 count, up from {100*o['ny_share_first']:.0f}% in 2006 — the small pharmacy-plus-bodega is a
+distinctly New York retail form. Worse for any trend claim, the two halves move in opposite directions:
+New York went from {o['ny'][0]} to {o['latest_ny']} while the rest of the country went from
+{o['ex_ny_first']} to {o['ex_ny_latest']}. A national line through that averages a rise and a fall and
+describes neither.</p>
+
+<p>So there is no independent-pharmacy finding here. What the chains show above is solid because
+their SNAP authorization is close to a store census; for independents, this source is the wrong
+instrument.</p>
 
 <h2>Where the stores were</h2>
 <p>The losses are concentrated, and the map follows Rite Aid's footprint.</p>
@@ -166,7 +172,8 @@ inside Target stores and are covered by Target's own authorization, so its autho
 understates its footprint. Rite Aid is left out for the opposite reason — its store count was moving
 so fast in 2024–25 that any single-date comparison is unstable.</p>
 <p>A pharmacy's SNAP authorization says nothing about whether it dispenses prescriptions, and nothing
-here measures prescription volume or pharmacy access as such.</p>
+here measures prescription volume or pharmacy access as such. The ZIP-code count above is for chain
+pharmacies only, for the coverage reason set out earlier.</p>
 </div>
 
 <footer>
