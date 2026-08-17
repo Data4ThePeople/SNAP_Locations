@@ -60,7 +60,7 @@ def main():
         if not go[f][o]["thin"] and not ow[f][o]["thin"]]
     c_growth = charts.scatter_chart(
         scatter_pts,
-        x_label="change in store numbers, 2006 to 2025", x_suffix="%",
+        x_label="% growth in store numbers, 2006 to 2025", x_suffix="%",
         y_label="still authorized in 2025", y_suffix="%",
         quadrant={"x": 0}, title="Only one format did both",
         note="Points left of the dashed line have fewer stores than in 2006.")
