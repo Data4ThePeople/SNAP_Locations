@@ -98,7 +98,11 @@ category as the dollar store: "Combination Grocery/Other," for shops that mainly
 and also sell food. That filing is not a technicality. In a neighborhood with no supermarket, the
 pharmacy is often where a SNAP household buys food.
 
-Those stores are going away, and it happened fast.
+It is also, by yesterday's two rules, a format that should have been safe. A chain pharmacy is a small
+store, and it belongs to a chain — the same combination that made the dollar store the most durable
+format in the data. For a decade it behaved that way.
+
+Then it stopped.
 
 ![{figs["drug-chain-arc"]['caption']}](images/{figs["drug-chain-arc"]['file']})
 
@@ -108,7 +112,34 @@ happened: down {abs(ch['peak_to_2021_pct'])}% by 2021. Then they lost
 
 That timing rules out the explanation that fits the other small formats in this series. USDA's stocking
 rules changed in 2018, and pharmacies face the same inventory test as everyone else. They passed it
-easily. This decline starts three years later, and the cause is far more ordinary.
+easily. This decline starts three years later.
+
+## Why the combination stopped working
+
+Think back to the gas station. A convenience store attached to a fuel pump is a small chain store with a
+second business behind it, and after 2020 that second business got much better: Murphy USA's margin on a
+gallon of fuel rose 103%. The store rode it up.
+
+A pharmacy is the same shape and the opposite story. The shop at the front sells toothpaste and snacks.
+The business behind it fills prescriptions — and that business does not set its own prices. What a
+prescription pays is set by the companies that manage drug benefits for insurers, the pharmacy benefit
+managers, and it has been going one way for years.
+
+The chains say so themselves. Walgreens' 2024 annual report describes "ongoing prescription
+reimbursement pressure," and names the cause: benefit managers and insurers "have consolidated over
+recent years to create larger healthcare entities with greater bargaining power." Rite Aid's last annual
+report before bankruptcy said it more bluntly. To stay in a payer's network, "retail pharmacies
+generally are required to accept lower reimbursement rates."
+
+That is the whole difference. Being small and being part of a chain are advantages in what it costs to
+run a store. Neither one does anything about what the store sells. The gas station's core business
+improved and pulled the format up with it. The pharmacy's core business was being squeezed, and the
+combination that protected the dollar store could not outrun it.
+
+One detail fits that story, though three companies is not a sample and this data cannot test it: the
+chain that held up best is the one that owns a benefit manager itself. CVS bought Caremark in 2007 and
+still owns it, and is down {abs(br['CVS']['pct']):.0f}%. Walgreens sold its own in 2011, and is down
+{abs(br['Walgreens']['pct']):.0f}%. Rite Aid sold its during bankruptcy, and is gone.
 
 ## Three companies did all of it
 
@@ -171,6 +202,11 @@ it is the last chapter.
 
 ## Limits
 
+**The reimbursement explanation is not measured here.** These records show the collapse and its timing;
+they say nothing about why. The squeeze on prescription margins is taken from the companies' own annual
+reports, quoted above, and from the fact that all three describe the same pressure. That is testimony
+from interested parties, not a measurement. Nothing in this dataset can confirm or refute it.
+
 These records count **SNAP authorizations**, not pharmacies. A drug store that stops accepting EBT but
 keeps trading looks the same here as one that closes. For Walgreens the two are nearly the same thing —
 that is what the census check above establishes — but that logic does not carry to anyone else.
@@ -195,7 +231,7 @@ coverage reason set out just above.
 
 *Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
 usable coordinates; a store counts as active in a year if an authorization covered 31 December.
-Corporate events from company filings and contemporaneous trade press. Code, pipeline and verification:
+Corporate events and reimbursement language from company 10-K filings (Walgreens Boots Alliance FY2024, Rite Aid FY2023, CVS Health FY2025) and contemporaneous trade press. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """
     (DIR / "post4.md").write_text(md)
