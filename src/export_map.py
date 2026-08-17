@@ -204,8 +204,19 @@ def export() -> None:
             ],
         })
 
+    # The page used to hardcode these in its copy, and both drifted: the loading
+    # line was 38 stores out and the "never appear" figure was stale by a third.
+    # Publishing them here means the copy is generated from the same pass that
+    # builds the payload and cannot disagree with it.
+    mappable = int(con.execute(
+        "SELECT count(*) FROM dim_store WHERE mappable").fetchone()[0])
+    never = mappable - len(df)
+
     meta = {
         "count": len(df),
+        "mappable": mappable,
+        "excluded_shortlived_count": never,
+        "excluded_shortlived_pct": round(100 * never / mappable, 1),
         "years": YEARS,
         "formats": formats,
         "format_by_year": format_by_year.tolist(),

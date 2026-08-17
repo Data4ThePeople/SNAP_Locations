@@ -31,7 +31,7 @@ raster tiles, which need no API key.
 ## How it works
 
 The whole dataset is **one row per store with a 20-bit year mask**, where bit *i*
-means "authorized on Dec 31 of 2006+*i*". 611,202 stores × 16 bytes = 9.78 MB,
+means "authorized on Dec 31 of 2006+*i*". 611,164 stores × 19 bytes = 11.61 MB,
 fetched once. The year slider is a bit test and every filter is a linear pass over
 typed arrays, so nothing round-trips to a server.
 
@@ -67,8 +67,8 @@ relies on the legend.
 
 `web/data/` is generated and **gitignored** — regenerate it with `export_map.py`
 rather than committing it. Deploying to GitHub Pages requires committing it
-deliberately (9.78 MB); note that Pages on a private repo needs a paid plan.
+deliberately (11.61 MB); note that Pages on a private repo needs a paid plan.
 
 A store appears in a year only if it was authorized on **Dec 31** of that year.
-33,972 stores (5.3%) opened and closed between Dec 31sts and never appear at all.
-Stores without coordinates are excluded — though no active-2025 store lacks them.
+45,704 stores (7.0%) opened and closed between Dec 31sts and never appear at all.
+Stores without usable coordinates are excluded; 9 stores active at the end of 2025 fall into that gap.

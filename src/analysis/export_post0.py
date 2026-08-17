@@ -36,15 +36,6 @@ def main():
          {"value": f"{ds['last_year'] - ds['first_year'] + 1}",
           "label": "years you can move through, one at a time"}])
 
-    # Short subject labels, not full headlines: table_png does not wrap, and a
-    # 70-character headline would run past its column.
-    fig(1, "reading-order",
-        "The seven pieces in reading order, with the headline figure of each.",
-        figures.table_png, ["Day", "Subject", "Headline figure"],
-        [[f"Day {c['day']}", c["subject"], f"{c['stat']['value']}"] for c in ch],
-        title="Read them in this order",
-        subtitle="the argument builds from one piece to the next")
-
     # The roadmap renders as styled HTML in post0.html, which cannot be pasted
     # into Prismic or Mailchimp. Emit each entry as a flat image instead, on the
     # dark ground those platforms use. The headline stays in the alt text so the
@@ -101,9 +92,7 @@ And where we could not make that match work, we say so and make no claim. That i
 
 ## Seven days, seven parts of one story.
 
-Each piece stands alone. But they are built to be read in order, and that order is not the order we wrote them in. It is the order in which the argument builds. The first six are the story. The last is an epilogue about what it means for policy.
-
-![{figs["reading-order"]['caption']}](images/{figs["reading-order"]['file']})
+Each piece stands alone, but the argument builds from one to the next. The first six are the story. The last is an epilogue about what it means for policy.
 
 {chapter_md}
 ## What we are not claiming
