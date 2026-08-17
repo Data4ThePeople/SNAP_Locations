@@ -124,25 +124,25 @@ its authorization than a small grocery.
 That is a real finding, and on its own it is a bleak one. It says the thing that decided which stores
 survived was a thing no small grocer could change.
 
-## Rule two: chains do not need to be big
+## Rule two: rule one does not apply to chains
 
-Except that size is not quite what is doing the work. Split each format by who owns it and the ladder
+Except that size is not quite what is doing the work. Split each format by who owns it and rule one
 comes apart.
 
 ![{figs["ownership-split"]['caption']}](images/{figs["ownership-split"]['file']})
 
-Among independent stores the ladder holds exactly as before: **{' , '.join(f"{r}%" for r in ind)}** down
+Among independent stores rule one holds exactly as stated: **{' , '.join(f"{r}%" for r in ind)}** down
 the size order. So size is real. It is not merely standing in for something else.
 
-But look along the chain row. A chain super store survives at **{ssc['rate']}%**. A dollar store — the
+Now look down the chain column. A chain super store survives at **{ssc['rate']}%**. A dollar store — the
 smallest box in the whole table — survives at **{dol['rate']}%**. Those are the same number. For a chain,
 being large stopped mattering.
 
-That is the second rule, and it is the one that explains the last two days. **Being part of a chain
-substitutes for being big.** Dollar stores are small and every one of them is a chain. The convenience
-stores that endured were the fuel chains, at 78.7%; the single-owner ones managed 14.2%.
+**Rule one does not apply to chains.** That is the whole of rule two, and it is what explains the last
+two days. Dollar stores are small, and every one of them is a chain. The convenience stores that endured
+were the fuel chains, at 78.7%; the single-owner ones managed 14.2%.
 
-Neither format was breaking the size rule. Both were beating it with a different one.
+Neither format was breaking rule one. Neither was subject to it.
 
 ## The large format wins at staying and loses at spreading
 
@@ -163,11 +163,11 @@ What spread was the format that found a way to be small and be a chain at the sa
 Two rules, and they are worth stating plainly because between them they cover almost everything in this
 series so far.
 
-**A bigger store was likelier to keep its SNAP authorization.** That held for every independent store in
-the data, right down the size order.
+**Rule one: a bigger store was likelier to keep its SNAP authorization.** That held for every independent
+store in the data, right down the size order.
 
-**A chain store did not need to be big.** A dollar store the size of a corner shop held its authorization
-as reliably as a super store.
+**Rule two: rule one does not apply to chains.** A dollar store the size of a corner shop held its
+authorization as reliably as a super store.
 
 Put the two together and you can see the shape of the last twenty years. The stores that went away were
 small and independent — they had neither advantage. The stores that grew were small and chained — they
