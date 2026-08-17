@@ -8,140 +8,181 @@ from config import ROOT
 DATA = ROOT / "reports" / "data" / "post3.json"
 OUT = ROOT / "reports" / "post3.html"
 
+SHORT = {"Super Store": "Super store", "Supermarket": "Supermarket",
+         "Grocery (Large)": "Large grocery", "Grocery (Medium)": "Medium grocery",
+         "Grocery (Small)": "Small grocery", "Dollar Store": "Dollar store",
+         "Convenience Store": "Convenience store"}
+
 
 def main():
     d = json.loads(DATA.read_text())
-    palette.validate(3, "light", verbose=False)
-    palette.validate(3, "dark", verbose=False)
+    palette.validate(4, "light", verbose=False)
+    palette.validate(4, "dark", verbose=False)
 
-    acc, sp, den = d["access"], d["spacing"], d["density_20mi"]
-    st, cen, zl = d["stores"], d["census"], d["pharmacy_loss_zips"]
-    radii = [a["radius"] for a in acc]
-    tot = d["total_pop"]
-    a10 = next(a for a in acc if a["radius"] == 10)
-    a20 = next(a for a in acc if a["radius"] == 20)
-    z10 = next(z for z in zl if z["radius"] == 10)
-    z20 = next(z for z in zl if z["radius"] == 20)
+    L, B = d["ladder"], d["breakers"]
+    sv, ow, gr = d["survival"], d["by_ownership"], d["growth"]
 
-    s_acc = [{"name": "with Walmart", "values": [a["with_pct"] for a in acc], "slot": 1},
-             {"name": "without Walmart", "values": [a["without_pct"] for a in acc], "slot": 2}]
-    c_acc = charts.line_chart(radii, s_acc, y_zero=False,
-                              y_label="% of US population within reach",
-        title="Take Walmart out and the reach drops sharply",
-        subtitle="share of the US population within a given distance of a superstore")
+    # Ladder order is the finding, so the chart is never re-sorted by value.
+    c_ladder = charts.bar_chart(
+        [{"label": SHORT[f], "value": sv[f]["rate"], "slot": 1 if f == L[0] else 0}
+         for f in L], suffix="%",
+        title="The bigger the store, the likelier it kept its authorization",
+        subtitle=f"still authorized in 2025, of those authorized {d['cohort']}")
 
-    c_gap = charts.bar_chart(
-        [{"label": f"{a['radius']} miles", "value": round(a["depends_on_walmart"] / 1e6, 1),
-          "slot": 1 if a["radius"] == 10 else 0} for a in acc], suffix="M",
-        title="13 million people depend on Walmart at ten miles",
-        subtitle="people who would fall outside the radius without a Walmart")
+    def cell(f, o):
+        c = ow[f][o]
+        return "—" if c["n"] == 0 else f"{c['rate']}%" + ("*" if c["thin"] else "")
 
-    c_sp = charts.bar_chart([
-        {"label": "Walmart, median spacing", "value": sp["Walmart"]["median"], "slot": 1},
-        {"label": "other superstores, median", "value": sp["all other superstores"]["median"],
-         "slot": 0}], suffix=" mi",
-        title="Walmart spaces its stores out. Others pile up.",
-        subtitle="median miles to the nearest other store of the same group")
+    own_tbl = "".join(
+        f"<tr><td>{SHORT[f]}</td><td>{cell(f,'independent')}</td>"
+        f"<td>{cell(f,'chain')}</td><td>{sv[f]['rate']}%</td></tr>" for f in L + B)
 
-    acc_tbl = "".join(
-        f"<tr><td>{a['radius']} mi</td><td>{a['with_pct']}%</td><td>{a['without_pct']}%</td>"
-        f"<td>{a['depends_on_walmart']/1e6:.1f}M</td></tr>" for a in acc)
+    c_growth = charts.bar_chart(
+        [{"label": SHORT[f], "value": gr[f]["mult"],
+          "slot": 2 if f == "Dollar Store" else (1 if f == "Super Store" else 0)}
+         for f in sorted(L + B, key=lambda x: -gr[x]["mult"])], suffix="x",
+        title="The most durable format is also the slowest growing",
+        subtitle="SNAP-authorized stores in 2025 as a multiple of 2006")
 
-    html = f"""{HEAD}<title>13 million people reach a superstore only because of Walmart</title>
+    ss, sg = sv["Super Store"], sv["Grocery (Small)"]
+    ssc, dol = ow["Super Store"]["chain"], sv["Dollar Store"]
+    ind = [ow[f]["independent"]["rate"] for f in L]
+    lo = min(sv[f]["unknown_share"] for f in L + B)
+    hi = max(sv[f]["unknown_share"] for f in L + B)
+    T = "The bigger the store, the better it did — unless it belonged to a chain"
+
+    html = f"""{HEAD}<title>{T}</title>
 <style>{CSS}</style>
 <main>
-<h1>13 million people reach a superstore only because of Walmart</h1>
-<p class="sub">SNAP-authorized retailers, 2025, against 2020 census tract population ·
-{st['all']:,} superstores, of which {st['walmart']:,} are Walmart · straight-line distance</p>
+<h1>{T}</h1>
+<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
+records · survival measured on the {d['cohort']} cohort, checked again at the end of 2025</p>
 
 <div class="ledger">
-  <div><b>{a10['depends_on_walmart']/1e6:.0f}M</b><span>people within 10 miles of a superstore only because of Walmart</span></div>
-  <div><b>{den['median_density']:.0f}</b><span>people per square mile in the tracts that depend on it, against {den['median_density_all']:,.0f} nationally</span></div>
-  <div><b>{sp['Walmart']['median']:.1f} mi</b><span>median distance between Walmart superstores, against {sp['all other superstores']['median']:.1f} for everyone else</span></div>
+  <div><b>{sg['rate']}%</b><span>of small groceries authorized in {d['cohort']} are still authorized,
+    against {ss['rate']:.0f}% of super stores</span></div>
+  <div><b>{ssc['rate']:.0f}%</b><span>survival for a chain store — about the same whether it is the
+    largest format or the smallest</span></div>
+  <div><b>{gr['Super Store']['mult']}x</b><span>super store growth since 2006, against the dollar
+    store's {gr['Dollar Store']['mult']}x</span></div>
 </div>
 
-<p>On the map of SNAP retailers, Walmart looks different from every other chain. Other superstores cluster where the people are. Walmart's are spread out almost evenly, including across country with very little else in it. This piece tries to put a number on what that spread covers.</p>
+<p>The last three days each followed one small format. Small groceries went away. Dollar stores grew
+and stayed. Convenience stores grew while their owners turned over. Three stories, three
+explanations.</p>
 
-<p>First, a check the rest of this depends on. Walmart has <strong>{cen['authorized']:,}</strong> SNAP-authorized superstores. The company reports operating about {cen['reported']:,}. That is a ratio of {cen['ratio']}. For this chain the record really is a store count, so we can talk about stores rather than paperwork.</p>
+<p>Put every format on one scale and the three collapse into two rules.</p>
 
-<h2>What disappears without it</h2>
+<h2>Rule one: size</h2>
 
-<p>Take every populated census tract. Measure how far it is to the nearest SNAP-authorized superstore. Then do it twice: once with all {st['all']:,} of them, and once with Walmart's {st['walmart']:,} taken off the map. The gap between the two lines is what Walmart covers.</p>
+<p>Take every store authorized between 2008 and 2012 and ask which ones are still authorized today.
+Sort the answer by how big the store is, using USDA's own size categories.</p>
 
-<figure>{c_acc}{charts.legend(s_acc)}
-<figcaption>Share of the US population within a given straight-line distance of a SNAP-authorized superstore.</figcaption></figure>
+<figure>{c_ladder}
+<figcaption>Share of stores authorized in {d['cohort']} that were still authorized at the end of 2025,
+by USDA store type, largest to smallest.</figcaption></figure>
 
-<p>The same curve as exact counts, band by band:</p>
+<p>The ladder is almost too neat: <strong>{' , '.join(f"{sv[f]['rate']}%" for f in L)}</strong>, straight
+down the size order with nothing out of place. A super store was
+<strong>{ss['rate']/sg['rate']:.0f} times</strong> likelier to keep its authorization than a small
+grocery.</p>
 
-<table><thead><tr><th>Distance</th><th>With Walmart</th><th>Without</th><th>Difference</th></tr></thead>
-<tbody>{acc_tbl}</tbody></table>
+<p>That is a real finding, and on its own it is a bleak one. It says the thing that decided which stores
+survived was a thing no small grocer could change.</p>
 
-<p>At ten miles the gap is <strong>{a10['depends_on_walmart']/1e6:.1f} million people</strong>. At twenty miles it is {a20['depends_on_walmart']/1e6:.1f} million. The gap narrows as the circle widens. That is the shape you would expect. Give people far enough to drive and someone else's store comes into range.</p>
+<h2>Rule two: chains do not need to be big</h2>
 
-<figure>{c_gap}
-<figcaption>Population whose nearest superstore is a Walmart, and who would fall outside the radius
-without one.</figcaption></figure>
+<p>Except that size is not quite what is doing the work. Split each format by who owns it and the ladder
+comes apart.</p>
 
-<h2>The difference is almost entirely rural</h2>
+<table><thead><tr><th>Store type</th><th>Independent</th><th>Chain</th><th>All</th></tr></thead>
+<tbody>{own_tbl}</tbody></table>
+<p class="fignote">Cells marked * rest on fewer than {d['min_n']} stores and are shown for completeness
+only.</p>
 
-<p>The {den['tracts']:,} tracts that reach a superstore within twenty miles only because of Walmart
-hold <strong>{den['pop']/1e6:.1f} million people</strong>, and they are not a random slice of the
-country. Median population density in those tracts is
-<strong>{den['median_density']:.0f} people per square mile</strong>, against
-{den['median_density_all']:,.0f} nationally — roughly
-{den['median_density_all']/den['median_density']:.0f} times sparser.</p>
+<p>Among independent stores the ladder holds exactly as before:
+<strong>{' , '.join(f"{r}%" for r in ind)}</strong> down the size order. So size is real. It is not merely
+standing in for something else.</p>
 
-<p>That is the answer to what the map looks like. Walmart is not evenly spread for its own sake. It is the only chain of this size that builds where the population does not obviously justify it.</p>
+<p>But look along the chain row. A chain super store survives at <strong>{ssc['rate']}%</strong>. A dollar
+store — the smallest box in the whole table — survives at <strong>{dol['rate']}%</strong>. Those are the
+same number. For a chain, being large stopped mattering.</p>
 
-<figure>{c_sp}
-<figcaption>Median distance from each superstore to the nearest other store of the same
-group.</figcaption></figure>
+<p>That is the second rule, and it is the one that explains the last two days. <strong>Being part of a
+chain substitutes for being big.</strong> Dollar stores are small and every one of them is a chain. The
+convenience stores that endured were the fuel chains, at 78.7%; the single-owner ones managed 14.2%.</p>
 
-<p>The spacing bears it out. The typical Walmart superstore sits
-<strong>{sp['Walmart']['median']:.1f} miles</strong> from the next one. The typical non-Walmart
-superstore sits <strong>{sp['all other superstores']['median']:.1f} miles</strong> from its nearest
-neighbour — they are effectively piled on top of each other in metros. Walmart's spacing is also more
-even: a coefficient of variation of {sp['Walmart']['cv']} against
-{sp['all other superstores']['cv']}. Not a literal grid, but far closer to one than anything else in
-this format.</p>
+<p>Neither format was breaking the size rule. Both were beating it with a different one.</p>
 
-<h2>How this fits the rest of the series</h2>
+<h2>The large format wins at staying and loses at spreading</h2>
 
-<p>Earlier pieces argued that thin markets only support stores that are cheap to run. That is why dollar stores and gas stations are what remain in small towns. Walmart looks like the opposite case. It is about the most expensive format there is, and it reaches into places with sixty people per square mile.</p>
+<p>One more thing falls out of the same table, and it is the opposite of what the first two rules
+suggest.</p>
 
-<p>It is not a contradiction. It is a different answer to the same problem. Take the {z10['base']:,} ZIP codes that lost their last chain pharmacy, and ask how many can reach a superstore.</p>
+<figure>{c_growth}
+<figcaption>Change in the number of SNAP-authorized stores between 2006 and 2025, by store
+type.</figcaption></figure>
 
-<p><strong>{z20['with_walmart']:,} of {z20['base']:,}</strong> are within twenty miles of one.
-Without Walmart, {z20['without_walmart']:,}. So these places are not superstore deserts at all. They
-are within driving distance of a very large store, and Walmart is why for
-{z20['with_walmart'] - z20['without_walmart']} of them.</p>
+<p>The super store is the most durable format in the data and close to the slowest growing:
+<strong>{gr['Super Store']['mult']}x</strong> since 2006, against
+<strong>{gr['Dollar Store']['mult']}x</strong> for dollar stores and {gr['Convenience Store']['mult']}x
+for convenience stores. Supermarkets barely moved at {gr['Supermarket']['mult']}x.</p>
 
-<p>What they lack is anything <em>local</em>. The dollar store solves the scale problem by being small enough to live on six thousand people. Walmart solves it by being big enough to pull from a whole county, and asking the county to drive. Both work. What vanished is the format in the middle: the full-line grocery store on a small town's main street, big enough to stock fresh food and close enough to walk to.</p>
+<p>Durability and growth are not the same trait. The formats that lasted best are not the ones that
+spread. What spread was the format that found a way to be small and be a chain at the same time.</p>
 
-<p>That carries no verdict. A household with a car and a Walmart twenty miles away gets better prices and far more choice than a small-town grocer offered in 2006. A household without a car has a dollar store. Same change, opposite results. This data cannot tell you which one fits any given family.</p>
+<h2>What it adds up to</h2>
+
+<p>Two rules, and they are worth stating plainly because between them they cover almost everything in
+this series so far.</p>
+
+<p><strong>A bigger store was likelier to keep its SNAP authorization.</strong> That held for every
+independent store in the data, right down the size order.</p>
+
+<p><strong>A chain store did not need to be big.</strong> A dollar store the size of a corner shop held
+its authorization as reliably as a super store.</p>
+
+<p>Put the two together and you can see the shape of the last twenty years. The stores that went away
+were small and independent — they had neither advantage. The stores that grew were small and chained —
+they had the one that could be bought. And the large format, which had both, mostly stayed where it
+was.</p>
+
+<p>Tomorrow we look at a format that had both advantages and lost anyway. It is the fastest collapse in
+the whole dataset, and it happened in the last four years.</p>
 
 <div class="caveat">
 <h3>Limits</h3>
-<p><strong>Removing stores from a map is not a counterfactual.</strong> The "without Walmart" figures
-say what coverage looks like if those stores vanish today. They do not say what the country would look like if Walmart had never existed. Other chains might have built some of those sites. Walmart's arrival probably stopped others from being built at all. So read the gap as today's dependence, not as history.</p>
-<p>Distances are straight lines from the middle of each tract. A real drive usually runs 1.2 to 1.4 times further. So the twenty-mile row is more like a twenty-five to twenty-eight mile drive. People also do not all live at the middle of a tract, and rural tracts are large.</p>
-<p>"Superstore" is USDA's own category. It covers warehouse clubs and mass merchants as well as supercenters. Some of those need a paid membership, and not all sell a full range of groceries. So this overstates food access a little for the non-Walmart group.</p>
-<p>Nothing here measures prices, selection, or transport. Above all it does not know whether a household has a car. That is the thing that decides whether twenty miles is a quick errand or a real wall.</p>
+<p><strong>These are authorizations, not buildings.</strong> A small grocery at {sg['rate']}% has
+overwhelmingly left the program; this source cannot tell you the storefront is empty. Day 1 worked
+through that gap in detail. The super store figure is the one place the two nearly coincide, because for
+the large chains the authorization list runs close to a store census.</p>
+<p><strong>Ownership is inferred, not reported.</strong> It comes from patterns in store names, and it is
+unknown for between {lo:.0f}% and {hi:.0f}% of each format's cohort. Rates are computed over the stores
+that could be classified, and the unclassified share is published in the data file beside every one of
+them.</p>
+<p><strong>Being a chain is not sufficient, and this data cannot show why.</strong> The chain
+small-grocery cell survives at {ow['Grocery (Small)']['chain']['rate']}%, no better than independents —
+but it holds only {ow['Grocery (Small)']['chain']['n']} stores, far too few to carry a claim, which is
+why nothing above is built on it. The likely reason is that "chain" here covers a three-store local
+operator and a national retailer with twenty thousand locations alike, and only the second kind has the
+scale that matters. This source cannot separate them.</p>
+<p><strong>The cohort is one window.</strong> Stores first authorized in {d['cohort']}, followed to the
+end of 2025. A different window would give different levels; the ordering is what this piece rests
+on.</p>
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, and 2020 Decennial Census (DHC,
-table P1) tract population with 2020 Gazetteer tract centroids; {tot:,} people across
-{len(radii)} distance bands. Walmart store count from company reporting. Code, pipeline and
-verification: <a href="https://github.com/Data4ThePeople/SNAP_Locations">Data4ThePeople/SNAP_Locations</a>.
+Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
+usable coordinates; a store counts as active in a year if an authorization covered 31 December. Code,
+pipeline and verification:
+<a href="https://github.com/Data4ThePeople/SNAP_Locations">Data4ThePeople/SNAP_Locations</a>.
 </footer>
 </main>"""
 
     OUT.write_text(html)
     print(f"wrote {OUT} ({len(html)//1000} KB)")
-    print(f"  10 mi gap {a10['depends_on_walmart']:,}  20 mi gap {a20['depends_on_walmart']:,}")
-    print(f"  spacing: Walmart {sp['Walmart']['median']} mi vs "
-          f"{sp['all other superstores']['median']} mi")
+    print("  ladder: " + " > ".join(f"{sv[f]['rate']}%" for f in L))
+    print(f"  chain super store {ssc['rate']}% vs dollar store {dol['rate']}%")
 
 
 if __name__ == "__main__":
