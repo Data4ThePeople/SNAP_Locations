@@ -142,6 +142,31 @@ def bar_chart(rows, width=720, row_h=30, slot=1, suffix="", note_key=None,
     return "\n".join(parts)
 
 
+def _nice_ticks(lo, hi, target=4):
+    """Round tick values covering [lo, hi], and the range they imply.
+
+    Dividing a data range into four equal parts gives ticks like 48.8% and
+    194.2%, which are unreadable and imply a precision the axis does not have.
+    Step up to a 1/2/2.5/5 x power-of-ten instead, and let the axis end on the
+    ticks rather than on the data.
+    """
+    import math
+    span = (hi - lo) or 1
+    raw = span / target
+    mag = 10 ** math.floor(math.log10(raw))
+    for m in (1, 2, 2.5, 5, 10):
+        step = m * mag
+        if raw <= step:
+            break
+    t0 = math.floor(lo / step) * step
+    t1 = math.ceil(hi / step) * step
+    n = int(round((t1 - t0) / step))
+    ticks = [t0 + step * i for i in range(n + 1)]
+    # -0.0 prints as "-0"; snap anything within a rounding error of zero.
+    ticks = [0.0 if abs(v) < step * 1e-9 else v for v in ticks]
+    return ticks, t0, t1
+
+
 def scatter_chart(points, width=720, height=400, x_label="", y_label="",
                   x_suffix="", y_suffix="", quadrant=None, title="", subtitle="",
                   note=""):
@@ -160,35 +185,41 @@ def scatter_chart(points, width=720, height=400, x_label="", y_label="",
 
     xs = [p["x"] for p in points]
     ys = [p["y"] for p in points]
-    # Extra room on the right: labels sit to the right of their mark, and the
-    # rightmost point needs space for its whole label rather than flipping side.
-    padx = (max(xs) - min(xs)) * 0.16 or 1
-    pady = (max(ys) - min(ys)) * 0.16 or 1
+    padx = (max(xs) - min(xs)) * 0.08 or 1
+    pady = (max(ys) - min(ys)) * 0.08 or 1
     # A percentage cannot go below zero, and an axis that offers "-8%" as a tick
     # invites the reader to think the scale means something it does not. Where
     # every value is non-negative, the axis floor is too.
-    xlo, xhi = min(xs) - padx, max(xs) + padx * 3.2
+    xlo, xhi = min(xs) - padx, max(xs) + padx
     ylo, yhi = min(ys) - pady, max(ys) + pady
     if min(xs) >= 0:
         xlo = max(0, xlo)
     if min(ys) >= 0:
         ylo = max(0, ylo)
-    sx = lambda v: x0 + (x1 - x0) * (v - xlo) / (xhi - xlo)
+    # Five steps on x, four on y: with four, a range of about 400 points
+    # rounds its step up to 200 and puts the first tick at -200%, below the
+    # -100% floor a count change can reach. Five lands it on -100%.
+    xticks, xlo, xhi = _nice_ticks(xlo, xhi, target=5)
+    yticks, ylo, yhi = _nice_ticks(ylo, yhi)
+    # Labels sit to the right of their mark, so the rightmost point needs room
+    # for its text. That room comes out of the PLOT WIDTH, not the data range.
+    # Padding the range instead put ticks at -200% and 600% on data running
+    # -41% to +307%, and a store cannot fall by more than 100%.
+    xplot = x1 - (x1 - x0) * 0.28
+    sx = lambda v: x0 + (xplot - x0) * (v - xlo) / (xhi - xlo)
     sy = lambda v: y0 - (y0 - y1) * (v - ylo) / (yhi - ylo)
 
     parts = [f'<svg viewBox="0 0 {w} {h}" role="img" class="chart">']
 
-    for k in range(5):
-        v = ylo + (yhi - ylo) * k / 4
+    for v in yticks:
         y = sy(v)
-        parts.append(f'<line x1="{x0}" x2="{x1}" y1="{y:.1f}" y2="{y:.1f}" '
+        parts.append(f'<line x1="{x0}" x2="{xplot:.1f}" y1="{y:.1f}" y2="{y:.1f}" '
                      f'stroke="var(--grid)" stroke-width="1"/>')
         parts.append(f'<text x="{x0-8}" y="{y+4:.1f}" text-anchor="end" '
-                     f'class="tick">{v:.0f}{escape(y_suffix)}</text>')
-    for k in range(5):
-        v = xlo + (xhi - xlo) * k / 4
+                     f'class="tick">{v:g}{escape(y_suffix)}</text>')
+    for v in xticks:
         parts.append(f'<text x="{sx(v):.1f}" y="{y0+20}" text-anchor="middle" '
-                     f'class="tick">{v:.1f}{escape(x_suffix)}</text>')
+                     f'class="tick">{v:g}{escape(x_suffix)}</text>')
 
     if quadrant and quadrant.get("x") is not None:
         qx = sx(quadrant["x"])
@@ -196,7 +227,7 @@ def scatter_chart(points, width=720, height=400, x_label="", y_label="",
                      f'stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="3 3"/>')
     if quadrant and quadrant.get("y") is not None:
         qy = sy(quadrant["y"])
-        parts.append(f'<line x1="{x0}" x2="{x1}" y1="{qy:.1f}" y2="{qy:.1f}" '
+        parts.append(f'<line x1="{x0}" x2="{xplot:.1f}" y1="{qy:.1f}" y2="{qy:.1f}" '
                      f'stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="3 3"/>')
 
     for pt in points:

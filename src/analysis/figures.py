@@ -222,8 +222,8 @@ def scatter_png(path, points, xlabel="", ylabel="", width=6.6, height=4.2,
 
     xs = [p["x"] for p in points]
     ys = [p["y"] for p in points]
-    padx = (max(xs) - min(xs)) * 0.16 or 1
-    pady = (max(ys) - min(ys)) * 0.16 or 1
+    padx = (max(xs) - min(xs)) * 0.10 or 1
+    pady = (max(ys) - min(ys)) * 0.10 or 1
     # Right padding is wider than left: labels sit to the right of their mark by
     # default, and the rightmost point needs room for its whole label or it has
     # to flip sides and read as detached.
@@ -231,7 +231,7 @@ def scatter_png(path, points, xlabel="", ylabel="", width=6.6, height=4.2,
     # invites the reader to think the scale means something it does not. Where
     # every value is non-negative, the axis floor is too.
     ax.set_xlim(max(0, min(xs) - padx) if min(xs) >= 0 else min(xs) - padx,
-                max(xs) + padx * 3.2)
+                max(xs) + padx * 2.6)
     ax.set_ylim(max(0, min(ys) - pady) if min(ys) >= 0 else min(ys) - pady,
                 max(ys) + pady)
 

@@ -96,7 +96,7 @@ def main():
         "Growth against survival, by store type and ownership. Only pairs with "
         f"at least {d['min_n']} stores on both measures are plotted.",
         figures.scatter_png, pts(),
-        xlabel="change in store numbers, 2006 to 2025", xsuffix="%",
+        xlabel="% growth in store numbers, 2006 to 2025", xsuffix="%",
         ylabel="still authorized in 2025", ysuffix="%",
         quadrant={"x": 0}, width=7.2, height=4.6,
         title="Only one format did both",
