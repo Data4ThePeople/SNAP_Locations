@@ -38,3 +38,5 @@ web/data/
 reports/data/
 reports/post*/
 reports/post*.html
+# Same: written by src/analysis/build_methodology.py, which is the source.
+reports/methodology/
