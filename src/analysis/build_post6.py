@@ -205,8 +205,8 @@ That reading is wrong, and it is worth correcting carefully.</p>
 <p>The Census Bureau counts business locations whether or not they accept EBT. If corner stores were
 closing, that count would fall.</p>
 
-<table><thead><tr><th>Year</th><th>Census establishments</th><th>Under 5 employees</th>
-<th>SNAP, no chain brand</th></tr></thead>
+<table><thead><tr><th>Year</th><th>Census stores</th><th>Under 5 staff</th>
+<th>SNAP, unbranded</th></tr></thead>
 <tbody>{cbp_tbl}</tbody></table>
 
 <p>It did the opposite. Between {cbp['base_year']} and {cbp['last_year']}, convenience establishments

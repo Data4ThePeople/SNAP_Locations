@@ -35,8 +35,8 @@ def main():
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
         [{"value": f"{im['stores_losing_authorization']:,}",
-          "label": "stores USDA expects to lose SNAP authorization under the new standard, "
-                   f"against {im['baseline_annual_losses']:,} in a normal year"},
+          "label": "stores USDA expects to lose SNAP authorization, against "
+                   f"{im['baseline_annual_losses']:,} in a normal year"},
          {"value": f"${im['cost_year_one']}",
           "label": "what USDA estimates it costs a store to comply in the first year"},
          {"value": n["compliance"].replace(" 2026", ""),
@@ -85,9 +85,6 @@ def main():
         align=["left", "left", "right"],
         title="Stores that already comply are in favour",
         subtitle="public positions on the rule")
-
-    pos_md = "\n".join(f"| {p['who']} | {p['represents']} | {p['stance']} |"
-                       for p in P["positions"])
 
     md = f"""# In November, the rules change for the stores that are left
 
@@ -195,9 +192,7 @@ store matters little in a city. It matters a great deal in a ZIP code of
 
 ## Who argued about this, and who did not
 
-| Organisation | Represents | Position |
-|---|---|---|
-{pos_md}
+![{figs["positions"]['caption']}](images/{figs["positions"]['file']})
 
 That line-up is worth sitting with. The formats that already meet the standard are for it. The formats that do not are against it. Whatever the rule does for nutrition, it also hands an advantage to stores that already carry a full range.
 

@@ -86,11 +86,11 @@ The map redraws for the stores authorized on 31 December of that year.</li>
 its authorization ended. That usually means the store closed, but it can also mean the store is still
 open and simply stopped accepting SNAP.</p>
 
-<p>The two look identical here. That one gap shapes the whole series, and we handle it the same way every time. Where a claim depends on stores actually closing, we check it against a source outside this data. Usually that is a company's own reported store count, or the Census Bureau's count of business locations. The census counts a store whether or not it takes EBT.</p>
+<p>While it's tempting to conflate the change in authorizations with the change in storefronts, don't fall into that trap. They are not the same. The good news is that more research can be done to find the change in storefronts, if that is what you are after. In the coming days, anytime we use this data to gain some insight into storefront closures or openings, we will check these counts against publicly available data to see how well they match up. Usually that is a company's own reported store count, or the Census Bureau's count of business locations. We recommend you do the same, which is easier than it sounds — it simply requires asking your AI agent of choice to perform this cross check.</p>
 
-<p>Where we could not check it, we say so and make no claim. That is why some obvious-looking findings are missing from these pieces.</p>
+<p>And where we could not make that match work, we say so and make no claim. That is why some obvious-looking findings are missing from these pieces.</p>
 
-<h2>Seven days, one argument</h2>
+<h2>Seven days, seven parts of one story.</h2>
 
 <p>Each piece stands alone. But they are built to be read in order, and that order is not the order we wrote them in. It is the order in which the argument builds. The first six are the story. The last is an epilogue about what it means for policy.</p>
 
