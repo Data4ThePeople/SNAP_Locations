@@ -45,15 +45,18 @@ def main():
         title="Read them in this order",
         subtitle="the argument builds from one piece to the next")
 
-    chapter_md = "\n".join(f"""
-### Day {c['day']} — {c['headline']}
-
-{c['topic']}
-
-**{c['stat']['value']}** — {c['stat']['label']}
-
-> {c['placement']}
-""" for c in ch)
+    # The roadmap renders as styled HTML in post0.html, which cannot be pasted
+    # into Prismic or Mailchimp. Emit each entry as a flat image instead, on the
+    # dark ground those platforms use. The headline stays in the alt text so the
+    # markdown is still searchable and the image still has a text equivalent.
+    print("chapter cards:")
+    for c in ch:
+        cp = IMG / f"day-{c['day']}.png"
+        figures.chapter_card_png(cp, c["day"], c["headline"], c["topic"],
+                                 c["stat"]["value"], c["stat"]["label"], c["placement"])
+        print(f"  {cp.name}")
+    chapter_md = "\n".join(
+        f"![Day {c['day']} — {c['headline']}](images/day-{c['day']}.png)\n" for c in ch)
 
     srcs = "\n".join(f"- {s}" for s in d["sources"])
 
@@ -92,15 +95,16 @@ This file records **authorizations, not storefronts**. A store leaving the data 
 ended. That usually means the store closed, but it can also mean the store is still open and simply
 stopped accepting SNAP.
 
-The two look identical here. That one gap shapes the whole series, and we handle it the same way every time. Where a claim depends on stores actually closing, we check it against a source outside this data. Usually that is a company's own reported store count, or the Census Bureau's count of business locations. The census counts a store whether or not it takes EBT.
+While it's tempting to conflate the change in authorizations with the change in storefronts, don't fall into that trap. They are not the same. The good news is that more research can be done to find the change in storefronts, if that is what you are after. In the coming days, anytime we use this data to gain some insight into storefront closures or openings, we will check these counts against publicly available data to see how well they match up. Usually that is a company's own reported store count, or the Census Bureau's count of business locations. We recommend you do the same, which is easier than it sounds — it simply requires asking your AI agent of choice to perform this cross check.
 
-Where we could not check it, we say so and make no claim. That is why some obvious-looking findings are missing from these pieces.
+And where we could not make that match work, we say so and make no claim. That is why some obvious-looking findings are missing from these pieces.
 
-## Seven days, one argument
+## Seven days, seven parts of one story.
 
 Each piece stands alone. But they are built to be read in order, and that order is not the order we wrote them in. It is the order in which the argument builds. The first six are the story. The last is an epilogue about what it means for policy.
 
 ![{figs["reading-order"]['caption']}](images/{figs["reading-order"]['file']})
+
 {chapter_md}
 ## What we are not claiming
 

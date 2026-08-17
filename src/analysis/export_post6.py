@@ -96,7 +96,7 @@ def main():
     fig(6, "census-vs-snap",
         "Census business locations against SNAP authorizations without a chain brand.",
         figures.table_png,
-        ["Year", "Census establishments", "Under 5 employees", "SNAP, no chain brand"],
+        ["Year", "Census stores", "Under 5 staff", "SNAP, unbranded"],
         [[str(y), f"{cbp['cbp'][str(y)]['establishments']:,}",
           f"{cbp['cbp'][str(y)]['under_5_emp']:,}", f"{cbp['snap_unbranded'][str(y)]:,}"]
          for y in cbp["years"]], title="Corner stores grew while SNAP sign-ups fell",

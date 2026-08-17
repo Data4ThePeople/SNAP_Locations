@@ -1,9 +1,15 @@
 """PNG renderers for charts and tables, for pasting into Mailchimp or Prismic.
 
 The HTML report uses inline SVG with CSS tokens so it can follow the reader's
-theme. Email and CMS layouts cannot, so these render the same figures to PNG on
-a solid light ground at 2x. Both read the same JSON, so the numbers cannot
-diverge — only the styling.
+theme. Email and CMS layouts cannot, so these render the same figures to PNG at
+2x on one fixed ground. Both read the same JSON, so the numbers cannot diverge —
+only the styling.
+
+That ground is dark (#181a1b), matching the surface these get pasted onto. The
+series colours therefore come from palette.DARK rather than palette.LIGHT: the
+light slots are tuned for a white surface and several of them fall below the
+3:1 contrast minimum against this one. Every dark slot clears it, and the
+adjacent-pair CVD separation is validated in palette.validate(n, "dark").
 
 Everything is drawn in monospace, matching the report's treatment of figures as
 record-keeping rather than display type.
@@ -16,16 +22,16 @@ from matplotlib.ticker import FuncFormatter
 
 from analysis import palette
 
-PAPER = "#ffffff"      # solid white: safest ground for email clients
-INK = "#16191c"
-INK_MID = "#4d545c"
-INK_SOFT = "#7c848c"
-RULE = "#dee4e9"
-MUTED = "#b9c0c7"
+PAPER = "#181a1b"      # the ground these are pasted onto
+INK = "#bbbdc0"        # 9.28:1 — headline values, emphasised cells
+INK_MID = "#a7a9ab"    # 7.41:1 — axis ticks, ordinary cells
+INK_SOFT = "#828486"   # 4.65:1 — captions, notes, column heads
+RULE = "#33383a"       # gridlines and hairlines: visible, still recessive
+MUTED = "#727a82"      # 4.01:1 — slot-0 context bars, which carry no identity
 DPI = 200
 MONO = ["DejaVu Sans Mono"]
 
-S = palette.LIGHT  # slot 1..8 -> S[0..7]
+S = palette.DARK  # slot 1..8 -> S[0..7]
 
 
 def _style(ax):
@@ -190,49 +196,72 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
     return path
 
 
-def ledger_png(path, items, width=6.6, accent=1):
+def ledger_png(path, items, width=8.6, accent=None):
     """The headline figures band, as an image.
 
-    Mirrors the report's ledger treatment: a heavy rule above, hairlines between
-    columns, the number in accent mono and its caption beneath in soft ink. Kept
-    as a figure so the stat block can be dropped into a layout like any chart.
+    Mirrors the report's ledger treatment — a heavy rule above, hairlines
+    between columns, the number in accent mono and its caption beneath — on the
+    same dark ground as the chapter cards, so the two can sit together in a
+    Prismic or Mailchimp layout without looking like different documents.
     """
-    import textwrap
-
     n = len(items)
-    # Wrap to the column, not a guessed character count: at 8pt a monospace glyph
-    # is about 0.6em wide, so a third-width column holds far fewer than 34 and the
-    # caption would otherwise run into the divider rule.
-    label_pt = 8
-    col_in = width / n - 0.34
-    chars = max(14, int(col_in / (label_pt * 0.60 / 72)))
-    wrapped = [textwrap.wrap(i["label"], chars)[:3] for i in items]
-    lines = max(len(w) for w in wrapped)
+    W = width * DPI
+    M = 0.30 * DPI          # outer margin, same as the chapter cards
+    pad_x = 0.13 * DPI      # gap from a column's divider to its text
+    inner = W - 2 * M
+    col = inner / n
+    num_kw = dict(family=MONO, fontsize=26)
+    lab_kw = dict(family=MONO, fontsize=9)
 
-    # Laid out in inches, not axis fractions: with fractions the caption's last
-    # line drifted into the bottom rule as soon as a label needed three lines.
-    LINE_H, NUM_TOP, BOTTOM_PAD = 0.145, 0.44, 0.18
-    height = NUM_TOP + LINE_H * lines + BOTTOM_PAD
-    fig = plt.figure(figsize=(width, height), dpi=DPI, facecolor=PAPER)
+    # Measured wrapping rather than a character estimate: the caption sits in a
+    # column barely wider than the number above it, and an estimate that is even
+    # slightly generous runs the last line into the divider rule.
+    scratch = plt.figure(figsize=(width, 3), dpi=DPI)
+    scratch.canvas.draw()
+    avail = col - 2 * pad_x
+    wrapped = [_wrap_px(scratch, i["label"], avail, avail, **lab_kw) for i in items]
+    plt.close(scratch)
+    lines = max(len(w) for w in wrapped)
+    # No truncation. An earlier version capped this at three lines, which cut a
+    # caption off mid-phrase and looked deliberate rather than broken. The band
+    # grows instead, and a long caption is reported so it can be shortened at
+    # source rather than silently mangled here.
+    if lines > 3:
+        longest = max(items, key=lambda i: len(i["label"]))["label"]
+        print(f"    note: ledger caption wraps to {lines} lines — consider "
+              f"shortening {longest[:60]!r}...")
+
+    px = lambda pt: pt * DPI / 72.0
+    lead = px(9 * 1.5)
+    rule_gap = 0.26 * DPI   # heavy rule down to the top of the numerals
+    num_h = 0.30 * DPI
+    H = M + rule_gap + num_h + 0.17 * DPI + lines * lead + 0.22 * DPI + M
+
+    fig = plt.figure(figsize=(width, H / DPI), dpi=DPI, facecolor=CARD_BG)
     ax = fig.add_axes([0, 0, 1, 1])
     ax.set_axis_off()
-    ax.set_xlim(0, width)
-    ax.set_ylim(0, height)
-    col = width / n
+    ax.set_xlim(0, W)
+    ax.set_ylim(0, H)
+    ax.set_facecolor(CARD_BG)
 
-    ax.plot([0, width], [height - 0.03, height - 0.03], color=INK, lw=2, clip_on=False)
-    ax.plot([0, width], [0.05, 0.05], color=RULE, lw=1, clip_on=False)
+    y_top = H - M
+    y_bot = M
+    ax.plot([M, W - M], [y_top] * 2, color=CARD_INK, lw=2, clip_on=False)
+    ax.plot([M, W - M], [y_bot] * 2, color=CARD_RULE, lw=1, clip_on=False)
     for i in range(1, n):
-        ax.plot([i * col, i * col], [0.08, height - 0.08], color=RULE, lw=1, clip_on=False)
+        x = M + i * col
+        ax.plot([x, x], [y_bot + 0.04 * DPI, y_top - 0.04 * DPI],
+                color=CARD_RULE, lw=1, clip_on=False)
 
+    base = y_top - rule_gap - num_h
     for i, (item, lab) in enumerate(zip(items, wrapped)):
-        x = i * col + 0.12
-        ax.text(x, height - NUM_TOP, item["value"], ha="left", va="baseline",
-                fontsize=25, family=MONO, color=S[accent - 1])
+        x = M + i * col + (pad_x if i else 0)
+        ax.text(x, base, item["value"], ha="left", va="baseline",
+                color=CARD_ACCENT, **num_kw)
         for k, ln in enumerate(lab):
-            ax.text(x, height - NUM_TOP - 0.14 - k * LINE_H, ln, ha="left", va="top",
-                    fontsize=8, family=MONO, color=INK_SOFT)
-    fig.savefig(path, facecolor=PAPER, bbox_inches="tight", pad_inches=0.12)
+            ax.text(x, base - 0.17 * DPI - k * lead, ln, ha="left", va="top",
+                    color=CARD_MUTED, **lab_kw)
+    fig.savefig(path, facecolor=CARD_BG, dpi=DPI)
     plt.close(fig)
     return path
 
@@ -275,6 +304,20 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
                     va="bottom", fontsize=10.5, family=MONO, color=INK,
                     fontweight="bold", annotation_clip=False)
 
+    # Column heads are right-aligned at fixed x positions, so a long one runs
+    # left into its neighbour and the two print on top of each other. Measure
+    # against the AXES width, not the figure width — the axes is inset by the
+    # subplot margins, and using the figure width made the gap look ~30% roomier
+    # than it is, which let a real collision through.
+    fig.canvas.draw()
+    ax_px = ax.get_window_extent().width
+    head_px = [_text_px(fig, h.upper(), family=MONO, fontsize=7.5) for h in headers]
+    for i in range(1, ncol):
+        gap = (xs[i] - xs[i - 1]) * ax_px
+        if head_px[i] > gap - 8:
+            print(f"    note: table head {headers[i]!r} overruns its column "
+                  f"({head_px[i]:.0f}px into {gap:.0f}px) — shorten it")
+
     for i, hd in enumerate(headers):
         ax.text(xs[i], top, hd.upper(), ha=align[i], va="top", fontsize=7.5,
                 family=MONO, color=INK_SOFT, transform=ax.transAxes)
@@ -292,5 +335,117 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
         ax.plot([0, 1], [y - rh * 0.5] * 2, color=RULE, lw=0.8,
                 transform=ax.transAxes, clip_on=False)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
+# --- chapter cards -----------------------------------------------------------
+# The roadmap in post 0 renders as styled HTML, which cannot be pasted into
+# Prismic or Mailchimp. These reproduce the same card as a flat image, on the
+# dark ground those platforms use.
+
+CARD_BG = PAPER
+CARD_INK = INK
+CARD_MUTED = INK_SOFT
+CARD_ACCENT = S[0]        # dark-theme slot 1; 4.80:1 on this ground
+CARD_RULE = "#2b2f31"     # slightly softer than the chart grid
+SERIF = ["Charter", "Palatino", "Georgia", "DejaVu Serif"]
+
+
+def _text_px(fig, s, **kw):
+    """Width of `s` in pixels, measured with the real font rather than guessed."""
+    t = fig.text(0, 0, s, **kw)
+    w = t.get_window_extent(renderer=fig.canvas.get_renderer()).width
+    t.remove()
+    return w
+
+
+def _wrap_px(fig, s, first_px, rest_px, **kw):
+    """Greedy wrap to a pixel width, measuring each candidate line.
+
+    Character-count wrapping is unreliable across a proportional serif and a
+    monospace face at different sizes, and these cards mix both. `first_px`
+    differs from `rest_px` so a line can start after an inline stat number.
+    """
+    lines, cur = [], ""
+    for word in s.split():
+        trial = f"{cur} {word}".strip()
+        limit = first_px if not lines else rest_px
+        if cur and _text_px(fig, trial, **kw) > limit:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def chapter_card_png(path, day, headline, topic, stat_value, stat_label, placement,
+                     width=8.6, bg=CARD_BG, ink=CARD_INK):
+    """One roadmap entry as a standalone image, sized to its own content."""
+    hl_kw = dict(family=SERIF, fontsize=15, fontweight="bold")
+    tp_kw = dict(family=SERIF, fontsize=12.5)
+    sv_kw = dict(family=MONO, fontsize=12, fontweight="bold")
+    sl_kw = dict(family=MONO, fontsize=10.5)
+    pl_kw = dict(family=SERIF, fontsize=11.5)
+
+    W = width * DPI
+    pad = 0.30 * DPI
+    gutter = 1.05 * DPI                 # the "DAY n" column
+    bx = pad + gutter                   # body left edge, in pixels
+    bw = W - bx - pad                   # body width
+    quote_indent = 0.17 * DPI
+
+    # Pass one measures on a scratch canvas; the real figure needs its height
+    # up front, and that depends on how many lines each block wraps to.
+    scratch = plt.figure(figsize=(width, 4), dpi=DPI)
+    scratch.canvas.draw()
+    hl = _wrap_px(scratch, headline, bw, bw, **hl_kw)
+    tp = _wrap_px(scratch, topic, bw, bw, **tp_kw)
+    sv_w = _text_px(scratch, stat_value, **sv_kw)
+    sl = _wrap_px(scratch, stat_label, bw - sv_w - 0.13 * DPI, bw, **sl_kw)
+    pl = _wrap_px(scratch, placement, bw - quote_indent, bw - quote_indent, **pl_kw)
+    plt.close(scratch)
+
+    lead = {"hl": 15 * 1.34, "tp": 12.5 * 1.46, "sl": 10.5 * 1.62, "pl": 11.5 * 1.5}
+    px = lambda pt: pt * DPI / 72.0
+    h_px = (pad
+            + len(hl) * px(lead["hl"]) + 0.07 * DPI
+            + len(tp) * px(lead["tp"]) + 0.13 * DPI
+            + len(sl) * px(lead["sl"]) + 0.15 * DPI
+            + len(pl) * px(lead["pl"]) + pad)
+
+    fig = plt.figure(figsize=(width, h_px / DPI), dpi=DPI, facecolor=bg)
+    H = h_px
+    # y is measured downward from the top in pixels, converted to the figure's
+    # bottom-left fraction at draw time.
+    fy = lambda y: 1 - y / H
+    fx = lambda x: x / W
+    put = lambda x, y, s, **kw: fig.text(fx(x), fy(y), s, va="baseline", **kw)
+
+    y = pad + px(lead["hl"]) * 0.74
+    put(pad, y, f"DAY {day}", family=MONO, fontsize=9.5, color=CARD_MUTED)
+    for i, line in enumerate(hl):
+        put(bx, y + i * px(lead["hl"]), line, color=ink, **hl_kw)
+    y += len(hl) * px(lead["hl"]) + 0.07 * DPI
+
+    for i, line in enumerate(tp):
+        put(bx, y + i * px(lead["tp"]), line, color=ink, **tp_kw)
+    y += len(tp) * px(lead["tp"]) + 0.13 * DPI
+
+    put(bx, y, stat_value, color=CARD_ACCENT, **sv_kw)
+    for i, line in enumerate(sl):
+        x = bx + (sv_w + 0.13 * DPI if i == 0 else 0)
+        put(x, y + i * px(lead["sl"]), line, color=CARD_MUTED, **sl_kw)
+    y += len(sl) * px(lead["sl"]) + 0.15 * DPI
+
+    q_top, q_h = y - px(lead["pl"]) * 0.82, len(pl) * px(lead["pl"])
+    fig.add_artist(plt.Line2D([fx(bx), fx(bx)], [fy(q_top + q_h), fy(q_top)],
+                              color=CARD_RULE, lw=2.2, solid_capstyle="butt"))
+    for i, line in enumerate(pl):
+        put(bx + quote_indent, y + i * px(lead["pl"]), line, color=CARD_MUTED, **pl_kw)
+
+    fig.savefig(path, facecolor=bg, dpi=DPI)
     plt.close(fig)
     return path
