@@ -100,8 +100,24 @@ def main():
                   else (1 if r["format"] == "Dollar Store" else 0)}
          for r in sorted(d["entry_change"], key=lambda r: r["pct"])], suffix="%")
 
+    cb, mix = d["cbp"], d["entry_mix"]
+    fig(8, "cbp-vs-snap",
+        f"Percentage decline, {cb['base_year']} to {cb['last_year']}. Census establishment counts "
+        "against SNAP authorizations.",
+        figures.hbar_png, [
+            {"label": "CBP grocery, all sizes", "value": abs(cb["cbp_total_pct"]), "slot": 0},
+            {"label": "CBP grocery, under 5 staff", "value": abs(cb["cbp_under5_pct"]), "slot": 1},
+            {"label": "CBP grocery, under 10 staff", "value": abs(cb["cbp_under10_pct"]), "slot": 1},
+            {"label": "SNAP Small + Medium", "value": abs(cb["snap_small_mid_pct"]), "slot": 3},
+            {"label": "SNAP Small only", "value": abs(cb["snap_small_pct"]), "slot": 2}], suffix="%")
+    fig(9, "classification-shift",
+        "Share of new SNAP grocery authorizations classified Medium rather than Small.",
+        figures.hbar_png,
+        [{"label": m["period"], "value": m["medium_share"],
+          "slot": 2 if m["period"] == "2018-2021" else 0} for m in mix], suffix="%")
+
     exit_change = 100 * (dr["exit_rate_after"] / dr["exit_rate_before"] - 1)
-    md = f"""# Half of America's small grocers left SNAP. Three explanations don't hold.
+    md = f"""# SNAP shows small grocers down 46%. The census says 22%. Both are right.
 
 *SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Service authorization records.
 {arc['peak']:,} small grocery stores in {arc['peak_year']}, {arc['latest']:,} today.*
@@ -140,7 +156,7 @@ Medium grocery ended **{ctx['Grocery (Medium)']['change_pct']:+.0f}%**, supersto
 **{ctx['Supermarket']['change_pct']:+.0f}%**. Only the smallest format fell. Whatever happened,
 happened to small stores specifically.
 
-## It is not reclassification
+## Existing stores were not re-registered under a new type
 
 USDA sorts stores by how much staple food they stock, so a store could in principle move from "small
 grocery" to another category without changing at all. This dataset can test that directly: a store's
@@ -155,7 +171,8 @@ of pairs, and **{100*rc['share_of_exits']:.1f}% of all exits**.
 
 ![{figs[4]['caption']}](images/{figs[4]['file']})
 
-Reclassification is real and it is small. What the table does show is churn: the most common successor
+Re-registration is real and it is small — hold onto that number, because a different kind
+of reclassification turns up later and it is much larger. What the table does show is churn: the most common successor
 at a departed small grocer's address is a convenience store, and the second most common is another
 small grocery. The storefront often keeps selling food. It frequently does so under a different owner
 and a different classification.
@@ -218,11 +235,11 @@ This remains a candidate rather than a proven cause, and two things argue for ca
 small-grocery entries begins in 2014, before the rule took effect, so something else is also at work. And
 these records carry no field for why an authorization ended.
 
-## What we cannot rule out
+## The question these records cannot answer
 
-One explanation survives, and it is the one the data cannot settle. A store that closes and a store
-that stays open but stops accepting EBT look identical here — both are simply an authorization that
-ended.
+One explanation survives the three tests above, and it is the one SNAP data cannot settle. A store that
+closes and a store that stays open but stops accepting EBT look identical here — both are simply an
+authorization that ended.
 
 We know the second thing happens, because some stores do it and come back:
 
@@ -230,14 +247,48 @@ We know the second thing happens, because some stores do it and come back:
 
 **{100*lap['Grocery (Small)']['rate']:.1f}%** of small grocers have gone unauthorized and returned,
 median gap {lap['Grocery (Small)']['median_gap_days']} days. Those stores were plainly open the whole
-time. And that is a floor, not an estimate: any store that dropped SNAP and never came back is
-indistinguishable from one that shut its doors.
+time. And that is a floor, not an estimate.
 
-Settling it requires a source that counts businesses rather than authorizations. Census County Business
-Patterns publishes establishment counts for grocery retailers by county and size class; if small
-grocery establishments held steady while SNAP authorizations halved, they left the program, and if both
-fell together, they closed. That comparison is the next thing to run, and until it is run the honest
-headline is the one at the top of this page: they left SNAP.
+## So we asked a source that counts businesses instead
+
+Census County Business Patterns counts *establishments* — every grocery store with employees, whether or
+not it takes EBT. If establishments held steady while authorizations halved, stores left the program. If
+both fell together, stores closed. NAICS 445110 is grocery excluding convenience stores, in both the old
+and new industry definitions.
+
+![{figs[8]['caption']}](images/{figs[8]['file']})
+
+Grocery establishments with fewer than five employees fell **{abs(cb['cbp_under5_pct'])}%**; under ten
+employees, **{abs(cb['cbp_under10_pct'])}%**. That is real attrition — those businesses are gone, not
+merely out of the program — so a substantial part of the headline decline is genuine. Grocery of all
+sizes fell only {abs(cb['cbp_total_pct'])}%, so the losses are concentrated in the smallest stores,
+which is what the SNAP data also said.
+
+But look at the two SNAP rows. **Small and Medium grocery together fell
+{abs(cb['snap_small_mid_pct'])}%** — within a point of the census figure. **Small alone fell
+{abs(cb['snap_small_pct'])}%.** The SNAP series is accurate at the level of "small grocery businesses"
+and misleading at the level of "USDA's Small Grocery category," which means the category boundary moved.
+
+## The definition moved, and the same rule moved it
+
+It did. Look at how new grocery stores were classified over time.
+
+![{figs[9]['caption']}](images/{figs[9]['file']})
+
+For a decade, about {mix[1]['medium_share']:.0f}% of new grocery authorizations were classed Medium. In
+2018–21 that jumped to **{mix[3]['medium_share']:.0f}%**. The 2018 rule required 36 qualifying items held
+continuously across four staple categories — and a store carrying that much stock is, in USDA's own
+language, closer to a "moderate selection" than a "small" one. The floor for being in the program at all
+rose above what "Small" used to describe.
+
+This is a different mechanism from the re-registration tested earlier. Existing businesses re-registering
+under a new type is rare — {100*rc['share_of_exits']:.1f}% of exits. What changed is where the line sits
+for *new* entrants. Both statements are true, and only the second one shows up in the aggregate.
+
+So the answer, in three parts. Small grocery businesses really did contract, by about a quarter. SNAP's
+own Small category fell twice that far because the rule that drove part of the contraction also redrew
+the category. And the stores that vanished were disproportionately the ones with no scale to absorb a new
+fixed cost.
 
 ## Where it happened
 

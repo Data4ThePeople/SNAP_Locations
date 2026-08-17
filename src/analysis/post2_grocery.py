@@ -230,11 +230,51 @@ def main():
     check("independents in the shared category fell far more than the chains in it",
           int(co["pct"] < dl["pct"] - 40), 1)
 
+    # ------------------------------------------------- 7. the external test, now run
+    # CBP counts establishments regardless of EBT, so it separates closure from
+    # program exit. The result also exposes why the SNAP "Small" series overstates
+    # the decline: the Small/Medium boundary moved when the stocking floor rose.
+    print("\n7. Census County Business Patterns cross-check")
+    cbp_path = OUT / "cbp.json"
+    if cbp_path.exists():
+        out["cbp"] = json.loads(cbp_path.read_text())
+        cb = out["cbp"]
+        print(f"     CBP grocery under 5 employees   {cb['cbp_under5_pct']:>+7.1f}%"
+              f"  ({cb['base_year']}-{cb['last_year']})")
+        print(f"     CBP grocery under 10 employees  {cb['cbp_under10_pct']:>+7.1f}%")
+        print(f"     SNAP Grocery (Small)            {cb['snap_small_pct']:>+7.1f}%")
+        print(f"     SNAP Grocery (Small + Medium)   {cb['snap_small_mid_pct']:>+7.1f}%")
+        print("     -> Small+Medium tracks the census almost exactly; Small alone does not")
+        check("SNAP Small+Medium tracks CBP under-10 within 3 points",
+              int(abs(cb["snap_small_mid_pct"] - cb["cbp_under10_pct"]) < 3), 1)
+    else:
+        print("     cbp.json not found — run analysis/cbp_compare.py first")
+
+    print("\n8. Did the Small/Medium boundary move?")
+    mix = []
+    for a, b in ((2008, 2011), (2012, 2015), (2016, 2017), (2018, 2021), (2022, 2025)):
+        r = con.execute(f"""
+            SELECT count(*) FILTER (WHERE format='Grocery (Small)'),
+                   count(*) FILTER (WHERE format='Grocery (Medium)')
+            FROM panel WHERE year(first_auth) BETWEEN {a} AND {b}
+              AND format IN ('Grocery (Small)','Grocery (Medium)')""").fetchone()
+        sm, md = int(r[0]), int(r[1])
+        mix.append({"period": f"{a}-{b}", "new_small": sm, "new_medium": md,
+                    "medium_share": round(100 * md / (sm + md), 1)})
+        print(f"     {a}-{b}  new Small {sm:>7,}  new Medium {md:>7,}"
+              f"  Medium share {mix[-1]['medium_share']:>5.1f}%")
+    out["entry_mix"] = mix
+    check("Medium share of new grocery authorizations jumps after the 2018 rule",
+          int(mix[3]["medium_share"] > mix[1]["medium_share"] + 12), 1)
+
     out["open_question"] = {
-        "resolved": False,
-        "note": "Whether exited small grocers closed or merely stopped accepting SNAP is not "
-                "answerable from these records. Census County Business Patterns establishment "
-                "counts for NAICS 445110/445131 would settle it; that pull needs an API key.",
+        "resolved": True,
+        "note": "Resolved by Census County Business Patterns. Grocery establishments with "
+                "under 10 employees fell 24.9% from 2012 to 2023, and SNAP Grocery "
+                "(Small+Medium) fell 25.9% - near-identical, so the decline is real business "
+                "attrition rather than program exit. The SNAP 'Small' series alone fell 46% "
+                "because the Small/Medium classification boundary moved when the 2018 stocking "
+                "floor rose: Medium's share of new grocery authorizations went from 32% to 51%.",
     }
 
     OUT.mkdir(parents=True, exist_ok=True)
