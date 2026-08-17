@@ -77,18 +77,51 @@ POLICY = {
         "docket": "FNS-2025-0018",
         "directive": "Agricultural Act of 2014",
         "blocked": "the same seven-variety expansion was blocked by Congress in 2017",
+        "citation": "91 FR 25082",
         "source": "Updated Staple Food Stocking Standards for Retailers in the "
-                  "Supplemental Nutrition Assistance Program, final rule",
+                  "Supplemental Nutrition Assistance Program, final rule, "
+                  "91 FR 25082 (8 May 2026)",
     },
+    # Every figure below is from the RIA filed in the docket as a supporting
+    # document, NOT from the Federal Register notice — the notice carries the
+    # totals but none of the store-level projections. Docket FNS-2025-0018,
+    # document FNS-2025-0018-0236, "SNAP Retailer Stocking RIA - 3.19.26".
+    #
+    # Two corrections live here, both caught by reading the RIA rather than the
+    # notice:
+    #  - Cost was 262 dollars, which is the SEPTEMBER 2025 PROPOSED rule. The
+    #    final rule revised small-retailer cost up to 407 in year one and 482
+    #    over five years.
+    #  - The 5,000 figure is DENIALS, not permanent losses. USDA "expect[s] that
+    #    most of these retailers will likely invest in stock to meet the new
+    #    standards and apply for reauthorization", and budgets for 4,500
+    #    reauthorizations. The projected net permanent loss is therefore about
+    #    500, and any claim that 5,000 stores will be lost misreads the source.
     "impact": {
-        "stores_losing_authorization": 5000,
-        "baseline_annual_losses": 2000,
-        "small_format_share_pct": 70,
-        "cost_year_one": 262,
-        "cost_five_years": 374,
+        "stores_denied": 5000,
+        "reauthorizations_expected": 4500,
+        "net_permanent_loss": 500,
+        "baseline_annual_denials": 2000,
+        "baseline_denial_rate_pct": 3.5,
+        "new_denial_rate_pct": 5.0,
+        "stores_needing_varieties": 99_192,
+        "small_firms": 188_512,
+        "large_firms": 80_705,
+        "cost_year_one_small": 407,
+        "cost_five_years_small": 482,
+        "cost_year_one_large": 24,
+        "cost_retailers_total_musd": 77,
+        "cost_government_musd": 4,
+        # USDA's own justification for why the losses would not matter. This is
+        # the argument the rest of the series is a response to.
+        "small_share_of_redemptions_pct": 11,
+        "small_share_of_retailers_pct": 71,
+        "large_share_of_redemptions_pct": 74,
+        "large_share_of_retailers_pct": 15,
         "rfa_finding": "no significant economic impact on a substantial number of "
                        "small entities",
-        "source": "USDA regulatory impact analysis accompanying the final rule",
+        "source": "USDA regulatory impact analysis for the final rule, docket "
+                  "FNS-2025-0018 document 0236 (19 March 2026)",
     },
     "need_for_access": {
         "citation": "7 CFR 278.1",
@@ -188,10 +221,14 @@ def main():
 
     print("\n4. USDA's own forecast")
     im = POLICY["impact"]
-    mult = round(im["stores_losing_authorization"] / im["baseline_annual_losses"], 1)
-    print(f"   {im['stores_losing_authorization']:,} stores lose authorization vs "
-          f"{im['baseline_annual_losses']:,} baseline = {mult}x")
-    print(f"   compliance cost estimated at ${im['cost_year_one']} in year one")
+    mult = round(im["stores_denied"] / im["baseline_annual_denials"], 1)
+    print(f"   {im['stores_denied']:,} denials vs {im['baseline_annual_denials']:,} "
+          f"baseline = {mult}x; {im['reauthorizations_expected']:,} reauthorizations "
+          f"expected, so net permanent loss ~{im['net_permanent_loss']:,}")
+    print(f"   {im['stores_needing_varieties']:,} stores must add varieties; "
+          f"${im['cost_year_one_small']} year one for a small retailer")
+    print(f"   small stores: {im['small_share_of_retailers_pct']}% of retailers, "
+          f"{im['small_share_of_redemptions_pct']}% of redemptions")
     check("USDA projects a material increase in authorization losses", mult >= 2,
           f"{mult}x")
     POLICY["impact"]["multiple"] = mult

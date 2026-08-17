@@ -58,10 +58,10 @@ def main():
 made before the deadline</p>
 
 <div class="ledger">
-  <div><b>{im['stores_losing_authorization']:,}</b><span>stores USDA expects to lose SNAP
-    authorization under the new standard, against {im['baseline_annual_losses']:,} in a normal
-    year</span></div>
-  <div><b>${im['cost_year_one']}</b><span>what USDA estimates it costs a store to comply in the first
+  <div><b>{im['small_share_of_redemptions_pct']}% vs {im['small_share_of_retailers_pct']}%</b><span>of
+    SNAP spending happens at the small stores this rule hits hardest — which are
+    {im['small_share_of_retailers_pct']}% of every SNAP retailer in the country</span></div>
+  <div><b>${im['cost_year_one_small']}</b><span>what USDA estimates it costs a small store to comply in the first
     year</span></div>
   <div><b>{n['compliance']}</b><span>the day every SNAP retailer has to meet it</span></div>
 </div>
@@ -111,14 +111,45 @@ stocks a full-line basket is the one that left.</p>
 
 <p>The four categories are {n['category_names']}. The variety requirement more than doubles.</p>
 
-<p>USDA has published its own forecast. It expects about <strong>{im['stores_losing_authorization']:,} stores to lose SNAP authorization</strong>. In a normal year about {im['baseline_annual_losses']:,} do. So by the agency's own math, that is a {im['multiple']}-fold jump. Around <strong>{im['small_format_share_pct']}%</strong> of all SNAP
+<p>USDA has published its own forecast, in an impact analysis filed with the rule.
+<strong>{im['stores_needing_varieties']:,} stores</strong> have to add varieties to keep selling to SNAP
+households. Of those, the agency expects about <strong>{im['stores_denied']:,} to be denied</strong> — a
+denial rate of {im['new_denial_rate_pct']}%, up from the {im['baseline_denial_rate_pct']}% and roughly
+{im['baseline_annual_denials']:,} denials a normal year produces.</p>
+
+<p>That is not the same as {im['stores_denied']:,} stores gone, and it is worth being precise about it.
+USDA expects most of those stores to buy the stock and apply again: it budgets for
+{im['reauthorizations_expected']:,} reauthorizations. Its own projected net loss is about
+<strong>{im['net_permanent_loss']:,} stores</strong>. Around
+<strong>{im['small_share_of_retailers_pct']}%</strong> of all SNAP
 retailers are the small formats most exposed: convenience stores, small grocers, and the combination
 stores that include dollar stores.</p>
+
+<h2>Why USDA thinks that is acceptable</h2>
+
+<p>The same analysis says why the agency is not worried, and it is worth quoting, because it is the
+argument this whole series has been circling.</p>
+
+<p>Only about <strong>{im['small_share_of_redemptions_pct']}% of SNAP spending</strong> happens at the
+small store types this rule hits hardest — the ones that make up about
+<strong>{im['small_share_of_retailers_pct']}% of all SNAP-authorized retailers</strong>. Meanwhile
+{im['large_share_of_redemptions_pct']}% of SNAP spending happens at superstores and supermarkets, which
+are {im['large_share_of_retailers_pct']}% of retailers. From that, USDA concludes: "If participants are
+not redeeming a significant amount of SNAP benefits at these smaller stores, then it is not likely that
+their removal from the program will pose hardship to many SNAP participants."</p>
+
+<p>Read one way, that is simply true. Most SNAP money is spent at big stores, and it always has been.</p>
+
+<p>Read another way, it is the argument for every change in this series. A store that holds 11% of
+spending still holds all of the spending for the household that walks to it. The six days before this
+one were about which stores are near people and which are not, and averages do not answer that question.
+The 7.7% of ZIP codes with a dollar store and no grocery are not visible in a national redemption
+share.</p>
 
 <h2>Two problems with that forecast</h2>
 
 <p><strong>The first is the cost.</strong> USDA put compliance at about
-<strong>${im['cost_year_one']} in the first year</strong> and ${im['cost_five_years']} over five years
+<strong>${im['cost_year_one_small']} in the first year</strong> and ${im['cost_five_years_small']} over five years
 for a store that needs to add varieties. That figure is what let the agency conclude the rule has
 "{im['rfa_finding']}".</p>
 
@@ -126,7 +157,7 @@ for a store that needs to add varieties. That figure is what let the agency conc
 shelf-stable varieties in each category without much trouble. It is that perishable foods must now appear
 in <strong>{n['perishable_categories']}</strong> of the four categories rather than
 {o['perishable_categories']}. Perishable means refrigeration. A commercial cooler does not cost
-${im['cost_year_one']}. If that is the binding constraint, the agency has priced the easy half of its own
+${im['cost_year_one_small']}. If that is the binding constraint, the agency has priced the easy half of its own
 rule.</p>
 
 <p><strong>The second is that a store can be spared.</strong> A third authorization pathway,
@@ -176,7 +207,7 @@ one authorized store matters little in a city. It matters a great deal in a ZIP 
 
 <h2>What we will do about it</h2>
 
-<p>Every figure in this series comes from a file USDA updates. When it updates, the same code that made these charts will show which stores lost authorization. By format, by ZIP code, and by how many people live there. It will also show whether {im['stores_losing_authorization']:,} was close.</p>
+<p>Every figure in this series comes from a file USDA updates. When it updates, the same code that made these charts will show which stores lost authorization. By format, by ZIP code, and by how many people live there. It will also show whether {im['net_permanent_loss']:,} was close.</p>
 
 <p>We will publish that either way.</p>
 
@@ -219,7 +250,8 @@ Grocers Association and the joint comments of NACS, NATSO and SIGMA filed 24 Nov
     OUT.write_text(html)
     print(f"wrote {OUT} ({len(html)//1000} KB)")
     print(f"  entry {pre['entry_pct']:+.0f}% vs exit {pre['exit_pct']:+.0f}%")
-    print(f"  {im['stores_losing_authorization']:,} projected losses at {im['multiple']}x baseline")
+    print(f"  {im['stores_denied']:,} denials, {im['reauthorizations_expected']:,} reapplications, "
+          f"net ~{im['net_permanent_loss']:,}")
 
 
 if __name__ == "__main__":

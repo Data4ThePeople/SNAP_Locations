@@ -115,6 +115,7 @@ def main():
     p6_surv = {r["segment"]: r for r in (g("post6", "survival", default=[]) or [])}
     p3_own = g("post3", "by_ownership", default={}) or {}
     p3_sv = g("post3", "survival", default={}) or {}
+    p1_arc = g("post1", "arc", default={}) or {}
 
     # One headline number per chapter, pulled from that chapter's output.
     stats = {
@@ -124,29 +125,34 @@ def main():
         "post2": {"value": f"{abs(g('post2','cbp','cbp_under10_pct', default=24.9)):.0f}%",
                   "label": "fall in the number of small grocery businesses, by the "
                            "Census Bureau's count"},
-        "post1": {"value": f"{100*p1_surv['Dollar Store']['rate']:.0f}%",
-                  "label": "of dollar stores authorized in 2008-2012 are still "
-                           "authorized today"},
+        "post1": {"value": f"{g('post3','growth','Dollar Store','pct'):+}%",
+                  "label": "change in the number of SNAP-authorized dollar stores "
+                           "since 2006 — the steepest growth of any format"},
         "post6": {"value": f"{p6_surv['single-owner stores']['rate']}%",
                   "label": "of single-owner convenience stores lasted thirteen years, "
                            f"against {p6_surv['chains that sell fuel']['rate']}% of the "
                            "chains"},
-        # Not the 78% chain-survival figure, striking as it is: Day 2's card
-        # already carries a 78%, and two cards showing the same number a few
-        # inches apart reads as a mistake rather than as a coincidence.
-        "post3": {"value": f"{p3_sv['Super Store']['rate']/p3_sv['Grocery (Small)']['rate']:.0f}x",
-                  "label": "likelier a super store kept its SNAP authorization than a "
-                           "small grocery. A dollar store did better than both"},
+        # The chapter's point is that ownership beats size, so the card carries
+        # the ownership gap inside a SINGLE size band. Holding the format fixed
+        # is what makes the comparison mean anything.
+        "post3": {"value": f"{p3_own['Super Store']['chain']['rate']:.0f}% vs "
+                           f"{p3_own['Super Store']['independent']['rate']:.0f}%",
+                  "label": "of super stores kept their SNAP authorization — chain-owned "
+                           "against independent. The same size store, either way"},
         "post4": {"value": f"{g('post4','chain','peak', default=0):,}",
                   "label": "peak SNAP-authorized chain pharmacies, now "
                            f"{g('post4','chain','latest', default=0):,}"},
         "post5": {"value": f"{g('post5','groups','lost', default=976):,}",
                   "label": "ZIP codes lost their last SNAP-authorized chain pharmacy since 2021"},
-        "post7": {"value": f"{g('post7','policy','impact','stores_losing_authorization', default=5000):,}",
-                  "label": "stores USDA expects to lose SNAP authorization under the new "
-                           "stocking standard, against "
-                           f"{g('post7','policy','impact','baseline_annual_losses', default=2000):,} "
-                           "in a normal year"},
+        # NOT the 5,000 that used to sit here. That figure is denials, and USDA
+        # budgets for 4,500 of those stores to restock and reapply, so its own
+        # projected net loss is about 500. This is the agency's reasoning for
+        # why the losses are acceptable, which is what the epilogue answers.
+        "post7": {"value": f"{g('post7','policy','impact','small_share_of_redemptions_pct')}% vs "
+                           f"{g('post7','policy','impact','small_share_of_retailers_pct')}%",
+                  "label": "of SNAP spending happens at the small stores this rule hits "
+                           "hardest — and they are the larger share of every SNAP "
+                           "retailer in the country"},
     }
 
     def headline(slug):

@@ -50,10 +50,10 @@ def main():
 
     wal = d["census"][0]
 
-    html = f"""{HEAD}<title>Rite Aid went from 1,523 SNAP-authorized stores to 2</title>
+    html = f"""{HEAD}<title>The one chain format that did not work</title>
 <style>{CSS}</style>
 <main>
-<h1>Rite Aid went from 1,523 SNAP-authorized stores to 2</h1>
+<h1>The one chain format that did not work</h1>
 <p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
 records · drug chains peaked at {ch['peak']:,} in {ch['peak_year']} and stand at {ch['latest']:,}</p>
 

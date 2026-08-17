@@ -80,7 +80,7 @@ def main():
         title="Where the pharmacies were",
         subtitle="largest falls in authorized drug stores, 2021 to 2025")
 
-    md = f"""# Rite Aid went from 1,523 SNAP-authorized stores to 2
+    md = f"""# The one chain format that did not work
 
 *SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Service authorization records.
 Drug chains peaked at {ch['peak']:,} in {ch['peak_year']} and stand at {ch['latest']:,}.*
