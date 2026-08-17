@@ -77,9 +77,17 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
         for val, s in ends:
             y = val if not placed else max(val, placed[-1] + gap)
             placed.append(y)
-            ax.annotate(f" {s['name']}", (years[-1], y),
-                        textcoords="offset points", xytext=(7, 0), va="center",
-                        fontsize=8, family=MONO, color=INK_MID, zorder=5)
+            c = S[s["slot"] - 1]
+            # A swatch beside the label carries identity. Label text stays in ink
+            # per convention, so without this a nudged label cannot be matched to
+            # its line — which is exactly what happened where two series both
+            # finished near zero.
+            ax.annotate("\u25cf", (years[-1], y), textcoords="offset points",
+                        xytext=(9, 0), va="center", ha="left", fontsize=5.5,
+                        color=c, zorder=5, annotation_clip=False)
+            ax.annotate(f"  {s['name']}", (years[-1], y), textcoords="offset points",
+                        xytext=(14, 0), va="center", ha="left", fontsize=8,
+                        family=MONO, color=INK_MID, zorder=5, annotation_clip=False)
     for a in (annotate or []):
         ax.axvline(a["year"], color=INK_SOFT, lw=1, ls=(0, (3, 3)), zorder=1)
         ax.annotate(a["text"], (a["year"], ax.get_ylim()[1]),

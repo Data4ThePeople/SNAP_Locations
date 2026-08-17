@@ -89,6 +89,17 @@ def main():
         [{"label": f"{t['state']}  {t['then']:,}→{t['now']:,}", "value": abs(t["pct"]),
           "slot": 4 if t["state"] == "NY" else 0} for t in st[:8]], suffix="%")
 
+    ecm = {r["format"]: r for r in d["entry_change"]}
+    co, dl = ecm["Combination Grocery/Other"], ecm["Dollar Store"]
+    md, sm = ecm["Grocery (Medium)"], ecm["Supermarket"]
+    fig(8, "entry-change-by-format",
+        "Change in new SNAP authorizations per year, 2012-13 average against 2018-19 average.",
+        figures.hbar_png,
+        [{"label": r["format"], "value": abs(r["pct"]),
+          "slot": 2 if r["format"] == "Combination Grocery/Other"
+                  else (1 if r["format"] == "Dollar Store" else 0)}
+         for r in sorted(d["entry_change"], key=lambda r: r["pct"])], suffix="%")
+
     exit_change = 100 * (dr["exit_rate_after"] / dr["exit_rate_before"] - 1)
     md = f"""# Half of America's small grocers left SNAP. Three explanations don't hold.
 
@@ -166,12 +177,45 @@ start dying; it stopped being replaced. Small grocers have always churned hard �
 a thin-margin corner business — and for years enough new ones opened to cover the losses. After 2014
 they stopped.
 
-The timing points somewhere specific. The 2014 Farm Bill directed USDA to raise stocking requirements,
-and the resulting rule — finalised in 2016 and enforced from 2018 — increased both the number of staple
-varieties a store must carry and the requirement for perishables. A higher bar for *new* applicants
-predicts precisely this shape: entries fall, departures stay flat, the population settles at a lower
-level. That is a well-supported candidate, not a proven cause: these records carry no field for why an
-authorization ended.
+The timing points somewhere specific, though the detail matters. The 2014 Farm Bill directed USDA to
+raise stocking requirements from three to seven varieties in each staple category, and to require
+perishables in three categories instead of two. Those two provisions were **blocked**: an appropriations
+rider in May 2017 (P.L. 115-31, §765) sent USDA back to three varieties and two perishable categories,
+and they were not enforced.
+
+What did take effect, in January 2018, was less headline-grabbing and probably more consequential for a
+very small store: a **depth-of-stock** requirement of three units of each variety — 36 qualifying items
+on the shelf continuously — and a narrowed definition of which foods count toward the staple categories
+at all. For a store with limited shelf space and thin working capital, that is a permanent inventory
+commitment.
+
+## The bar sorted by owner, not by format
+
+Here is the part that makes the policy story credible, and it is not what I expected. The stocking rules
+apply to any retailer authorized on inventory, which includes dollar stores and drug stores, not just
+grocers. So if the rule mattered, its fingerprints should appear across formats. They do — but along a
+different seam.
+
+![{figs[7]['caption']}](images/{figs[7]['file']})
+
+Compare the top and bottom rows. **Combination Grocery/Other** — USDA's bucket for retailers whose main
+business is general merchandise — fell {abs(co['pct']):.0f}%, the steepest of any format. **Dollar stores
+fell {abs(dl['pct']):.0f}%.** And dollar stores *are* Combination Grocery/Other: USDA files them in
+exactly that category. They are only shown separately here because we identified them by brand.
+
+Same rule, same USDA classification, opposite outcomes. The independents in that category collapsed while
+the chains inside it barely moved. Medium grocery and supermarkets — bigger stores that already carried
+deep staple inventory — were untouched at {abs(md['pct']):.0f}% and {abs(sm['pct']):.0f}%.
+
+That points at compliance cost rather than format. Thirty-six qualifying items across four categories,
+held continuously, is a planogram revision for a chain: decide once, roll it to twenty thousand stores,
+amortise the cooler over a national footprint. Dollar General was adding refrigerated capacity through
+exactly these years anyway. For a single independent corner store it is a permanent working-capital and
+spoilage commitment with nothing to spread it across.
+
+This remains a candidate rather than a proven cause, and two things argue for caution. The decline in
+small-grocery entries begins in 2014, before the rule took effect, so something else is also at work. And
+these records carry no field for why an authorization ended.
 
 ## What we cannot rule out
 
