@@ -77,7 +77,7 @@ def main():
 
     fig(4, "positions",
         "Who took a public position on the rule.",
-        figures.table_png, ["Organisation", "Represents", "Position"],
+        figures.table_png, ["Organization", "Represents", "Position"],
         [[p["who"], p["represents"], p["stance"]] for p in P["positions"]],
         align=["left", "left", "right"],
         title="Stores that already comply are in favor",

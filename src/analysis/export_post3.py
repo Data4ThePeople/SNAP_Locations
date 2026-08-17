@@ -53,20 +53,29 @@ def main():
 
     # Rule two: the same numbers, split by who owns the store.
     def cell(f, o):
+        # A rate on ~110 stores is noise, and printing it does real damage here:
+        # the three thin chain-grocery cells read as 21.1 / 6.7 / 3.6 going down
+        # the column, which looks like the very size ladder this table exists to
+        # show does NOT apply to chains. Say "too few" instead of showing a
+        # number the reader will reasonably believe.
         c = ow[f][o]
         if c["n"] == 0:
-            return "—"
-        return f"{c['rate']}%" + ("*" if c["thin"] else "")
+            return "none"
+        return "too few" if c["thin"] else f"{c['rate']}%"
+
+    NOTE = ('"too few" = fewer than %d stores in that cell, so no rate is shown. '
+            '"none" = there are no stores of that kind: every dollar store is a chain.'
+            % d["min_n"])
     fig(2, "ownership-split",
-        "The same survival rates split by ownership. Cells marked * rest on fewer "
-        f"than {d['min_n']} stores and are shown for completeness only.",
+        "The same survival rates split by ownership.",
         figures.table_png,
         ["Store type", "Independent", "Chain", "All"],
         [[SHORT[f], cell(f, "independent"), cell(f, "chain"), f"{sv[f]['rate']}%"]
          for f in L + B],
         highlight_row=len(L) + 0,
         title="Among independents size decides. Among chains it does not.",
-        subtitle="still authorized in 2025, by store type and ownership")
+        subtitle="still authorized in 2025, by store type and ownership",
+        note=NOTE)
 
     fig(3, "growth",
         "Change in the number of SNAP-authorized stores between 2006 and 2025, by "
