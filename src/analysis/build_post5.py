@@ -156,8 +156,7 @@ control. One in eight has fewer than five thousand.</p>
 
 <ul>
 <li>Small grocery's collapse was a collapse in <strong>new stores</strong>. Sign-ups fell
-{abs(round(100*(s2.get('drivers',{}).get('new_after',1)/s2.get('drivers',{}).get('new_before',1)-1))) if s2 else 55}%
-. The 2018 stocking rule added a fixed cost a chain can absorb and a single store cannot. Inside USDA's own Combination Grocery/Other category, independents fell 64%. The dollar chains in that same category fell 5%.</li>
+{abs(round(100*(s2.get('drivers',{}).get('new_after',1)/s2.get('drivers',{}).get('new_before',1)-1))) if s2 else 55}%. The 2018 stocking rule asks every store for a fixed amount of inventory, which is a large demand on a small shop and no demand at all on a big one. In USDA's own categories the fall sorted by exactly that: new sign-ups dropped 58% for small grocers, while the largest grocery category grew 8%.</li>
 <li>Dollar stores' advantage was never fast opening. It was that they
 <strong>{round(100*s1.get('survival',[{}])[0].get('rate',0.78)) if s1 else 78}%</strong> stay — a format
 cheap enough to survive where others cannot.</li>

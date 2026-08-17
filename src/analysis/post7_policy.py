@@ -24,8 +24,17 @@ that established them rather than recomputed:
   - the 2018 precedent (post 2): when stocking standards last tightened, new
     authorizations roughly halved while exits stayed flat. This is the basis for
     predicting an entry collapse rather than a wave of closures.
-  - the scale gradient (post 6): survival ordered by operator scale, which is
-    the basis for predicting that losses fall on single sites, not chains.
+  - the size gradient (post 2): when the standard last tightened, the fall in
+    new sign-ups sorted by how much stock a format already carried — small
+    grocery -58%, the largest grocery category +8%. This is the basis for
+    predicting who a higher floor removes.
+
+An earlier draft predicted the losses would fall on single stores rather than
+chains, citing a chain/independent split inside one USDA category. That split
+does not hold: the non-dollar chains in that category fell as far as the
+independents, and they are Walgreens, CVS, Rite Aid, Big Lots and Fred's, so
+their fall is entangled with a bankruptcy and a liquidation. A stocking rule
+asks for stock, so the honest prediction is about stock.
 """
 import json
 
@@ -149,7 +158,16 @@ def main():
           entry_drop < -30 and exit_drop > -30 and abs(entry_drop) > abs(exit_drop) * 2,
           f"entries {entry_drop:+.0f}% vs departures {exit_drop:+.0f}%")
 
-    print("\n2. The scale gradient, from post 6")
+    print("\n2. The size gradient, from post 2")
+    eu = {r["store_type"]: r["pct"] for r in d2["entry_change_usda"]}
+    for k in ("Small Grocery Store", "Convenience Store", "Medium Grocery Store",
+              "Supermarket", "Large Grocery Store"):
+        print(f"   {k:28} {eu[k]:>+6.1f}%")
+    check("the fall sorted by how much stock a format already carried",
+          eu["Small Grocery Store"] < eu["Medium Grocery Store"] - 30
+          and eu["Large Grocery Store"] > -15)
+
+    print("\n2b. The survival gradient, from post 6 (a different measure)")
     surv = {r["segment"]: r["rate"] for r in d6["survival"]}
     for k in ("fuel-forward chains", "other convenience chains",
               "fuel-branded single sites", "unbranded convenience"):
@@ -194,6 +212,7 @@ def main():
         "precedent": {"years": fl["years"], "new": fl["new"], "departed": fl["departed"],
                       "drivers": dr, "entry_pct": entry_drop, "exit_pct": exit_drop},
         "survival": d6["survival"],
+        "entry_change_usda": d2["entry_change_usda"],
         "thin_markets": {"groups": d5["groups"], "density": d5["density"],
                          "total_loss": d5["total_loss"],
                          "presence": d5["presence"]},

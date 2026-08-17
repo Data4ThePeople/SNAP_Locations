@@ -5,6 +5,9 @@ from analysis import charts, palette
 from analysis.report_css import CSS, HEAD
 from config import ROOT
 
+LADDER = ["Small Grocery Store", "Convenience Store", "Combination Grocery/Other",
+          "Medium Grocery Store", "Supermarket", "Large Grocery Store"]
+
 DATA = ROOT / "reports" / "data" / "post7.json"
 OUT = ROOT / "reports" / "post7.html"
 
@@ -29,17 +32,12 @@ def main():
         title="Last time the rules tightened, new sign-ups fell",
         subtitle="small grocery stores per year")
 
-    c_gap = charts.bar_chart([
-        {"label": "fuel-forward chains", "value": surv["fuel-forward chains"]["rate"],
-         "slot": 1},
-        {"label": "other convenience chains",
-         "value": surv["other convenience chains"]["rate"], "slot": 0},
-        {"label": "fuel-branded single sites",
-         "value": surv["fuel-branded single sites"]["rate"], "slot": 0},
-        {"label": "no chain behind the store",
-         "value": surv["unbranded convenience"]["rate"], "slot": 2}], suffix="%",
-        title="Scale predicts survival, not format",
-        subtitle="share of 2008-2012 convenience stores still authorized in 2025")
+    # The size ladder, not the survival gradient: a stocking rule asks for stock,
+    # so the prediction it supports is about how much stock a format carries.
+    eu = {r["store_type"]: r for r in d["entry_change_usda"]}
+    ladder_rows = "".join(
+        f"<tr><td>{typ}</td><td>{eu[typ]['pct']:+.0f}%</td></tr>"
+        for typ in LADDER if typ in eu)
 
     std_tbl = "".join(f"<tr><td>{lbl}</td><td>{a}</td><td>{b}</td></tr>" for lbl, a, b in [
         ("Varieties required in each of four categories",
@@ -154,13 +152,12 @@ the next store from starting.</p>
 <figcaption>New authorizations and departures for small grocery stores. The last time stocking standards
 tightened, the entry line moved and the exit line did not.</figcaption></figure>
 
-<p><strong>Second: the losses will fall on single stores, not chains.</strong> A chain spreads a fixed
-compliance cost across thousands of locations. A single store pays it alone. That is the mechanism behind
-every survival gap in this series.</p>
+<p><strong>Second: the losses will fall on the stores that carry the least stock.</strong> A stocking rule asks for a fixed amount of inventory. That is a large demand on a small store and no demand at all on a big one. When the standard last tightened, the fall sorted by exactly that, in USDA's own categories:</p>
 
-<figure>{c_gap}
-<figcaption>Share of convenience stores first authorized 2008–2012 that were still authorized in 2025,
-by who runs the store.</figcaption></figure>
+<table><thead><tr><th>USDA store type</th><th>Change in new sign-ups per year</th></tr></thead>
+<tbody>{ladder_rows}</tbody></table>
+
+<p>It is tempting to shorten this to "chains will be fine, independents will not." The record does not support that cleanly. Inside the one USDA category that holds both, the non-dollar chains fell as far as the independents did — and those chains are Walgreens, CVS, Rite Aid, Big Lots and Fred's, so their fall is tangled up with a bankruptcy and a liquidation. Scale helps a store stay in the program once it is in. It did not decide who stopped signing up.</p>
 
 <p><strong>Third: the access consequences will concentrate in the places in this series.</strong> Losing
 one authorized store matters little in a city. It matters a great deal in a ZIP code of
