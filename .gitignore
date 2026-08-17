@@ -25,5 +25,8 @@ web/data/
 
 # data/brands.csv is deliberately NOT ignored — it is hand-curated source.
 
-# Analysis intermediates — regenerate with src/analysis/post*.py
+# Analysis intermediates and generated report bundles — rebuild with
+# src/analysis/post*.py then src/analysis/export_post*.py
 reports/data/
+reports/post*/
+reports/post*.html

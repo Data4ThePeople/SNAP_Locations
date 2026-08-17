@@ -105,11 +105,13 @@ def main():
         SELECT s.brand, s.yr, sum(s.n) AS n FROM stock s
         WHERE s.brand IN {DOLLAR_BRANDS} GROUP BY 1, 2 ORDER BY 1, 2
     """).df()
+    # Align every brand to the full year axis: a brand absent in a year has zero
+    # stores, not a missing point, and ragged arrays break any shared x axis.
+    all_years = list(range(panel.FIRST_YEAR, panel.LAST_YEAR + 1))
     out["brands"] = {}
     for b in sorted(rows.brand.unique()):
-        sub = rows[rows.brand == b].set_index("yr")["n"]
-        out["brands"][b] = {"years": [int(y) for y in sub.index],
-                            "stock": [int(v) for v in sub]}
+        sub = rows[rows.brand == b].set_index("yr")["n"].reindex(all_years, fill_value=0)
+        out["brands"][b] = {"years": all_years, "stock": [int(v) for v in sub]}
     print(f"     {'brand':20}" + "".join(f"{y:>9}" for y in (2008, 2016, 2020, 2024, 2025)))
     for b, d in out["brands"].items():
         idx = dict(zip(d["years"], d["stock"]))

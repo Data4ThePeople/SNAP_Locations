@@ -46,8 +46,10 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
         parts.append(f'<text x="{x0-8}" y="{y+4:.1f}" text-anchor="end" '
                      f'class="tick">{_fmt(v)}</text>')
     # x axis: first, last and every fourth year, to avoid a crowded axis.
+    keep = {years[0], years[-1]} | {y for y in years
+                                    if y % 4 == 0 and years[0] + 3 <= y <= years[-1] - 3}
     for i, yr in enumerate(years):
-        if i == 0 or i == len(years) - 1 or yr % 4 == 0:
+        if yr in keep:
             parts.append(f'<text x="{sx(i):.1f}" y="{y0+20}" text-anchor="middle" '
                          f'class="tick">{yr}</text>')
 
@@ -55,12 +57,19 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
         pts = " ".join(f"{sx(i):.1f},{sy(v):.1f}" for i, v in enumerate(s["values"]))
         parts.append(f'<polyline points="{pts}" fill="none" stroke="var(--s{s["slot"]})" '
                      f'stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>')
-        # Direct label at the line's end: identity without hunting the legend.
-        ly = sy(s["values"][-1])
-        parts.append(f'<circle cx="{sx(len(years)-1):.1f}" cy="{ly:.1f}" r="3.5" '
+        parts.append(f'<circle cx="{sx(len(years)-1):.1f}" cy="{sy(s["values"][-1]):.1f}" r="3.5" '
                      f'fill="var(--s{s["slot"]})" stroke="var(--surface)" stroke-width="2"/>')
+
+    # Direct labels at the line ends, nudged apart where series finish close
+    # together so two labels never print on top of each other.
+    placed = []
+    for val, s in sorted(((s["values"][-1], s) for s in series), key=lambda t: -t[0]):
+        ly = sy(val)
+        if placed and ly - placed[-1] < 14:
+            ly = placed[-1] + 14
+        placed.append(ly)
         parts.append(f'<text x="{x1+8}" y="{ly+4:.1f}" class="dlabel">'
-                     f'{escape(s["name"])}{" " + _fmt(s["values"][-1]) if value_labels else ""}</text>')
+                     f'{escape(s["name"])}{" " + _fmt(val) if value_labels else ""}</text>')
 
     for a in (annotate or []):
         i = years.index(a["year"])
@@ -88,8 +97,10 @@ def bar_chart(rows, width=720, row_h=30, slot=1, suffix="", note_key=None):
         parts.append(f'<text x="{x0-10}" y="{y+row_h/2+4:.0f}" text-anchor="end" '
                      f'class="blabel">{escape(r["label"])}</text>')
         # 4px rounded data-end, anchored to the baseline.
+        sl = r.get("slot", slot)
+        fill = "var(--muted)" if sl == 0 else f"var(--s{sl})"
         parts.append(f'<rect x="{x0}" y="{y+5:.0f}" width="{max(bw,2):.1f}" '
-                     f'height="{row_h-12}" rx="4" fill="var(--s{r.get("slot", slot)})"/>')
+                     f'height="{row_h-12}" rx="4" fill="{fill}"/>')
         parts.append(f'<text x="{x0+bw+8:.1f}" y="{y+row_h/2+4:.0f}" class="bvalue">'
                      f'{r["value"]:,.1f}{suffix}'.replace(".0" + suffix, suffix) + '</text>')
         if note_key and r.get(note_key):
