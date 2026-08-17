@@ -12,6 +12,25 @@ from html import escape
 
 PAD = {"t": 18, "r": 96, "b": 34, "l": 58}
 
+# Height reserved above the plot for a title, and for a units line beneath it.
+TITLE_H, SUB_H = 22, 15
+
+
+def _heading(title, subtitle, x, y):
+    """Title in ink above the plot, units beneath it in soft ink.
+
+    The reader meets the figure before its caption, so the figure states what it
+    shows on its own. The title carries the claim in words; the units line stays
+    recessive so it does not compete.
+    """
+    parts, cy = [], y
+    if title:
+        parts.append(f'<text x="{x}" y="{cy}" class="chart-title">{escape(title)}</text>')
+        cy += SUB_H
+    if subtitle:
+        parts.append(f'<text x="{x}" y="{cy}" class="axis-title">{escape(subtitle)}</text>')
+    return parts
+
 
 def _fmt(v):
     if v >= 1_000_000:
@@ -24,11 +43,18 @@ def _fmt(v):
 
 
 def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
-              value_labels=True, annotate=None):
-    """`series` is a list of {name, values, slot} — slot is the 1-based palette index."""
-    w, h = width, height
+              value_labels=True, annotate=None, title="", subtitle=""):
+    """`series` is a list of {name, values, slot} — slot is the 1-based palette index.
+
+    `subtitle` is an alias for `y_label`, so every chart here takes the same
+    title/subtitle pair and a caller can change chart type without renaming the
+    keyword. y_label wins if both are supplied.
+    """
+    y_label = y_label or subtitle
+    head = (TITLE_H if title else 0) + (SUB_H if y_label else 0)
+    w, h = width, height + head
     x0, x1 = PAD["l"], w - PAD["r"]
-    y0, y1 = h - PAD["b"], PAD["t"]
+    y0, y1 = h - PAD["b"], PAD["t"] + head
     lo = 0 if y_zero else min(min(s["values"]) for s in series) * 0.95
     hi = max(max(s["values"]) for s in series) * 1.06
     sx = lambda i: x0 + (x1 - x0) * i / max(len(years) - 1, 1)
@@ -82,21 +108,23 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
         parts.append(f'<text x="{sx(i)+5:.1f}" y="{y1+11}" class="note">'
                      f'{escape(a["text"])}</text>')
 
-    if y_label:
-        parts.append(f'<text x="{x0}" y="{y1-6}" class="axis-title">{escape(y_label)}</text>')
+    parts.extend(_heading(title, y_label, x0, PAD["t"] - 2 + (TITLE_H - 8 if title else 0)))
     parts.append("</svg>")
     return "\n".join(parts)
 
 
-def bar_chart(rows, width=720, row_h=30, slot=1, suffix="", note_key=None):
+def bar_chart(rows, width=720, row_h=30, slot=1, suffix="", note_key=None,
+              title="", subtitle=""):
     """Horizontal bars, `rows` = [{label, value, note}]. One hue: length is the
     encoding, so spending the identity channel on it would be redundant."""
-    h = PAD["t"] + PAD["b"] + row_h * len(rows)
+    head = (TITLE_H if title else 0) + (SUB_H if subtitle else 0)
+    h = PAD["t"] + PAD["b"] + row_h * len(rows) + head
     x0, x1 = 186, width - 74
     hi = max(r["value"] for r in rows) * 1.02
     parts = [f'<svg viewBox="0 0 {width} {h}" role="img" class="chart">']
+    parts.extend(_heading(title, subtitle, 0, PAD["t"] - 2 + (TITLE_H - 8 if title else 0)))
     for i, r in enumerate(rows):
-        y = PAD["t"] + row_h * i
+        y = PAD["t"] + head + row_h * i
         bw = (x1 - x0) * r["value"] / hi
         parts.append(f'<text x="{x0-10}" y="{y+row_h/2+4:.0f}" text-anchor="end" '
                      f'class="blabel">{escape(r["label"])}</text>')

@@ -52,10 +52,59 @@ def _thousands(v, _=None):
     return f"{v:,.0f}"
 
 
+
+MONO_ADVANCE = 0.6023   # DejaVu Sans Mono advance width, in em
+
+
+def _titles(fig, ax, title, subtitle, gutter_pt=0):
+    """Put a plain-language title above the plot, with units beneath it.
+
+    The reader meets the figure before the caption, so the figure has to say what
+    it is on its own. Title carries the claim in words; subtitle carries the units
+    and stays recessive so it cannot compete with it.
+
+    `gutter_pt` is for the bar charts, whose row labels are drawn OUTSIDE the axes
+    to its left. Anchoring a title to the axes puts it at the bar origin, where it
+    reads as indented against those labels; anchoring it to the figure does not
+    work either, because the labels overhang the figure edge and the tight bounding
+    box then shifts everything right by the overhang. So the title is offset left
+    from the axes corner by the width of the widest label. DejaVu Sans Mono has a
+    fixed advance of 0.6023 em, which makes that width exact rather than guessed.
+    """
+    if gutter_pt:
+        dy = 8
+        if subtitle:
+            ax.annotate(subtitle, (0, 1), xycoords="axes fraction",
+                        textcoords="offset points", xytext=(-gutter_pt, dy),
+                        ha="left", va="bottom", fontsize=8, family=MONO,
+                        color=INK_SOFT, annotation_clip=False)
+            dy += 15
+        if title:
+            ax.annotate(title, (0, 1), xycoords="axes fraction",
+                        textcoords="offset points", xytext=(-gutter_pt, dy),
+                        ha="left", va="bottom", fontsize=10.5, family=MONO,
+                        color=INK, fontweight="bold", annotation_clip=False)
+        return
+    if title:
+        ax.set_title(title, loc="left", fontsize=10.5, family=MONO, color=INK,
+                     fontweight="bold", pad=20 if subtitle else 10)
+    if subtitle:
+        # Axes coordinates, just above the plot, so it sits between the title and
+        # the top gridline regardless of figure height.
+        ax.text(0, 1.02, subtitle, transform=ax.transAxes, ha="left", va="bottom",
+                fontsize=8, family=MONO, color=INK_SOFT)
+
+
 def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=None,
-             label_ends=True):
+             label_ends=True, title="", subtitle=""):
     """`series` = [{name, values, slot}]. Direct end labels satisfy the relief
-    rule for the lighter slots, which sit under 3:1 on a light ground."""
+    rule for the lighter slots, which sit under 3:1 on a light ground.
+
+    `subtitle` is an alias for `ylabel` so that every renderer here takes the same
+    title/subtitle pair, and a caller can switch chart type without rewriting the
+    keyword. ylabel wins if both are given.
+    """
+    ylabel = ylabel or subtitle
     fig, ax = plt.subplots(figsize=(width, height), dpi=DPI, facecolor=PAPER)
     _style(ax)
     ax.grid(axis="y", color=RULE, lw=1, zorder=0)
@@ -100,16 +149,16 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
     # collide with them.
     mids = [y for y in years if y % 4 == 0 and years[0] + 3 <= y <= years[-1] - 3]
     ax.set_xticks([years[0]] + mids + [years[-1]])
-    if ylabel:
-        ax.set_title(ylabel, loc="left", fontsize=8, family=MONO, color=INK_SOFT, pad=8)
+    _titles(fig, ax, title, ylabel)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)
     return path
 
 
-def hbar_png(path, rows, suffix="", width=6.6, note_key=None):
+def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
+             subtitle=""):
     """`rows` = [{label, value, slot?, note?}], drawn top-to-bottom as given."""
-    h = 0.42 * len(rows) + 0.55
+    h = 0.42 * len(rows) + 0.55 + (0.42 if title else 0)
     fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
     ax.set_facecolor(PAPER)
     for side in ("top", "right", "bottom", "left"):
@@ -133,6 +182,9 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None):
                     fontsize=7.5, family=MONO, color=INK_SOFT)
     ax.set_ylim(len(rows) - 0.5, -0.6)
     ax.set_xlim(0, hi * 1.52)
+    # Widest row label, converted to points, plus the label-to-bar gap.
+    gutter = max(len(str(r["label"])) for r in rows) * 8.5 * MONO_ADVANCE + 7
+    _titles(fig, ax, title, subtitle, gutter_pt=gutter)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)
     return path
@@ -185,10 +237,11 @@ def ledger_png(path, items, width=6.6, accent=1):
     return path
 
 
-def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None):
+def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
+              title="", subtitle=""):
     """A table as an image, so it can be dropped into a layout like any figure."""
     n = len(rows)
-    h = 0.34 * (n + 1.6)
+    h = 0.34 * (n + 1.6) + (0.42 if title else 0) + (0.24 if subtitle else 0)
     fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
     ax.set_facecolor(PAPER)
     ax.axis("off")
@@ -204,6 +257,23 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None):
         xs = [0.0] + [0.52 + 0.48 * i / (ncol - 2) for i in range(ncol - 1)]
     top = 1.0
     rh = 1.0 / (n + 1.6)
+
+    # Stacked upward from the top of the axes in points, not axes fractions: the
+    # axes height varies with row count, so a fractional offset would put the
+    # title on top of the header row in a tall table and far above it in a short
+    # one. Subtitle sits closest to the header, title above it.
+    dy = 6
+    if subtitle:
+        ax.annotate(subtitle, (0, 1.0), xycoords=ax.transAxes,
+                    textcoords="offset points", xytext=(0, dy), ha="left",
+                    va="bottom", fontsize=8, family=MONO, color=INK_SOFT,
+                    annotation_clip=False)
+        dy += 13
+    if title:
+        ax.annotate(title, (0, 1.0), xycoords=ax.transAxes,
+                    textcoords="offset points", xytext=(0, dy), ha="left",
+                    va="bottom", fontsize=10.5, family=MONO, color=INK,
+                    fontweight="bold", annotation_clip=False)
 
     for i, hd in enumerate(headers):
         ax.text(xs[i], top, hd.upper(), ha=align[i], va="top", fontsize=7.5,

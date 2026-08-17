@@ -6,19 +6,34 @@ from analysis import figures
 from config import ROOT
 
 SRC = ROOT / "reports" / "data" / "post5.json"
+# Shared figures come from the fuel chapter's own output so the two pieces
+# cannot disagree about a number they both quote.
+FUEL = ROOT / "reports" / "data" / "post6.json"
 DIR = ROOT / "reports" / "post5"
 IMG = DIR / "images"
 
 
 def main():
     d = json.loads(SRC.read_text())
+    d6 = json.loads(FUEL.read_text()) if FUEL.exists() else {}
+    _fs = {r["segment"]: r for r in d6.get("survival", [])}
+    f_ff = _fs.get("fuel-forward chains", {}).get("rate", 78.7)
+    f_do = _fs.get("dollar stores", {}).get("rate", 78.2)
+    f_mult = d6.get("stock_change", {}).get("fuel-forward chains", {}).get("multiple", 3.58)
+    f_unb = _fs.get("unbranded convenience", {}).get("rate", 13.5)
+    _mu = d6.get("fuel_margin", {}).get("companies", {}).get("Murphy USA", {})
+    f_pre, f_post = _mu.get("pre_mean", 13.32), _mu.get("post_mean", 27.06)
     IMG.mkdir(parents=True, exist_ok=True)
-    figs = []
+    figs = {}
 
     def fig(n, slug, caption, fn, *a, **kw):
+        # Keyed by slug rather than list position. With a list, a duplicated
+        # number or an inserted figure shifted every later figs[i] lookup by one
+        # and silently printed the wrong chart under the text — which is exactly
+        # what happened in this series.
         p = IMG / f"{n:02d}-{slug}.png"
         fn(p, *a, **kw)
-        figs.append({"file": p.name, "caption": caption})
+        figs[slug] = {"file": p.name, "caption": caption}
         print(f"  {p.name}")
 
     arc, ac = d["arc"], d["arc_change"]
@@ -48,13 +63,17 @@ def main():
          {"name": "grocery", "values": arc["groc"], "slot": 4},
          {"name": "dollar", "values": arc["dollar"], "slot": 1},
          {"name": "chain pharmacy", "values": arc["drug"], "slot": 2}],
-        ylabel="SNAP-authorized stores")
+        ylabel="SNAP-authorized stores",
+        title="Dollar stores rose as everything else fell",
+        subtitle="SNAP-authorized stores across the 976 pharmacy-loss ZIP codes")
 
     fig(2, "presence-vs-control",
         "What each group of ZIP codes has in 2025.",
         figures.table_png, ["In 2025, the ZIP has...", "Lost pharmacy", "Kept pharmacy"],
         [[p["label"], f"{p['lost_pct']}%", f"{p['kept_pct']}%"] for p in pres],
-        highlight_row=len(pres) - 1)
+        highlight_row=len(pres) - 1,
+        title="These places look like the control group",
+        subtitle="share of ZIP codes with each kind of store, 2025")
 
     fig(3, "growth-vs-control",
         "Change in store counts 2021 to 2025, in ZIP codes that lost their last chain pharmacy "
@@ -64,7 +83,9 @@ def main():
             {"label": "dollar, kept pharmacy", "value": gr["kept"]["dollar_pct"], "slot": 0},
             {"label": "convenience, lost pharmacy", "value": gr["lost"]["conv_pct"], "slot": 2},
             {"label": "convenience, kept pharmacy", "value": gr["kept"]["conv_pct"], "slot": 0}],
-        suffix="%")
+        suffix="%",
+        title="Dollar stores grew slower where the pharmacy left",
+        subtitle="change in store counts, 2021 to 2025")
 
     fig(4, "median-population",
         "Median 2020 census population of the ZIP code (ZCTA), by group.",
@@ -72,7 +93,9 @@ def main():
             {"label": "lost pharmacy", "value": den["lost"]["median_pop"], "slot": 2},
             {"label": "kept pharmacy", "value": den["kept"]["median_pop"], "slot": 0},
             {"label": "lost, and no grocery left",
-             "value": den["lost_no_grocery"]["median_pop"], "slot": 2}])
+             "value": den["lost_no_grocery"]["median_pop"], "slot": 2}],
+        title="What these places share is being small",
+        subtitle="median ZIP code population, 2020 census")
 
     fig(5, "small-zip-share",
         "Share of ZIP codes below population thresholds, by group.",
@@ -81,12 +104,13 @@ def main():
             {"label": "kept pharmacy, under 10k", "value": den["kept"]["under_10k_pct"], "slot": 0},
             {"label": "lost pharmacy, under 5k", "value": den["lost"]["under_5k_pct"], "slot": 2},
             {"label": "kept pharmacy, under 5k", "value": den["kept"]["under_5k_pct"], "slot": 0}],
-        suffix="%")
+        suffix="%",
+        title="A third have fewer than ten thousand people",
+        subtitle="share of ZIP codes below each population line")
 
-    md = f"""# The pharmacy left. The grocery left. The dollar store stayed.
+    md = f"""# The pharmacy left. The grocery left. Two formats stayed.
 
-*SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The fifth and last in
-this series.*
+*SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The last in this series.*
 
 **{grp['lost']:,}** ZIP codes lost their last SNAP-authorized chain pharmacy since 2021.
 **{ac['dollar_multiple']}×** growth in dollar stores in those same ZIP codes since 2006.
@@ -96,15 +120,13 @@ this series.*
 
 ---
 
-The four earlier pieces each followed one format. Dollar stores almost never leave the program. Small
+The five earlier pieces each followed one format. Dollar stores almost never leave the program. Small
 grocers left in numbers, and mostly stopped being replaced. Pharmacy chains held flat for years and
-then collapsed. Read separately they are three unrelated retail stories.
+then collapsed. Read on their own they are unrelated retail stories.
 
-They are not unrelated in the places where they land. Take the **{grp['lost']:,} ZIP codes** that lost
-their last SNAP-authorized chain pharmacy between 2021 and 2025, and look at what has happened to every
-other kind of food retailer in those same places over twenty years.
+They are not unrelated in the places where they land. Take the **{grp['lost']:,} ZIP codes** that lost their last SNAP-authorized chain pharmacy between 2021 and 2025. Now look at every other kind of food store in those same places, over twenty years.
 
-![{figs[1]['caption']}](images/{figs[1]['file']})
+![{figs["twenty-year-arc"]['caption']}](images/{figs["twenty-year-arc"]['file']})
 
 Dollar stores went from {arc['dollar'][0]:,} to {arc['dollar'][-1]:,} — **{ac['dollar_multiple']}×**.
 Grocery of every size went from {arc['groc'][0]:,} to {arc['groc'][-1]:,}, down
@@ -119,63 +141,56 @@ that the data does not support it, because it is the interpretation everyone rea
 including me.
 
 Three tests, all using a control group of the {grp['kept']:,} ZIP codes that had a chain pharmacy in
-2021 and still have one. Without that comparison every number here looks like substitution, because
-dollar stores grew almost everywhere.
+2021 and still have one. Without that comparison, every number here looks like one store pushing out another. Dollar stores grew almost everywhere, so you need a control group to see anything at all.
 
 **First: presence is identical.** Dollar and convenience stores are no more common where the pharmacy
 went than where it stayed.
 
-![{figs[2]['caption']}](images/{figs[2]['file']})
+![{figs["presence-vs-control"]['caption']}](images/{figs["presence-vs-control"]['file']})
 
 **Second: growth was slower, not faster.** If dollar stores were moving into vacated ground you would
 expect the opposite.
 
-![{figs[3]['caption']}](images/{figs[3]['file']})
+![{figs["growth-vs-control"]['caption']}](images/{figs["growth-vs-control"]['file']})
 
 **Third, and decisive: the dollar stores were already there.** Of the {seq['base']:,} ZIP codes,
 **{seq['had_before_pct']}%** already had a dollar store in 2021, before the pharmacy left. Only
 {seq['arrived_after']} — {seq['arrived_after_pct']}% — gained their first one afterwards. Nobody moved in
 to fill a gap. They were neighbours for years.
 
-And the timing does not work either. Pharmacy authorizations were flat from 2016 to 2021 and fell off
-after 2022, tracking opioid litigation, pharmacy reimbursement and Rite Aid's bankruptcy. Dollar store
-openings ran at a near-constant rate for sixteen years, indifferent to all of it.
+The timing does not work either. Pharmacy authorizations were flat from 2016 to 2021, then fell off after 2022. That tracks opioid lawsuits, drug pricing, and Rite Aid's bankruptcy. Dollar stores opened at a near-constant rate for sixteen years, through all of it.
 
 ## What these places actually have in common
 
 The distinguishing feature is not what arrived. It is how small they are.
 
-![{figs[4]['caption']}](images/{figs[4]['file']})
+![{figs["median-population"]['caption']}](images/{figs["median-population"]['file']})
 
 Median population in a ZIP that lost its pharmacy is **{den['lost']['median_pop']:,}**, against
 **{den['kept']['median_pop']:,}** where the pharmacy survived. And among those that have also lost every
 grocery store, the median is **{den['lost_no_grocery']['median_pop']:,} people**.
 
-![{figs[5]['caption']}](images/{figs[5]['file']})
+![{figs["small-zip-share"]['caption']}](images/{figs["small-zip-share"]['file']})
 
 A third of the pharmacy-loss ZIPs have fewer than ten thousand residents, against a tenth of the
 control. One in eight has fewer than five thousand.
 
-That is the thread. **A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar
-store needs neither.** Its whole model is a small box, a narrow assortment, few staff and no fresh
-inventory to spoil — which is precisely why it works in a market of six thousand people where a grocery
-store does not.
+That is the thread. **A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar store needs neither.** Its whole model is a small box, few staff, a narrow range, and no fresh food to spoil. That is exactly why it works in a town of six thousand where a grocery store cannot.
 
-Read that way, the three stories in this series stop being coincidences and become the same story told
-from three angles:
+And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. **{f_ff}% of fuel-forward chain stores** from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do}%. That is a gap of well under one point. Those chains also grew {f_mult}× over the twenty years. So naming only dollar stores would leave out half the answer.
 
-- Small grocery's collapse was an **entry** collapse — new authorizations fell {entry_pct}% — and the
-  2018 depth-of-stock rule added a fixed cost that a chain absorbs and a single store cannot. Within
-  USDA's own Combination Grocery/Other category, independents fell 64% while the dollar chains in that
-  same category fell 5%.
+Read that way, the pieces in this series stop being coincidences. They become one story told from several angles.
+
+- Small grocery's collapse was a collapse in **new stores**. Sign-ups fell {entry_pct}% . The 2018 stocking rule added a fixed cost a chain can absorb and a single store cannot. Inside USDA's own Combination Grocery/Other category, independents fell 64%. The dollar chains in that same category fell 5%.
 - Dollar stores' advantage was never fast opening. It was that **{dollar_surv}% stay** — a format cheap
   enough to survive where others cannot.
+- Fuel-forward convenience chains match that staying power, and after 2020 they gained something dollar
+  stores did not: fuel margins roughly doubled and stayed there. Murphy USA's went from {f_pre} to
+  {f_post} cents a gallon.
 - Pharmacies were removed by forces of their own, but they were removed **from the thinnest markets
   first**.
 
-No one displaced anyone. Three different pressures pushed in the same direction, and the formats with
-the lowest fixed costs were the ones left standing. That is harder to address than displacement would
-be: if a competitor were driving this, there would be a competitor to regulate.
+No one pushed anyone out. Several separate pressures pushed the same way. The formats left standing were the ones with the lowest cost per location: the dollar store and the gas station. They arrived at the same place from opposite ends of retail. That is harder to fix than a rival would be. If one competitor were driving this, there would be a competitor to regulate.
 
 ## What is at stake
 
@@ -183,18 +198,17 @@ In **{tl['no_grocery']}** of these ZIP codes the only SNAP-authorized food retai
 or a convenience store. In **{tl['no_snap_retail_at_all']}** there is no SNAP-authorized retailer of any
 kind. A household with an EBT card in those places is choosing among shelf-stable groceries, or driving.
 
-There is a second consequence this data cannot measure but which should not go unmentioned. A retail
-pharmacy is, for many people, the most accessible health professional they have — the person who checks
-an interaction, takes a blood pressure, gives advice that would otherwise require an appointment. When
-the last pharmacy in a small town closes, that access goes with it. These records count SNAP
+There is a second cost this data cannot measure, and it should not go unsaid. For many people a pharmacist is the easiest health professional to reach. They check a drug interaction, take a blood pressure, answer a question that would otherwise need an appointment. When the last pharmacy in a small town closes, that goes too. These records count SNAP
 authorizations; they say nothing about prescriptions or clinical advice, and the pharmacy desert
 literature is the place to look for that. But it is the same buildings and the same towns.
 
+That is where the measurement ends. It leaves a question about policy that this data cannot settle on its
+own, and a rule that changes the answer in a few months. Both are taken up in the epilogue that follows
+this piece.
+
 ## Limits
 
-Every retail figure counts **SNAP authorizations**, not storefronts. For the pharmacy chains those are
-nearly the same thing — Walgreens' authorizations run at 0.97 of its own reported store count — but for
-independents they are not, and this series does not treat them as such.
+Every figure here counts **SNAP authorizations**, not storefronts. For the pharmacy chains those are nearly the same thing. Walgreens' authorizations run at 0.97 of its own reported store count. For independents they are not the same, and this series does not treat them as such.
 
 The control group is ZIP codes that had a chain pharmacy in 2021 and kept one. It is not a matched
 sample: the two groups differ in population, which is the finding rather than a nuisance. Read the
@@ -210,8 +224,9 @@ source.
 ---
 
 *Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, and 2020 Decennial Census (DHC,
-table P1) population by ZCTA. Analysis uses 611,164 stores with usable coordinates; a store counts as
-active in a year if an authorization covered 31 December. Code, pipeline and verification:
+table P1) population by ZCTA. Analysis uses 656,868 stores with usable coordinates; a store counts as
+active in a year if an authorization covered 31 December. Fuel-chain survival and margin figures are from
+the gas station chapter. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """
     (DIR / "post5.md").write_text(md)

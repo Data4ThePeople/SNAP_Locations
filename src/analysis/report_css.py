@@ -1,5 +1,13 @@
 """Shared report styling, used by every post so the series looks like a series."""
 
+# These files are written as UTF-8 and contain em dashes, curly quotes and "×".
+# Without a charset declaration a browser opening one directly falls back to
+# Latin-1 and renders every em dash as "â€"". The meta tag has to come before
+# any non-ASCII byte in the document, so it goes first, ahead of <title>.
+HEAD = '''<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+'''
+
 CSS = """
 /* Subject is a federal authorization ledger, so the identity is serif prose
    against monospaced record-keeping: every figure, axis tick and label is mono
@@ -93,6 +101,9 @@ figcaption {
 }
 .chart { width: 100%; height: auto; display: block; overflow: visible; }
 .tick, .note, .axis-title { font: 400 10.5px var(--mono); fill: var(--ink-soft); }
+/* The figure names itself before the caption does. Title in full ink so it reads
+   as a heading; the units line under it stays soft and recessive. */
+.chart-title { font: 700 13px var(--mono); fill: var(--ink); }
 .dlabel, .bvalue { font: 400 11.5px var(--mono); fill: var(--ink-mid); }
 .blabel { font: 400 11.5px var(--mono); fill: var(--ink-mid); }
 .bvalue { font-variant-numeric: tabular-nums; }
