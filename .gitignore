@@ -18,6 +18,9 @@ data/raw/hist.csv
 # The source zip is 23MB; keep it out of git and re-fetch when needed.
 data/raw/*.zip
 
+# Cached Census API pulls — re-fetch with the analysis scripts.
+data/raw/*.json
+
 # Standalone bundle (8.4MB) — rebuild with `python src/build_standalone.py`.
 dist/
 
