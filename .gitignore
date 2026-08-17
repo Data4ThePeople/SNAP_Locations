@@ -24,3 +24,6 @@ data/vendor/
 web/data/
 
 # data/brands.csv is deliberately NOT ignored — it is hand-curated source.
+
+# Analysis intermediates — regenerate with src/analysis/post*.py
+reports/data/
