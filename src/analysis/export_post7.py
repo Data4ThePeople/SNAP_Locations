@@ -38,11 +38,13 @@ def main():
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{im['stores_losing_authorization']:,}",
-          "label": "stores USDA expects to lose SNAP authorization, against "
-                   f"{im['baseline_annual_losses']:,} in a normal year"},
-         {"value": f"${im['cost_year_one']}",
-          "label": "what USDA estimates it costs a store to comply in the first year"},
+        [{"value": f"{im['small_share_of_redemptions_pct']}% vs {im['small_share_of_retailers_pct']}%",
+          "label": "of SNAP spending happens at the small stores this rule hits "
+                   f"hardest — which are {im['small_share_of_retailers_pct']}% of "
+                   "every SNAP retailer in the country"},
+         {"value": f"${im['cost_year_one_small']}",
+          "label": "what USDA estimates it costs a small store to comply in the "
+                   "first year"},
          {"value": n["compliance"].replace(" 2026", ""),
           "label": "the 2026 date by which every SNAP retailer has to meet it"}])
 
@@ -88,9 +90,8 @@ def main():
 *An epilogue. The Thrifty Food Plan, the new SNAP stocking standard, and a prediction made before the
 deadline.*
 
-**{im['stores_losing_authorization']:,}** stores USDA expects to lose SNAP authorization under the new
-standard, against {im['baseline_annual_losses']:,} in a normal year.
-**${im['cost_year_one']}** what USDA estimates it costs a store to comply in the first year.
+**{im['small_share_of_redemptions_pct']}% vs {im['small_share_of_retailers_pct']}%** of SNAP spending happens at the small stores this rule hits hardest — which are {im['small_share_of_retailers_pct']}% of all SNAP retailers.
+**${im['cost_year_one_small']}** what USDA estimates it costs a small store to comply in the first year.
 **{n['compliance']}** the day every SNAP retailer has to meet it.
 
 ![Headline figures](images/00-key-figures.png)
@@ -141,20 +142,42 @@ The floor is about to move. Congress ordered a seven-variety standard back in th
 
 The four categories are {n['category_names']}. The variety requirement more than doubles.
 
-USDA has published its own forecast. It expects about **{im['stores_losing_authorization']:,} stores to lose SNAP authorization**. In a normal year about {im['baseline_annual_losses']:,} do. So by the agency's own math, that is a {im['multiple']}-fold jump. Around **{im['small_format_share_pct']}%** of all SNAP retailers are the
+USDA has published its own forecast, in an impact analysis filed with the rule. **{im['stores_needing_varieties']:,} stores** have to add varieties to keep selling to SNAP households. Of those, the agency expects about **{im['stores_denied']:,} to be denied** — a denial rate of {im['new_denial_rate_pct']}%, up from the {im['baseline_denial_rate_pct']}% and roughly {im['baseline_annual_denials']:,} denials a normal year produces.
+
+That is not the same as {im['stores_denied']:,} stores gone, and it is worth being precise about it. USDA expects most of those stores to buy the stock and apply again: it budgets for {im['reauthorizations_expected']:,} reauthorizations. Its own projected net loss is about **{im['net_permanent_loss']:,} stores**. Around **{im['small_share_of_retailers_pct']}%** of all SNAP retailers are the
 small formats most exposed: convenience stores, small grocers, and the combination stores that include
 dollar stores.
 
+## Why USDA thinks that is acceptable
+
+The same analysis says why the agency is not worried, and it is worth quoting, because it is the
+argument this whole series has been circling.
+
+Only about **{im['small_share_of_redemptions_pct']}% of SNAP spending** happens at the small store types
+this rule hits hardest — the ones that make up about
+**{im['small_share_of_retailers_pct']}% of all SNAP-authorized retailers**. Meanwhile
+{im['large_share_of_redemptions_pct']}% of SNAP spending happens at superstores and supermarkets, which
+are {im['large_share_of_retailers_pct']}% of retailers. From that, USDA concludes: "If participants are
+not redeeming a significant amount of SNAP benefits at these smaller stores, then it is not likely that
+their removal from the program will pose hardship to many SNAP participants."
+
+Read one way, that is simply true. Most SNAP money is spent at big stores, and it always has been.
+
+Read another way, it is the argument for every change in this series. A store that holds 11% of spending
+still holds all of the spending for the household that walks to it. The six days before this one were
+about which stores are near people and which are not, and averages do not answer that question. The
+7.7% of ZIP codes with a dollar store and no grocery are not visible in a national redemption share.
+
 ## Two problems with that forecast
 
-**The first is the cost.** USDA put compliance at about **${im['cost_year_one']} in the first year** and
-${im['cost_five_years']} over five years for a store that needs to add varieties. That figure is what let
+**The first is the cost.** USDA put compliance at about **${im['cost_year_one_small']} in the first year** and
+${im['cost_five_years_small']} over five years for a small store that needs to add varieties. That figure is what let
 the agency conclude the rule has "{im['rfa_finding']}".
 
 But the requirement that actually bites is not the seven varieties. A small store can stock seven
 shelf-stable varieties in each category without much trouble. It is that perishable foods must now appear
 in **{n['perishable_categories']}** of the four categories rather than {o['perishable_categories']}.
-Perishable means refrigeration. A commercial cooler does not cost ${im['cost_year_one']}. If that is the
+Perishable means refrigeration. A commercial cooler does not cost ${im['cost_year_one_small']}. If that is the
 binding constraint, the agency has priced the easy half of its own rule.
 
 **The second is that a store can be spared.** A third authorization pathway, **"need for access"**
@@ -199,7 +222,7 @@ There is precedent for what happens next. A version of this rule was proposed in
 
 ## What we will do about it
 
-Every figure in this series comes from a file USDA updates. When it updates, the same code that made these charts will show which stores lost authorization. By format, by ZIP code, and by how many people live there. It will also show whether {im['stores_losing_authorization']:,} was close.
+Every figure in this series comes from a file USDA updates. When it updates, the same code that made these charts will show which stores lost authorization. By format, by ZIP code, and by how many people live there. It will also show whether {im['net_permanent_loss']:,} was close.
 
 We will publish that either way.
 
