@@ -196,7 +196,7 @@ For a household with an EBT card, the practical result is the same either way. I
 realistic options are narrowing to two: a dollar store, or a gas station. Both are now cheap to run, both
 are profitable at a size no supermarket can match, and neither was designed to sell a week of groceries.
 
-**Tomorrow: we switch gears to study the largest store of all, and the 13 million people who can only reach one because of it.**
+**Tomorrow: every format on one scale. Two rules turn out to explain almost all of it — and one of them is why the dollar store and the gas station both won.**
 
 ## Limits
 

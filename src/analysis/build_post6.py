@@ -194,7 +194,7 @@ realistic options are narrowing to two: a dollar store, or a gas station. Both a
 both are profitable at a size no supermarket can match, and neither was designed to sell a week of
 groceries.</p>
 
-<p><strong>Tomorrow: we switch gears to study the largest store of all, and the 13 million people who can only reach one because of it.</strong></p>
+<p><strong>Tomorrow: every format on one scale. Two rules turn out to explain almost all of it — and one of them is why the dollar store and the gas station both won.</strong></p>
 
 <div class="caveat">
 <h3>Limits</h3>

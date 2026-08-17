@@ -11,6 +11,13 @@ IMG = DIR / "images"
 MAP_URL = "https://github.com/Data4ThePeople/SNAP_Locations"
 
 
+# Spelled out from the chapter list rather than typed. The count changed once
+# already (the Walmart chapter was cut) and every hardcoded "seven" in this
+# file went stale at the same moment.
+NUM = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+       7: "seven", 8: "eight", 9: "nine"}
+
+
 def main():
     d = json.loads(SRC.read_text())
     IMG.mkdir(parents=True, exist_ok=True)
@@ -51,10 +58,13 @@ def main():
 
     srcs = "\n".join(f"- {s}" for s in d["sources"])
 
+    n_all = NUM[len(ch)]
+    N_all = n_all.capitalize()
+    n_story = NUM[len(ch) - 1]   # the last piece is an epilogue, not a chapter
     md = f"""# Twenty years of SNAP retailers, mapped — and what we found in it
 
 *Every store authorized to accept SNAP anywhere in the United States, {ds['first_year']}–{ds['last_year']}.
-{ds['stores']:,} stores. An interactive map, and seven days of analysis built on it.*
+{ds['stores']:,} stores. An interactive map, and {n_all} days of analysis built on it.*
 
 **{ds['stores']:,}** stores authorized to accept SNAP at some point in the last twenty years.
 **{ds['active_2025']:,}** still authorized at the end of {ds['last_year']}.
@@ -66,7 +76,7 @@ def main():
 
 SNAP is the largest food assistance program in the country. To use it you need a store that accepts it. USDA publishes a record of every store ever approved to do so, going back twenty years. It is a remarkable file: **{ds['stores']:,} stores**. Each one has a location, a store type, and the dates its approval started and ended.
 
-We have turned that file into a map you can explore, and then spent seven pieces working out what it says.
+We have turned that file into a map you can explore, and then spent {n_all} pieces working out what it says.
 
 ## The map
 
@@ -90,9 +100,9 @@ While it's tempting to conflate the change in authorizations with the change in 
 
 And where we could not make that match work, we say so and make no claim. That is why some obvious-looking findings are missing from these pieces.
 
-## Seven days, seven parts of one story.
+## {N_all} days, {n_all} parts of one story.
 
-Each piece stands alone, but the argument builds from one to the next. The first six are the story. The last is an epilogue about what it means for policy.
+Each piece stands alone, but the argument builds from one to the next. The first {n_story} are the story. The last is an epilogue about what it means for policy.
 
 {chapter_md}
 ## What we are not claiming

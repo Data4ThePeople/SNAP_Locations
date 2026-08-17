@@ -1,20 +1,34 @@
 """Post 0 — the announcement and the reading order for the series.
 
 This is the only piece with no analysis of its own. It introduces the map and
-lays out the six chapters and the epilogue. Every number it quotes is read from the chapter that
+lays out the five chapters and the epilogue. Every number it quotes is read from the chapter that
 established it, so the announcement cannot drift from the pieces it advertises.
 
 The reading order is deliberately NOT the order the chapters were written in.
 The argument builds: establish the loss, then the two formats that filled the
-gap, then the opposite solution, then the newest loss, then the synthesis.
+gap, then the newest loss, then the synthesis.
 
     Day 1  small grocery      post2   what went away, and how much of it is real
     Day 2  dollar stores      post1   the format that replaced it in count
     Day 3  gas stations       post6   the second format that endures, and why
-    Day 4  Walmart            post3   the other answer to the same problem
+    Day 4  every format       post3   the rule the first three were exceptions to
     Day 5  pharmacies         post4   the newest loss, and the highest stakes
     Day 6  synthesis          post5   the thread through all five
     Day 7  epilogue           post7   what it means for policy, and a prediction
+
+Day 4 sits where it does deliberately. The first three chapters each follow one
+small format; Day 4 puts every format on one scale, which turns them from three
+observations into two rules and their exceptions. It has to come after them —
+the payoff is recognising formats you have already met — and before Day 5,
+which is the one chain format that lost anyway.
+
+post3 was ORIGINALLY a Walmart chapter and was cut, then rebuilt on a different
+question. The Walmart piece asked whether the losses limit anyone's access,
+which is a different question needing data this source does not have, and which
+measured properly came out mostly negative: SNAP households live CLOSER to
+supermarkets than average. That analysis survives in census_access.py and its
+one durable finding — the rural tail — belongs in post7, where the benefit
+formula already assumes a store that may not be nearby.
 
 Chapter numbers in the JSON are reading-order positions. The `slug` field keeps
 the link back to the file that holds the chapter, because renaming the analysis
@@ -52,13 +66,13 @@ CHAPTERS = [
      "Dollar stores are only half the answer. The chains that sell fuel endure at "
      "the same rate, for a reason that shows up in company filings. Almost nobody "
      "else in the category does."),
-    (4, "post3", "Walmart",
-     "How much of the country can reach a large store at all, measured with and "
-     "without Walmart's locations.",
-     "A deliberate counterweight. The first three chapters are about small cheap "
-     "stores. This one is about the largest format there is solving the same "
-     "problem the opposite way — and it complicates the story rather than "
-     "confirming it."),
+    (4, "post3", "Every format",
+     "Every store type on a single scale: which ones kept their SNAP "
+     "authorization, split by size and by whether a chain owned them.",
+     "The keystone. The first three chapters each followed one format and each "
+     "needed its own explanation. This one shows they were the same two rules all "
+     "along — and that the formats that won were not breaking the rule about size, "
+     "they were beating it with a rule about chains."),
     (5, "post4", "Pharmacies",
      "The collapse of the chain pharmacy, which happened faster and more recently "
      "than any other change in the data.",
@@ -83,7 +97,7 @@ CHAPTERS = [
 
 def main():
     data = {}
-    for n in list(range(1, 8)):
+    for n in range(1, 8):
         p = OUT / f"post{n}.json"
         if p.exists():
             data[f"post{n}"] = json.loads(p.read_text())
@@ -99,8 +113,8 @@ def main():
 
     p1_surv = {r["format"]: r for r in (g("post1", "survival", default=[]) or [])}
     p6_surv = {r["segment"]: r for r in (g("post6", "survival", default=[]) or [])}
-    p3_acc = {r["radius"]: r for r in (g("post3", "access", default=[]) or [])}
-    p3_space = g("post3", "spacing", default={}) or {}
+    p3_own = g("post3", "by_ownership", default={}) or {}
+    p3_sv = g("post3", "survival", default={}) or {}
 
     # One headline number per chapter, pulled from that chapter's output.
     stats = {
@@ -117,12 +131,12 @@ def main():
                   "label": "of single-owner convenience stores lasted thirteen years, "
                            f"against {p6_surv['chains that sell fuel']['rate']}% of the "
                            "chains"},
-        # Not the 13 million — the headline already says that, and a card that
-        # repeats its own title wastes the number. This is the mechanism behind it.
-        "post3": {"value": f"{p3_space['Walmart']['median']:.1f} mi",
-                  "label": "between one Walmart and the next, against "
-                           f"{p3_space['all other superstores']['median']:.1f} for every "
-                           "other superstore — they spread out where the rest cluster"},
+        # Not the 78% chain-survival figure, striking as it is: Day 2's card
+        # already carries a 78%, and two cards showing the same number a few
+        # inches apart reads as a mistake rather than as a coincidence.
+        "post3": {"value": f"{p3_sv['Super Store']['rate']/p3_sv['Grocery (Small)']['rate']:.0f}x",
+                  "label": "likelier a super store kept its SNAP authorization than a "
+                           "small grocery. A dollar store did better than both"},
         "post4": {"value": f"{g('post4','chain','peak', default=0):,}",
                   "label": "peak SNAP-authorized chain pharmacies, now "
                            f"{g('post4','chain','latest', default=0):,}"},
