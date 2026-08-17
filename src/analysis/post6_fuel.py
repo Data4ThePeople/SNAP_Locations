@@ -54,6 +54,7 @@ Two guards on the language, per the rules this series runs under:
 """
 import io
 import json
+import statistics
 import urllib.request
 import zipfile
 
@@ -88,8 +89,14 @@ OIL_BRANDS = ("SHELL", "BP", "CITGO", "SUNOCO", "MOBIL", "EXXON", "CHEVRON", "TE
 NAICS_CODES = ("445120", "447110", "445131", "457110")
 CBP_YEARS = [2012, 2016, 2019, 2021, 2022, 2023]
 
-ORDER = ["fuel-forward chains", "dollar stores", "other convenience chains",
-         "fuel-branded single sites", "unbranded convenience"]
+# Named for who owns and runs the store, because that is what the split measures.
+# An oil brand on the canopy is a fuel supply contract, not an owner — a "Shell"
+# station is almost never owned by Shell — so those sit with the single sites.
+# An earlier version broke them out separately; the distinction was real (20.6%
+# survival against 13.5%) but too fine to carry its own row, and having two
+# segments with "fuel" in the name made the table unreadable.
+ORDER = ["chains that sell fuel", "dollar stores", "other chains",
+         "single-owner stores"]
 CONV_SEGMENTS = [s for s in ORDER if s != "dollar stores"]
 
 FAILURES = []
@@ -115,11 +122,9 @@ def segment_case(alias="p"):
     return f"""CASE
       WHEN {alias}.format = 'Dollar Store' THEN 'dollar stores'
       WHEN {alias}.format <> 'Convenience Store' THEN NULL
-      WHEN {alias}.brand IN ({ff}) THEN 'fuel-forward chains'
-      WHEN {alias}.brand IS NOT NULL THEN 'other convenience chains'
-      WHEN regexp_matches({alias}.name_norm, '(^| )({oil})( |$)')
-           THEN 'fuel-branded single sites'
-      ELSE 'unbranded convenience' END"""
+      WHEN {alias}.brand IN ({ff}) THEN 'chains that sell fuel'
+      WHEN {alias}.brand IS NOT NULL THEN 'other chains'
+      ELSE 'single-owner stores' END"""
 
 
 ACTIVE = """JOIN fact_spell f ON NOT f.date_anomaly
@@ -255,19 +260,17 @@ def main():
     out["survival"] = [{"segment": s, "cohort": int(r["cohort"]),
                         "survived": int(r["survived"]), "rate": float(r["rate"])}
                        for s, r in cs.iterrows()]
-    ff_r = float(cs.loc["fuel-forward chains", "rate"])
+    ff_r = float(cs.loc["chains that sell fuel", "rate"])
     do_r = float(cs.loc["dollar stores", "rate"])
-    oc_r = float(cs.loc["other convenience chains", "rate"])
-    fb_r = float(cs.loc["fuel-branded single sites", "rate"])
-    un_r = float(cs.loc["unbranded convenience", "rate"])
+    oc_r = float(cs.loc["other chains", "rate"])
+    un_r = float(cs.loc["single-owner stores", "rate"])
     out["survival_gap_pp"] = round(ff_r - do_r, 1)
-    check("fuel-forward chains persist at the dollar-store rate (within 3pp)",
+    check("chains that sell fuel persist at the dollar-store rate (within 3pp)",
           abs(ff_r - do_r) <= 3, f"{ff_r}% vs {do_r}%")
-    check("scale, not format, orders survival",
-          ff_r > oc_r > fb_r > un_r,
-          f"{ff_r} > {oc_r} > {fb_r} > {un_r}")
-    check("fuel-forward chains persist at more than 5x the unbranded rate",
-          ff_r > 5 * un_r, f"{ff_r}% vs {un_r}%")
+    check("scale, not fuel, orders survival",
+          ff_r > oc_r > un_r, f"{ff_r} > {oc_r} > {un_r}")
+    check("chains persist at more than 4x the single-owner rate",
+          ff_r > 4 * un_r, f"{ff_r}% vs {un_r}%")
 
     print("\n3. Stock 2006 to 2025")
     st = stock_by_segment(con)
@@ -282,13 +285,13 @@ def main():
         ch[c] = {"y2006": a, "y2025": b, "multiple": round(b / a, 2) if a else None}
         print(f"     {c:28} {a:>8,} {b:>8,} {ch[c]['multiple']:>8.2f}x")
     out["stock_change"] = ch
-    check("fuel-forward chains more than tripled",
-          ch["fuel-forward chains"]["multiple"] >= 3,
-          f"{ch['fuel-forward chains']['multiple']}x")
-    check("unbranded grew least of any segment",
-          ch["unbranded convenience"]["multiple"] == min(
+    check("chains that sell fuel more than tripled",
+          ch["chains that sell fuel"]["multiple"] >= 3,
+          f"{ch['chains that sell fuel']['multiple']}x")
+    check("single-owner stores grew least of any segment",
+          ch["single-owner stores"]["multiple"] == min(
               v["multiple"] for v in ch.values()),
-          f"{ch['unbranded convenience']['multiple']}x")
+          f"{ch['single-owner stores']['multiple']}x")
 
     print("\n4. The composition shift inside one USDA category")
     y0, y1 = panel.FIRST_YEAR, panel.LAST_YEAR
@@ -299,8 +302,68 @@ def main():
         print(f"     {y}  " + "  ".join(f"{k.split()[0]} {v}%" for k, v in shares[y].items()))
     out["shares"] = shares
     check("chains' share of the convenience format rose",
-          shares[y1]["fuel-forward chains"] > shares[y0]["fuel-forward chains"],
-          f"{shares[y0]['fuel-forward chains']}% -> {shares[y1]['fuel-forward chains']}%")
+          shares[y1]["chains that sell fuel"] > shares[y0]["chains that sell fuel"],
+          f"{shares[y0]['chains that sell fuel']}% -> {shares[y1]['chains that sell fuel']}%")
+
+    print("\n4b. How fast the named chains grew")
+    # Median year-over-year change, not the start-to-end multiple.
+    #
+    # Two different things look identical in an authorization file: a chain that
+    # opens stores adds them a few at a time, and a chain that decides to start
+    # taking EBT adds its whole estate in one year. Wawa put 40% of nineteen
+    # years of growth into 2010 alone; Murphy USA put 48% into 2022. A multiple
+    # reads those as explosive expansion, which they are not.
+    #
+    # The median discards them by construction — one outlier year cannot move it
+    # — so what is left is the rate in a typical year. Years growing off a base
+    # under 50 stores are skipped, because a percentage off a base that small is
+    # noise rather than a growth rate.
+    # Restricted to the fuel chains, because that is the segment this section is
+    # about. 7-Eleven is the largest convenience brand in the file but is NOT on
+    # that list — it is mixed on fuel — so including it here contradicted the
+    # section it illustrated.
+    ff_list = ",".join(lit(b) for b in FUEL_FORWARD)
+    series = con.execute(f"""
+        SELECT y.yr, p.brand, count(DISTINCT f.record_id) AS n
+        FROM generate_series({panel.FIRST_YEAR},{panel.LAST_YEAR}) AS y(yr)
+        JOIN fact_spell f ON NOT f.date_anomaly
+                         AND f.auth_date <= make_date(y.yr,12,31)
+                         AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+        JOIN panel p ON p.record_id = f.record_id
+        WHERE p.format = 'Convenience Store' AND p.brand IN ({ff_list})
+        GROUP BY 1, 2""").df()
+
+    brands = []
+    for b in series.brand.unique():
+        s = (series[series.brand == b].set_index("yr")["n"]
+             .reindex(range(panel.FIRST_YEAR, panel.LAST_YEAR + 1), fill_value=0))
+        if s.iloc[-1] < 500:
+            continue
+        g = [s.iloc[k] / s.iloc[k - 1] - 1 for k in range(1, len(s)) if s.iloc[k - 1] >= 50]
+        # A chain needs most of the window at a countable size for its median to
+        # be comparable with the rest. Murphy USA has only eight such years — its
+        # stores existed from the 1990s but did not take EBT until 2009 — so a
+        # rate from that window is not the same measurement as Circle K's.
+        if len(g) < 12:
+            continue
+        step = s.diff().fillna(0)
+        rise = max(int(s.iloc[-1] - s.iloc[0]), 1)
+        brands.append({
+            "brand": b, "y0": int(s.iloc[0]), "y1": int(s.iloc[-1]),
+            "median_growth": round(100 * statistics.median(g), 1),
+            "years_counted": len(g),
+            # Kept for the limits note, not shown in the piece.
+            "biggest_jump_share": round(100 * step.max() / rise, 1),
+            "jump_year": int(step.idxmax())})
+    brands.sort(key=lambda r: -r["y1"])
+    out["brand_growth"] = {"brands": brands}
+    print(f"     {'brand':<22} {'2025':>7} {'median yr':>10} {'yrs':>5}")
+    for r in brands[:10]:
+        print(f"     {r['brand']:<22} {r['y1']:>7,} {r['median_growth']:>9.1f}% "
+              f"{r['years_counted']:>5}")
+    check("every named chain grew in a typical year",
+          all(r["median_growth"] > 0 for r in brands),
+          f"slowest {min(r['median_growth'] for r in brands)}%")
 
     print("\n5. Chain census: do authorizations equal stores for these operators?")
     # Store counts as each company reports them in its own FY2025 10-K.
@@ -332,8 +395,7 @@ def main():
               if bad else f"{len(yrs)} years in 80k-200k")
         if bad:
             yrs = [y for y in yrs if y not in bad]
-        unb = ("p.format='Convenience Store' AND p.brand IS NULL AND NOT "
-               f"regexp_matches(p.name_norm, '(^| )({'|'.join(OIL_BRANDS)})( |$)')")
+        unb = "p.format='Convenience Store' AND p.brand IS NULL"
         snap_unb = {y: active_count(con, y, unb) for y in yrs}
         print(f"     {'yr':>6} | {'CBP estabs':>11} {'<5 emp':>9} | {'SNAP unbranded':>15}")
         for y in yrs:
@@ -382,7 +444,7 @@ def main():
         cv = pr["convenience store"]
         print(f"     convenience present in {cv['lost_pct']}% of pharmacy-loss ZIPs"
               f" vs {cv['kept_pct']}% of controls")
-        for seg_name, w in (("fuel-forward chains",
+        for seg_name, w in (("chains that sell fuel",
                              "p.brand IN (" + ",".join(lit(b) for b in FUEL_FORWARD) + ")"),
                             ("dollar stores", "p.format='Dollar Store'")):
             n = active_count(con, 2025, w)

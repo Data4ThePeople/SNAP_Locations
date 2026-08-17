@@ -311,12 +311,21 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
     # than it is, which let a real collision through.
     fig.canvas.draw()
     ax_px = ax.get_window_extent().width
-    head_px = [_text_px(fig, h.upper(), family=MONO, fontsize=7.5) for h in headers]
+    # Check the widest thing in each column, not just the header. A header can
+    # fit while the values below it collide — which is exactly what shipped when
+    # only headers were measured.
     for i in range(1, ncol):
         gap = (xs[i] - xs[i - 1]) * ax_px
-        if head_px[i] > gap - 8:
-            print(f"    note: table head {headers[i]!r} overruns its column "
-                  f"({head_px[i]:.0f}px into {gap:.0f}px) — shorten it")
+        widest, w_px = headers[i].upper(), _text_px(
+            fig, headers[i].upper(), family=MONO, fontsize=7.5)
+        for row in rows:
+            if i < len(row):
+                cw = _text_px(fig, str(row[i]), family=MONO, fontsize=8.5)
+                if cw > w_px:
+                    widest, w_px = str(row[i]), cw
+        if w_px > gap - 8:
+            print(f"    note: table column {headers[i]!r} overruns — {widest!r} needs "
+                  f"{w_px:.0f}px in a {gap:.0f}px column; shorten it or drop a column")
 
     for i, hd in enumerate(headers):
         ax.text(xs[i], top, hd.upper(), ha=align[i], va="top", fontsize=7.5,
