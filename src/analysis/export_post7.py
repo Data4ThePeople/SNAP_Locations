@@ -80,7 +80,7 @@ def main():
         figures.table_png, ["Organisation", "Represents", "Position"],
         [[p["who"], p["represents"], p["stance"]] for p in P["positions"]],
         align=["left", "left", "right"],
-        title="Stores that already comply are in favour",
+        title="Stores that already comply are in favor",
         subtitle="public positions on the rule")
 
     md = f"""# In November, the rules change for the stores that are left

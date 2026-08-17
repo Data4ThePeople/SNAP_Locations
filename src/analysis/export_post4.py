@@ -189,7 +189,7 @@ Pennsylvania — Rite Aid's home state — lost {abs(st[0]['delta']):,} of {st[0
 terms.
 
 Nationally, **{z['lost']:,} ZIP codes** that had at least one SNAP-authorized chain pharmacy in 2021 had
-none by 2025. Only {z['gained']} gained one. That is the part that matters for people. In a neighbourhood with no grocery store, a pharmacy is often where a SNAP household buys food. It is also where they fill prescriptions.
+none by 2025. Only {z['gained']} gained one. That is the part that matters for people. In a neighborhood with no grocery store, a pharmacy is often where a SNAP household buys food. It is also where they fill prescriptions.
 
 ## Limits
 

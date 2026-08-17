@@ -14,8 +14,8 @@ DIR = ROOT / "reports" / "post2"
 IMG = DIR / "images"
 
 # Super Store is deliberately absent. Its new authorizations fell 36%, but that is
-# Walmart alone — 168 a year to 10 — pausing a supercentre programme that was
-# already built out. A supercentre clears any stocking floor without trying, so
+# Walmart alone — 168 a year to 10 — pausing a supercenter program that was
+# already built out. A supercenter clears any stocking floor without trying, so
 # the rule cannot be what moved it, and leaving the row in a table about store
 # size invites the reader to think it can. Called out in the limits instead.
 LADDER = ["Small Grocery Store", "Convenience Store", "Combination Grocery/Other",
@@ -105,7 +105,7 @@ def main():
 ---
 
 Small grocery stores are leaving the SNAP program in large numbers. The obvious way to read that is
-that the neighbourhood grocery store is dying. That turns out to be partly true, and the honest
+that the neighborhood grocery store is dying. That turns out to be partly true, and the honest
 version is more useful than the headline.
 
 ## How much of the drop is real
@@ -191,7 +191,7 @@ were plainly open the whole time.
 The Census Bureau counts businesses with paid employees. A grocery store run entirely by its owner
 with no payroll is not in that count, so the comparison covers employer businesses only.
 
-One category is left out of that table. New Super Store authorizations also fell, by 36%, but that is Walmart on its own — from about 168 a year to 10 — pausing a supercentre programme that was already close to complete. A store that size meets any stocking requirement without trying, so the rule cannot be what moved it.
+One category is left out of that table. New Super Store authorizations also fell, by 36%, but that is Walmart on its own — from about 168 a year to 10 — pausing a supercenter program that was already close to complete. A store that size meets any stocking requirement without trying, so the rule cannot be what moved it.
 
 The stocking rule is offered as a likely explanation, on timing and shape. These records carry no reason code, so this source alone cannot confirm it.
 
