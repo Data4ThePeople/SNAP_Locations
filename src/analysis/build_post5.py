@@ -19,10 +19,12 @@ def main():
     palette.validate(4, "dark", verbose=False)
 
     f_surv = {r["segment"]: r for r in d6.get("survival", [])}
-    f_ff = f_surv.get("fuel-forward chains", {})
-    f_do = f_surv.get("dollar stores", {})
-    f_sc = d6.get("stock_change", {}).get("fuel-forward chains", {})
-    f_mu = d6.get("fuel_margin", {}).get("companies", {}).get("Murphy USA", {})
+    # Keyed by post 6's segment names. A silent .get default here would survive a
+    # rename and quietly publish a stale number, so this raises instead.
+    f_ff = f_surv["chains that sell fuel"]
+    f_do = f_surv["dollar stores"]
+    f_sc = d6["stock_change"]["chains that sell fuel"]
+    f_mu = d6["fuel_margin"]["companies"]["Murphy USA"]
 
     arc, ac = d["arc"], d["arc_change"]
     grp, pres, gr, seq = d["groups"], d["presence"], d["growth"], d["sequencing"]
@@ -150,7 +152,7 @@ control. One in eight has fewer than five thousand.</p>
 
 <p>That is the thread. <strong>A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar store needs neither.</strong> Its whole model is a small box, few staff, a narrow range, and no fresh food to spoil. That is exactly why it works in a town of six thousand where a grocery store cannot.</p>
 
-<p>And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. <strong>{f_ff.get('rate', 78.7)}% of fuel-forward chain stores</strong> from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do.get('rate', 78.2)}%. That is a gap of well under one point. Those chains also grew {f_sc.get('multiple', 3.58)}× over the twenty years. So naming only dollar stores would leave out half the answer.</p>
+<p>And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. <strong>{f_ff['rate']}% of convenience chains that sell fuel</strong> from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do['rate']}%. That is a gap of well under one point. Those chains also grew {f_sc['multiple']}× over the twenty years. So naming only dollar stores would leave out half the answer.</p>
 
 <p>Read that way, the pieces in this series stop being coincidences. They become one story told from several angles.</p>
 
@@ -162,7 +164,7 @@ control. One in eight has fewer than five thousand.</p>
 cheap enough to survive where others cannot.</li>
 <li>Fuel-forward convenience chains match that staying power, and after 2020 they gained something
 dollar stores did not: fuel margins roughly doubled and stayed there. Murphy USA's went from
-{f_mu.get('pre_mean', 13.3)} to {f_mu.get('post_mean', 27.1)} cents a gallon.</li>
+{f_mu['pre_mean']} to {f_mu['post_mean']} cents a gallon.</li>
 <li>Pharmacies were removed by forces of their own, but they were removed
 <strong>from the thinnest markets first</strong>.</li>
 </ul>

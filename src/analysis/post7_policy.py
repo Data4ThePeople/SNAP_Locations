@@ -169,12 +169,11 @@ def main():
 
     print("\n2b. The survival gradient, from post 6 (a different measure)")
     surv = {r["segment"]: r["rate"] for r in d6["survival"]}
-    for k in ("fuel-forward chains", "other convenience chains",
-              "fuel-branded single sites", "unbranded convenience"):
+    for k in ("chains that sell fuel", "other chains", "single-owner stores"):
         print(f"   {k:28} {surv[k]:>5.1f}%")
     check("survival is ordered by operator scale",
-          surv["fuel-forward chains"] > surv["other convenience chains"]
-          > surv["fuel-branded single sites"] > surv["unbranded convenience"])
+          surv["chains that sell fuel"] > surv["other chains"]
+          > surv["single-owner stores"])
 
     print("\n3. The standard is more than doubling")
     o, n = POLICY["old_standard"], POLICY["new_standard"]

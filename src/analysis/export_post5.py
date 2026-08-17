@@ -16,13 +16,15 @@ IMG = DIR / "images"
 def main():
     d = json.loads(SRC.read_text())
     d6 = json.loads(FUEL.read_text()) if FUEL.exists() else {}
-    _fs = {r["segment"]: r for r in d6.get("survival", [])}
-    f_ff = _fs.get("fuel-forward chains", {}).get("rate", 78.7)
-    f_do = _fs.get("dollar stores", {}).get("rate", 78.2)
-    f_mult = d6.get("stock_change", {}).get("fuel-forward chains", {}).get("multiple", 3.58)
-    f_unb = _fs.get("unbranded convenience", {}).get("rate", 13.5)
-    _mu = d6.get("fuel_margin", {}).get("companies", {}).get("Murphy USA", {})
-    f_pre, f_post = _mu.get("pre_mean", 13.32), _mu.get("post_mean", 27.06)
+    _fs = {r["segment"]: r for r in d6["survival"]}
+    # Keyed by post 6's segment names, without defaults: a rename should break
+    # the build rather than publish a stale number.
+    f_ff = _fs["chains that sell fuel"]["rate"]
+    f_do = _fs["dollar stores"]["rate"]
+    f_mult = d6["stock_change"]["chains that sell fuel"]["multiple"]
+    f_unb = _fs["single-owner stores"]["rate"]
+    _mu = d6["fuel_margin"]["companies"]["Murphy USA"]
+    f_pre, f_post = _mu["pre_mean"], _mu["post_mean"]
     IMG.mkdir(parents=True, exist_ok=True)
     figs = {}
 
@@ -177,7 +179,7 @@ control. One in eight has fewer than five thousand.
 
 That is the thread. **A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar store needs neither.** Its whole model is a small box, few staff, a narrow range, and no fresh food to spoil. That is exactly why it works in a town of six thousand where a grocery store cannot.
 
-And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. **{f_ff}% of fuel-forward chain stores** from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do}%. That is a gap of well under one point. Those chains also grew {f_mult}× over the twenty years. So naming only dollar stores would leave out half the answer.
+And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. **{f_ff}% of convenience chains that sell fuel** from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do}%. That is a gap of well under one point. Those chains also grew {f_mult}× over the twenty years. So naming only dollar stores would leave out half the answer.
 
 Read that way, the pieces in this series stop being coincidences. They become one story told from several angles.
 
