@@ -121,9 +121,10 @@ since flattened rather than recovered, sitting at {arc['latest']:,} at the end o
 
 ![{figs[1]['caption']}](images/{figs[1]['file']})
 
-That is a big number, and "the death of the small grocer" is the obvious way to read it. Before
-accepting that, it is worth testing the explanations that would produce the same chart without any
-store dying.
+That is a big number, and "the death of the small grocer" is the obvious way to read it — but the
+records only show stores leaving the program, which is not the same claim. Before
+accepting that, it is worth testing the explanations that would produce the same chart for reasons
+other than stores going out of business.
 
 ## It is not grocery in general
 
@@ -159,10 +160,10 @@ at a departed small grocer's address is a convenience store, and the second most
 small grocery. The storefront often keeps selling food. It frequently does so under a different owner
 and a different classification.
 
-## It is not a wave of closures either
+## Departures did not spike. Arrivals collapsed.
 
-This is the part that surprised me. If small grocers were dying, departures should spike. They did
-not — the number leaving each year is *lower* now than in 2008. What collapsed was arrivals.
+This is the part that surprised me. If stores were leaving the program faster, departures should
+spike. They did not — the number leaving each year is *lower* now than in 2008. What collapsed was arrivals.
 
 ![{figs[5]['caption']}](images/{figs[5]['file']})
 
@@ -172,8 +173,8 @@ period fell {abs(100*(dr['dep_after']/dr['dep_before']-1)):.0f}% in absolute ter
 population was shrinking, the *rate* at which a given store left rose from {dr['exit_rate_before']:.0%}
 to {dr['exit_rate_after']:.0%}, about {exit_change:.0f}% higher.
 
-So both blades of the scissors moved, but the dominant one is entry. Small grocery did not suddenly
-start dying; it stopped being replaced. Small grocers have always churned hard — that is the nature of
+So both blades of the scissors moved, but the dominant one is entry. Small grocery did not start leaving
+faster; it stopped being replaced. Small grocers have always churned hard — that is the nature of
 a thin-margin corner business — and for years enough new ones opened to cover the losses. After 2014
 they stopped.
 

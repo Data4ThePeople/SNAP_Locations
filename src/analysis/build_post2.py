@@ -89,9 +89,10 @@ to accept SNAP fell from {arc['peak']:,} to {arc['trough']:,} — a drop of
 <figcaption>Small grocery stores with an active SNAP authorization on 31 December of each
 year.</figcaption></figure>
 
-<p>That is a big number, and "the death of the small grocer" is the obvious way to read it. Before
-accepting that, it is worth testing the explanations that would produce the same chart without any
-store dying.</p>
+<p>That is a big number, and "the death of the small grocer" is the obvious way to read it — but the
+records only show stores leaving the program, which is not the same claim. Before
+accepting that, it is worth testing the explanations that would produce the same chart for reasons
+other than stores going out of business.</p>
 
 <h2>It is not grocery in general</h2>
 <p>If shoppers were simply abandoning grocery stores for superstores, every grocery format would
@@ -130,9 +131,9 @@ successor at a departed small grocer's address is a convenience store, and the s
 another small grocery. The storefront often keeps selling food. It frequently does so under a
 different owner and a different classification.</p>
 
-<h2>It is not a wave of closures either</h2>
-<p>This is the part that surprised me. If small grocers were dying, departures should spike. They
-did not — the number leaving each year is <em>lower</em> now than in 2008. What collapsed was
+<h2>Departures did not spike. Arrivals collapsed.</h2>
+<p>This is the part that surprised me. If stores were leaving the program faster, departures should
+spike. They did not — the number leaving each year is <em>lower</em> now than in 2008. What collapsed was
 arrivals.</p>
 
 <figure>{c_fl}{charts.legend(s_fl)}
@@ -146,7 +147,7 @@ was shrinking, the <em>rate</em> at which a given store left rose from
 {dr['exit_rate_before']:.0%} to {dr['exit_rate_after']:.0%}, about {exit_rate_change:.0f}% higher.</p>
 
 <p>So both blades of the scissors moved, but the dominant one is entry. Small grocery did not
-suddenly start dying; it stopped being replaced. Small grocers have always churned hard — that is
+start leaving faster; it stopped being replaced. Small grocers have always churned hard — that is
 the nature of a thin-margin corner business — and for years enough new ones opened to cover the
 losses. After 2014 they stopped.</p>
 
