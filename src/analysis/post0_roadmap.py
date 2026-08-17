@@ -26,31 +26,33 @@ from config import ROOT
 
 OUT = ROOT / "reports" / "data"
 
-# (day, slug, subject, headline, one-line topic, why it sits here)
+# (day, slug, subject, one-line topic, why it sits here)
+#
+# The headline is NOT listed here. It is read from the published piece at build
+# time, because a copy of it here is a copy that can drift — and did: three
+# titles changed during editing and these cards went on advertising the old ones
+# until someone compared them by hand.
 # `subject` is the short label used in the reading-order table, where a full
 # headline would overflow the column.
 CHAPTERS = [
     (1, "post2", "Small grocery",
-     "SNAP shows small grocers down 46%. The census says 22%. Both are right.",
-     "What happened to the small neighbourhood grocery store, and how much of the "
+     "What happened to the small neighborhood grocery store, and how much of the "
      "drop is stores closing versus stores leaving the program.",
      "Start with the loss. It is the change everything else in the series responds "
      "to, and it forces the one distinction the whole series depends on: these "
      "records count authorizations, not buildings."),
     (2, "post1", "Dollar stores",
-     "Dollar stores almost never leave SNAP. Small grocers almost always do.",
      "The steadiest trend in the data: sixteen years of near-constant dollar store "
      "openings, and a survival rate no other format comes close to.",
      "Having established what went away, look at what grew in its place. The "
-     "surprise is not the growth. It is that these stores almost never close."),
+     "surprise is not the growth. It is that they almost never leave the program."),
     (3, "post6", "Gas stations",
-     "The gas station is the other store that stayed.",
      "Splitting the convenience store category by who runs the store, and the fuel "
      "margins that made the gas station newly profitable after 2020.",
-     "Dollar stores are only half the answer. A second format survives at exactly "
-     "the same rate, for a reason that shows up in company filings."),
+     "Dollar stores are only half the answer. The chains that sell fuel endure at "
+     "the same rate, for a reason that shows up in company filings. Almost nobody "
+     "else in the category does."),
     (4, "post3", "Walmart",
-     "13 million people reach a superstore only because of Walmart.",
      "How much of the country can reach a large store at all, measured with and "
      "without Walmart's locations.",
      "A deliberate counterweight. The first three chapters are about small cheap "
@@ -58,20 +60,17 @@ CHAPTERS = [
      "problem the opposite way — and it complicates the story rather than "
      "confirming it."),
     (5, "post4", "Pharmacies",
-     "Rite Aid went from 1,523 SNAP-authorized stores to 2.",
      "The collapse of the chain pharmacy, which happened faster and more recently "
      "than any other change in the data.",
      "The newest change, and the one with consequences beyond food. It also sets "
      "up the final chapter, which is built on the places this collapse hit."),
     (6, "post5", "The thread",
-     "The pharmacy left. The grocery left. Two formats stayed.",
      "The places where all of these trends land at once, what they have in common, "
      "and the explanation that turns out to be wrong.",
      "The synthesis, and the last chapter of the story. It tests the obvious "
      "reading — that one format pushed the others out — against a control group, "
      "and finds something harder to act on."),
     (7, "post7", "Epilogue",
-     "In November, the rules change for the stores that are left.",
      "How SNAP benefits are calculated, why that calculation assumes a store that "
      "may no longer be nearby, and what the new retailer stocking standard is "
      "likely to do when it takes effect.",
@@ -101,23 +100,29 @@ def main():
     p1_surv = {r["format"]: r for r in (g("post1", "survival", default=[]) or [])}
     p6_surv = {r["segment"]: r for r in (g("post6", "survival", default=[]) or [])}
     p3_acc = {r["radius"]: r for r in (g("post3", "access", default=[]) or [])}
+    p3_space = g("post3", "spacing", default={}) or {}
 
     # One headline number per chapter, pulled from that chapter's output.
     stats = {
-        # The headline number is the CBP-window comparison the chapter is built
-        # on, not arc.pct_fall — that one is peak-to-trough (-48.6%) and would
-        # contradict the chapter's own title.
-        "post2": {"value": f"{abs(g('post2','cbp','snap_small_pct', default=46.1)):.0f}%",
-                  "label": "fall in SNAP-authorized small grocers, against "
-                           f"{abs(g('post2','cbp','cbp_under5_pct', default=22.5)):.0f}% "
-                           "in the census count of the establishments themselves"},
-        "post1": {"value": f"{g('post1','headline','dollar_2025', default=37361):,}",
-                  "label": "dollar stores authorized to accept SNAP in 2025"},
-        "post6": {"value": f"{p6_surv.get('fuel-forward chains',{}).get('rate',78.7)}%",
-                  "label": "of fuel-forward chain stores from 2008-2012 were still "
-                           "authorized in 2025"},
-        "post3": {"value": f"{p3_acc.get(10,{}).get('depends_on_walmart',0)/1e6:.0f}M",
-                  "label": "people within 10 miles of a superstore only because of Walmart"},
+        # Each card carries the number that proves its own title, not simply the
+        # biggest number in the piece. Day 1 is titled "one in four", so it shows
+        # the census figure rather than SNAP's 46%.
+        "post2": {"value": f"{abs(g('post2','cbp','cbp_under10_pct', default=24.9)):.0f}%",
+                  "label": "fall in the number of small grocery businesses, by the "
+                           "Census Bureau's count"},
+        "post1": {"value": f"{100*p1_surv['Dollar Store']['rate']:.0f}%",
+                  "label": "of dollar stores authorized in 2008-2012 are still "
+                           "authorized today"},
+        "post6": {"value": f"{p6_surv['single-owner stores']['rate']}%",
+                  "label": "of single-owner convenience stores lasted thirteen years, "
+                           f"against {p6_surv['chains that sell fuel']['rate']}% of the "
+                           "chains"},
+        # Not the 13 million — the headline already says that, and a card that
+        # repeats its own title wastes the number. This is the mechanism behind it.
+        "post3": {"value": f"{p3_space['Walmart']['median']:.1f} mi",
+                  "label": "between one Walmart and the next, against "
+                           f"{p3_space['all other superstores']['median']:.1f} for every "
+                           "other superstore — they spread out where the rest cluster"},
         "post4": {"value": f"{g('post4','chain','peak', default=0):,}",
                   "label": "peak SNAP-authorized chain pharmacies, now "
                            f"{g('post4','chain','latest', default=0):,}"},
@@ -130,10 +135,20 @@ def main():
                            "in a normal year"},
     }
 
+    def headline(slug):
+        """The piece's own H1, read from what was published."""
+        md = ROOT / "reports" / slug / f"{slug}.md"
+        if not md.exists():
+            raise SystemExit(f"{md} is missing — build the pieces before the roadmap")
+        first = md.read_text().split("\n", 1)[0].lstrip("#").strip()
+        if not first:
+            raise SystemExit(f"{md} has no title on its first line")
+        return first
+
     out = {
-        "chapters": [{"day": d, "slug": s, "subject": sub, "headline": h, "topic": t,
-                      "placement": w, "stat": stats.get(s, {})}
-                     for d, s, sub, h, t, w in CHAPTERS],
+        "chapters": [{"day": d, "slug": s, "subject": sub, "headline": headline(s),
+                      "topic": t, "placement": w, "stat": stats.get(s, {})}
+                     for d, s, sub, t, w in CHAPTERS],
         "dataset": {
             # Pipeline figures. These are properties of the load, not of any one
             # analysis, so they are stated here and checked in verify_map.py.

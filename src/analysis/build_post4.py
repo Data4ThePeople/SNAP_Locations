@@ -166,7 +166,7 @@ least 150 in 2021. Labels show the count then and now.</figcaption></figure>
 most in absolute terms.</p>
 
 <p>Nationally, <strong>{z['lost']:,} ZIP codes</strong> that had at least one SNAP-authorized drug
-store in 2021 had none by 2025. Only {z['gained']} gained one. That is the part that matters for people. In a neighbourhood with no grocery store, a pharmacy is often where a SNAP household buys food. It is also where they fill prescriptions.</p>
+store in 2021 had none by 2025. Only {z['gained']} gained one. That is the part that matters for people. In a neighborhood with no grocery store, a pharmacy is often where a SNAP household buys food. It is also where they fill prescriptions.</p>
 
 <div class="caveat">
 <h3>Limits</h3>

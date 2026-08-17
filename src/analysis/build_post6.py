@@ -116,7 +116,7 @@ shown for scale.</figcaption></figure>
 <p>Chains went from {sh0['chains that sell fuel']}% of the category to
 {sh1['chains that sell fuel']}%.</p>
 
-<p>Which chains? Mostly ones you would recognise. These are the ten largest that sell fuel, with how fast each grew in a typical year — a median, so one unusual year cannot flatter a chain.</p>
+<p>Which chains? Mostly ones you would recognize. These are the ten largest that sell fuel, with how fast each grew in a typical year — a median, so one unusual year cannot flatter a chain.</p>
 
 <table><thead><tr><th>Chain</th><th>2006</th><th>2025</th><th>Typical year</th></tr></thead><tbody>{brand_tbl}</tbody></table>
 
@@ -202,13 +202,13 @@ groceries.</p>
 never owned by Shell or BP — it is somebody's own business with a fuel supply contract. So those
 stores count here as single-owner stores. Broken out separately they survive at 20.6% against 13.5%
 for stores with no brand at all: a real difference, too small to change the picture.</p>
-<p><strong>The list of fuel chains is a judgement call.</strong> Twenty-four operators are named
+<p><strong>The list of fuel chains is a judgment call.</strong> Twenty-four operators are named
 because they run fuel pumps at essentially all their US sites. The list is in the code. 7-Eleven is
 deliberately left out — it is the largest convenience brand here by a wide margin and is mixed on
 fuel, so including it would let one brand carry a claim about fuel economics.</p>
 <p><strong>The growth rate is a median, and the table shows no starting count.</strong> Both are for the same reason: a chain that joined SNAP late looks tiny at the start even when it was not. Wawa had roughly 540 stores in 2006 and 51 SNAP authorizations, and it added 40% of nineteen years of growth in 2010 alone — the year it signed up, not a year it built. A median cannot be moved by one such year. Murphy USA is left out entirely: its stores date from the 1990s but only eight years of its record are large enough to measure, which is not the same measurement as Circle K's nineteen.</p>
 <p><strong>Margin is not profit.</strong> Fuel margin is revenue minus the cost of the fuel. It does
-not subtract labour, rent, card fees or the pumps themselves.</p>
+not subtract labor, rent, card fees or the pumps themselves.</p>
 <p><strong>Growth in the single-owner segment is ambiguous.</strong> A rising count can mean more
 stores or wider EBT take-up among stores that already existed. The census comparison is what separates
 those, and it is only available for the category as a whole.</p>

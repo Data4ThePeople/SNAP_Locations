@@ -20,7 +20,7 @@ USDA's own store-type field cannot show this, because all four convenience rows
 above collapse into one category. That is the reason the format reads as stable
 in aggregate while its composition turns over completely.
 
-Segments, cut on evidence already in dim_store rather than on judgement:
+Segments, cut on evidence already in dim_store rather than on judgment:
 
   fuel-forward chains   a named, listed set of operators that run fueling
                         positions at essentially all US sites. This IS a curated
@@ -29,14 +29,14 @@ Segments, cut on evidence already in dim_store rather than on judgement:
                         convenience brand in the data by a wide margin and is
                         mixed on fuel, so including it would let one brand carry
                         a claim about fuel economics.
-  other conv. chains    any other recognised brand (brands.csv; 4+ locations is
+  other conv. chains    any other recognized brand (brands.csv; 4+ locations is
                         the floor for a brand to exist at all).
   fuel-branded          the name carries an oil brand (SHELL, BP, EXXON...) and
                         nothing else. classify.py deliberately calls these
                         ownership=unknown: a canopy brand is a fuel supply
                         agreement, not ownership, so these are overwhelmingly
                         single-site dealers.
-  unbranded             no recognised brand at all.
+  unbranded             no recognized brand at all.
 
 Two guards on the language, per the rules this series runs under:
 
