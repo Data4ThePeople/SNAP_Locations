@@ -5,6 +5,11 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 
+# Secrets — never commit. Census API key lives here.
+.env
+.env.*
+!.env.example
+
 # Derived — rebuild with `python src/pipeline.py`
 data/snap.duckdb
 data/snap.duckdb.wal
