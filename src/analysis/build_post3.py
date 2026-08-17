@@ -30,8 +30,19 @@ def main():
         subtitle=f"still authorized in 2025, of those authorized {d['cohort']}")
 
     def cell(f, o):
+        # A rate on ~110 stores is noise, and printing it does real damage here:
+        # the three thin chain-grocery cells read as 21.1 / 6.7 / 3.6 going down
+        # the column, which looks like the very size ladder this table exists to
+        # show does NOT apply to chains. Say "too few" instead of showing a
+        # number the reader will reasonably believe.
         c = ow[f][o]
-        return "—" if c["n"] == 0 else f"{c['rate']}%" + ("*" if c["thin"] else "")
+        if c["n"] == 0:
+            return "none"
+        return "too few" if c["thin"] else f"{c['rate']}%"
+
+    NOTE = ('"too few" = fewer than %d stores in that cell, so no rate is shown. '
+            '"none" = there are no stores of that kind: every dollar store is a chain.'
+            % d["min_n"])
 
     own_tbl = "".join(
         f"<tr><td>{SHORT[f]}</td><td>{cell(f,'independent')}</td>"
@@ -97,8 +108,7 @@ comes apart.</p>
 
 <table><thead><tr><th>Store type</th><th>Independent</th><th>Chain</th><th>All</th></tr></thead>
 <tbody>{own_tbl}</tbody></table>
-<p class="fignote">Cells marked * rest on fewer than {d['min_n']} stores and are shown for completeness
-only.</p>
+<p class="fignote">{NOTE}</p>
 
 <p>Among independent stores the ladder holds exactly as before:
 <strong>{' , '.join(f"{r}%" for r in ind)}</strong> down the size order. So size is real. It is not merely

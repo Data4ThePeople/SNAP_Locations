@@ -267,10 +267,24 @@ def ledger_png(path, items, width=8.6, accent=None):
 
 
 def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
-              title="", subtitle=""):
-    """A table as an image, so it can be dropped into a layout like any figure."""
+              title="", subtitle="", note=""):
+    """A table as an image, so it can be dropped into a layout like any figure.
+
+    `note` renders INSIDE the image. Any marker in a cell — an asterisk, a dash,
+    a "too few" — needs its key in the same PNG, because these files are dropped
+    into a newsletter and a CMS on their own and the markdown caption does not
+    travel with them. A table that explains its own symbols only in its caption
+    ships an asterisk pointing at nothing.
+    """
     n = len(rows)
-    h = 0.34 * (n + 1.6) + (0.42 if title else 0) + (0.24 if subtitle else 0)
+    # Reserve height for the note before the figure exists, from the mono advance
+    # width; the real wrap happens against the drawn axes further down.
+    note_lines = 0
+    if note:
+        cpl = max(20, int(width * 72 * 0.94 / (MONO_ADVANCE * 7.0)))
+        note_lines = max(1, -(-len(note) // cpl))
+    h = (0.34 * (n + 1.6) + (0.42 if title else 0) + (0.24 if subtitle else 0)
+         + (0.16 + 0.13 * note_lines if note else 0))
     fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
     ax.set_facecolor(PAPER)
     ax.axis("off")
@@ -343,6 +357,17 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
                     fontweight="bold" if strong else "normal")
         ax.plot([0, 1], [y - rh * 0.5] * 2, color=RULE, lw=0.8,
                 transform=ax.transAxes, clip_on=False)
+
+    if note:
+        lines = _wrap_px(fig, note, ax_px, ax_px, family=MONO, fontsize=7)
+        if len(lines) > note_lines:
+            print(f"    note: table footnote wrapped to {len(lines)} lines, "
+                  f"{note_lines} reserved — it may crowd the last row")
+        ax.annotate("\n".join(lines), (0, top - rh * (n + 1.0)),
+                    xycoords=ax.transAxes, textcoords="offset points",
+                    xytext=(0, -11), ha="left", va="top", fontsize=7,
+                    family=MONO, color=INK_SOFT, linespacing=1.5,
+                    annotation_clip=False)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)
     return path

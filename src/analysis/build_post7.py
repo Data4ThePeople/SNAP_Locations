@@ -165,7 +165,7 @@ one authorized store matters little in a city. It matters a great deal in a ZIP 
 
 <h2>Who argued about this, and who did not</h2>
 
-<table><thead><tr><th>Organisation</th><th>Represents</th><th>Position</th></tr></thead>
+<table><thead><tr><th>Organization</th><th>Represents</th><th>Position</th></tr></thead>
 <tbody>{pos_tbl}</tbody></table>
 
 <p>That line-up is worth sitting with. The formats that already meet the standard are for it. The formats that do not are against it. Whatever the rule does for nutrition, it also hands an advantage to stores that already carry a full range.</p>

@@ -105,8 +105,7 @@ POLICY = {
          "stance": "supports"},
         {"who": "National Grocers Association", "represents": "independent supermarkets",
          "stance": "supports"},
-        {"who": "NACS, NATSO and SIGMA", "represents": "convenience stores, truckstops "
-         "and fuel marketers", "stance": "opposes",
+        {"who": "NACS, NATSO and SIGMA", "represents": "convenience and fuel retailers", "stance": "opposes",
          "note": "filed jointly on 24 November 2025; called compliance unworkable for "
                  "small-format stores, singling out the grains and dairy categories"},
         {"who": "Food Research & Action Center", "represents": "anti-hunger advocacy",
