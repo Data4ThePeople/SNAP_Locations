@@ -40,6 +40,7 @@ def main():
     conv_2025 = 117_055
     stock, yrs = ctx["Dollar Store"]["stock"], ctx["Dollar Store"]["years"]
     growth = stock[-1] / stock[0]
+    growth_pct = round(100 * (growth - 1))
     lap_sg = next(r for r in lap if r["format"] == "Grocery (Small)")
     mix = d["ownership_mix"]
     m_ds, m_sg, m_cv = mix["Dollar Store"], mix["Grocery (Small)"], mix["Convenience Store"]
@@ -53,7 +54,7 @@ def main():
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
         [{"value": f"{growth:.1f}x",
-          "label": f"growth in SNAP-authorized dollar stores since {yrs[0]}"},
+          "label": f"change in SNAP-authorized dollar stores since {yrs[0]}"},
          {"value": f"{100*ds['rate']:.0f}%",
           "label": "of dollar stores authorized in 2008-2012 are still authorized today"},
          {"value": f"{100*z[-1]['dollar_only']/z[-1]['with_dollar']:.0f}%",
@@ -95,7 +96,7 @@ def main():
 {d['headline']['dollar_2025']:,} dollar stores authorized at the end of 2025, against
 {d['headline']['all_grocery_2025']:,} grocery stores of every size.*
 
-**{growth:.1f}×** growth in SNAP-authorized dollar stores since {yrs[0]}.
+**{growth_pct:+}%** change in SNAP-authorized dollar stores since {yrs[0]}.
 **{100*ds['rate']:.0f}%** of dollar stores authorized in 2008–2012 are still authorized today.
 **{100*z[-1]['dollar_only']/z[-1]['with_dollar']:.0f}%** of ZIP codes with a dollar store have no
 grocery of any size, up from {100*z[0]['dollar_only']/z[0]['with_dollar']:.0f}% in {z[0]['yr']}.

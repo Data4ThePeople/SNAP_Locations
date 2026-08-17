@@ -31,6 +31,8 @@ def main():
 
     surv = {r["segment"]: r for r in d["survival"]}
     sc, cbp, fm = d["stock_change"], d["cbp"], d["fuel_margin"]
+    _f = sc["chains that sell fuel"]
+    fuel_pct = round(100 * (_f["y2025"] / _f["y2006"] - 1))
     ch, so = surv["chains that sell fuel"], surv["single-owner stores"]
     mu = fm["companies"]["Murphy USA"]
     cy = fm["companies"]["Casey's General Stores"]
@@ -47,8 +49,8 @@ def main():
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{sc['chains that sell fuel']['multiple']}x",
-          "label": f"growth in chains that sell fuel since {d['stock']['years'][0]}"},
+        [{"value": f"{fuel_pct:+}%",
+          "label": f"change in chains that sell fuel since {d['stock']['years'][0]}"},
          {"value": f"{ch['rate']}%",
           "label": f"of their 2008-2012 stores are still authorized. For single-owner "
                    f"stores it is {so['rate']}%"},
@@ -94,7 +96,7 @@ def main():
 *SNAP-authorized retailers, 2006–2025. EIA weekly gasoline prices. Retail fuel margins from Murphy USA
 and Casey's 10-K filings. {conv_total:,} convenience stores in the file.*
 
-**{sc['chains that sell fuel']['multiple']}×** growth in chains that sell fuel since
+**{fuel_pct:+}%** change in chains that sell fuel since
 {d['stock']['years'][0]}.
 **{ch['rate']}%** of their 2008–2012 stores are still authorized. For single-owner stores it is
 {so['rate']}%.

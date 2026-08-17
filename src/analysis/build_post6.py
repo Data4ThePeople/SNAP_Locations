@@ -32,6 +32,8 @@ def main():
 
     surv = {r["segment"]: r for r in d["survival"]}
     sc, cbp, cens = d["stock_change"], d["cbp"], d["census"]
+    _f = sc["chains that sell fuel"]
+    fuel_pct = round(100 * (_f["y2025"] / _f["y2006"] - 1))
     fm = d["fuel_margin"]
     ch, so = surv["chains that sell fuel"], surv["single-owner stores"]
     mu = fm["companies"]["Murphy USA"]
@@ -84,7 +86,7 @@ def main():
 from Murphy USA and Casey's 10-K filings · {conv_total:,} convenience stores in the file</p>
 
 <div class="ledger">
-  <div><b>{sc['chains that sell fuel']['multiple']}×</b><span>growth in chains that sell fuel
+  <div><b>{fuel_pct:+}%</b><span>change in chains that sell fuel
     since {d['stock']['years'][0]}</span></div>
   <div><b>{ch['rate']}%</b><span>of their 2008–2012 stores are still authorized. For
     single-owner stores it is {so['rate']}%</span></div>

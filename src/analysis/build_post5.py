@@ -27,6 +27,10 @@ def main():
     f_mu = d6["fuel_margin"]["companies"]["Murphy USA"]
 
     arc, ac = d["arc"], d["arc_change"]
+    # From the counts, not the rounded multiple: 494 -> 2,054 is +316%, where a
+    # 4.2x would imply +320%.
+    dollar_pct = round(100 * (arc["dollar"][-1] / arc["dollar"][0] - 1))
+    f_pct = round(100 * (f_sc["y2025"] / f_sc["y2006"] - 1))
     grp, pres, gr, seq = d["groups"], d["presence"], d["growth"], d["sequencing"]
     den, tl = d["density"], d["total_loss"]
     pr = {p["label"]: p for p in pres}
@@ -82,7 +86,7 @@ records, with 2020 census population by ZCTA · the last in this series</p>
 
 <div class="ledger">
   <div><b>{grp['lost']:,}</b><span>ZIP codes lost their last SNAP-authorized chain pharmacy since 2021</span></div>
-  <div><b>{ac['dollar_multiple']}×</b><span>growth in dollar stores in those same ZIP codes since 2006</span></div>
+  <div><b>{dollar_pct:+}%</b><span>change in dollar stores in those same ZIP codes since 2006</span></div>
   <div><b>{den['lost_no_grocery']['median_pop']:,}</b><span>median population of those that now have no grocery at all</span></div>
 </div>
 
@@ -97,7 +101,7 @@ flat for years and then collapsed. Read on their own they are unrelated retail s
 their last chain pharmacy between 2021 and 2025.</figcaption></figure>
 
 <p>Dollar stores went from {arc['dollar'][0]:,} to {arc['dollar'][-1]:,} —
-<strong>{ac['dollar_multiple']}×</strong>. Grocery of every size went from {arc['groc'][0]:,} to
+<strong>{dollar_pct:+}%</strong>. Grocery of every size went from {arc['groc'][0]:,} to
 {arc['groc'][-1]:,}, down {abs(ac['groc_pct']):.0f}%. Pharmacies peaked at {ac['drug_peak']:,} in
 {ac['drug_peak_year']} and are now at zero. In 2006 these places had roughly ten times as many grocery
 stores as dollar stores. Today grocery outnumbers dollar by about two to one, and the direction of
@@ -152,7 +156,7 @@ control. One in eight has fewer than five thousand.</p>
 
 <p>That is the thread. <strong>A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar store needs neither.</strong> Its whole model is a small box, few staff, a narrow range, and no fresh food to spoil. That is exactly why it works in a town of six thousand where a grocery store cannot.</p>
 
-<p>And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. <strong>{f_ff['rate']}% of convenience chains that sell fuel</strong> from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do['rate']}%. That is a gap of well under one point. Those chains also grew {f_sc['multiple']}× over the twenty years. So naming only dollar stores would leave out half the answer.</p>
+<p>And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. <strong>{f_ff['rate']}% of convenience chains that sell fuel</strong> from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do['rate']}%. That is a gap of well under one point. Those chains also added {f_pct:+}% over the twenty years. So naming only dollar stores would leave out half the answer.</p>
 
 <p>Read that way, the pieces in this series stop being coincidences. They become one story told from several angles.</p>
 
