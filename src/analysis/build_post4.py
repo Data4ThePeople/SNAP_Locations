@@ -2,7 +2,7 @@
 import json
 
 from analysis import charts, palette
-from analysis.report_css import CSS
+from analysis.report_css import CSS, HEAD
 from config import ROOT
 
 DATA = ROOT / "reports" / "data" / "post4.json"
@@ -22,18 +22,24 @@ def main():
     c_chain = charts.line_chart(
         yrs, [{"name": "drug chains", "values": ch["stock"], "slot": 1}],
         y_label="active SNAP authorizations",
-        annotate=[{"year": 2018, "text": "stocking rule"}, {"year": 2021, "text": "collapse begins"}])
+        annotate=[{"year": 2018, "text": "stocking rule"}, {"year": 2021, "text": "collapse begins"}],
+        title="Chain pharmacies held flat, then fell off a cliff",
+        subtitle="stores authorized on 31 December")
 
     bpick = ["Walgreens", "CVS", "Rite Aid", "Duane Reade"]
     s_br = [{"name": b, "values": br[b]["stock"], "slot": i + 1}
             for i, b in enumerate(bpick) if b in br]
-    c_br = charts.line_chart(yrs, s_br, y_label="active authorizations")
+    c_br = charts.line_chart(yrs, s_br, y_label="active authorizations",
+        title="Three companies drive the whole decline",
+        subtitle="stores authorized on 31 December, by chain")
 
     end_years = sorted(ends.keys())
     tot = [sum(ends[y].values()) for y in end_years]
     c_end = charts.bar_chart(
         [{"label": y, "value": tot[i], "slot": 2 if int(y) >= 2022 else 0}
-         for i, y in enumerate(end_years)])
+         for i, y in enumerate(end_years)],
+        title="The break lands after 2022",
+        subtitle="drug chain authorizations ending each year")
 
     end_tbl = "".join(
         f"<tr><td>{y}</td><td>{sum(ends[y].values()):,}</td>"
@@ -44,7 +50,9 @@ def main():
 
     c_st = charts.bar_chart(
         [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": abs(r["pct"]),
-          "slot": 2 if r["state"] == "PA" else 0} for r in st[:8]], suffix="%")
+          "slot": 2 if r["state"] == "PA" else 0} for r in st[:8]], suffix="%",
+        title="Where the pharmacies were",
+        subtitle="largest falls in authorized drug stores, 2021 to 2025")
 
     brand_tbl = "".join(
         f"<tr><td>{b}</td><td>{v['peak']:,}</td><td>{v['peak_year']}</td>"
@@ -53,7 +61,7 @@ def main():
 
     wal = d["census"][0]
 
-    html = f"""<title>Rite Aid went from 1,523 SNAP-authorized stores to 2</title>
+    html = f"""{HEAD}<title>Rite Aid went from 1,523 SNAP-authorized stores to 2</title>
 <style>{CSS}</style>
 <main>
 <h1>Rite Aid went from 1,523 SNAP-authorized stores to 2</h1>
@@ -66,8 +74,7 @@ records · drug chains peaked at {ch['peak']:,} in {ch['peak_year']} and stand a
   <div><b>{z['lost']:,}</b><span>ZIP codes lost their last SNAP-authorized drug store since 2021</span></div>
 </div>
 
-<p>USDA files drug stores in the same category as dollar stores — "Combination Grocery/Other," a
-bucket for retailers whose main business is general merchandise but which also sell food. The two
+<p>USDA files drug stores in the same category as dollar stores. It is called "Combination Grocery/Other." The bucket holds stores that mainly sell general goods but also sell food. The two
 have moved in opposite directions, and the pharmacy side has fallen off a cliff in the last four
 years.</p>
 
@@ -79,15 +86,17 @@ year.</figcaption></figure>
 then did almost nothing for five years: down {abs(ch['peak_to_2021_pct'])}% by 2021. Then they lost
 <strong>{abs(ch['2021_to_latest_pct'])}%</strong> in four years.</p>
 
-<p>That timing rules out the explanation that fits other small-format retailers. USDA's stocking
-standards changed in 2018, and pharmacies are authorized under the same inventory test as everyone
-else — but drug chains sailed through it. Their decline starts three years later, and it has a much
+<p>That timing rules out the explanation that fits other small-format retailers. USDA's stocking rules changed in 2018. Pharmacies face the same inventory test as everyone else. The drug chains passed it easily. Their decline starts three years later, and it has a much
 more mundane cause.</p>
 
 <h2>It is three companies</h2>
 
+<p>The decline is not spread across the industry. Split the same total by chain and three names carry all of it:</p>
+
 <figure>{c_br}{charts.legend(s_br)}
 <figcaption>Active SNAP authorizations by pharmacy chain.</figcaption></figure>
+
+<p>Here is each chain at its peak and today:</p>
 
 <table><thead><tr><th>Chain</th><th>Peak</th><th>Year</th><th>2025</th><th>Change</th></tr></thead>
 <tbody>{brand_tbl}</tbody></table>
@@ -105,23 +114,22 @@ is down {abs(br['CVS']['pct']):.0f}% from {br['CVS']['peak_year']} — a smaller
 2024 and 271 more announced for 2025.</p>
 
 <h2>When they left</h2>
-<p>Authorizations ending per year makes the break unmistakable. The baseline is a couple of hundred a
+<p>Count the authorizations that ended each year and the break is obvious: The baseline is a couple of hundred a
 year. Then 2022 arrives.</p>
 
 <figure>{c_end}
 <figcaption>Drug chain SNAP authorizations ending each year.</figcaption></figure>
 
+<p>Split the same years by company and you can see who left when:</p>
+
 <table><thead><tr><th>Year</th><th>Total</th><th>Rite Aid</th><th>Walgreens</th><th>CVS</th></tr></thead>
 <tbody>{end_tbl}</tbody></table>
 
-<p>This is the most externally checkable finding in this series. Every one of these movements was
-announced by the company and covered in the trade press at the time, and the authorization records
-line up with them. When a retailer's own filings and USDA's paperwork tell the same story, the
+<p>This is the most externally checkable finding in this series. Every one of these moves was announced by the company and covered in the trade press. The authorization records line up with them. When a retailer's own filings and USDA's paperwork tell the same story, the
 paperwork can be trusted for the cases where no filing exists.</p>
 
 <p>It also means closure language is defensible here in a way it is not for independent grocers. In
-2024 Walgreens had {wal['authorized_2024']:,} SNAP authorizations against roughly
-{wal['reported']:,} US stores it reported operating — a ratio of {wal['ratio']}. For this chain,
+2024 Walgreens had {wal['authorized_2024']:,} SNAP authorizations. It reported operating about {wal['reported']:,} US stores. That is a ratio of {wal['ratio']}. For this chain,
 authorization is effectively a store census, so an ending is a closed store.</p>
 
 <h2>What this data cannot tell you about independent pharmacies</h2>
@@ -158,26 +166,21 @@ least 150 in 2021. Labels show the count then and now.</figcaption></figure>
 most in absolute terms.</p>
 
 <p>Nationally, <strong>{z['lost']:,} ZIP codes</strong> that had at least one SNAP-authorized drug
-store in 2021 had none by 2025. Only {z['gained']} gained one. That is the part with consequences for
-people: a pharmacy is often where a SNAP household buys food in a neighbourhood with no grocery
-store, and it is where they fill prescriptions.</p>
+store in 2021 had none by 2025. Only {z['gained']} gained one. That is the part that matters for people. In a neighbourhood with no grocery store, a pharmacy is often where a SNAP household buys food. It is also where they fill prescriptions.</p>
 
 <div class="caveat">
 <h3>Limits</h3>
 <p>These records count <strong>SNAP authorizations</strong>, not pharmacies. A drug store that stops
 accepting EBT but keeps trading looks the same as one that closes. For Walgreens the two are nearly
 equivalent — hence the census check above — but that logic does not transfer to independents.</p>
-<p>CVS is deliberately left out of the census comparison: roughly 1,700 of its pharmacies operate
-inside Target stores and are covered by Target's own authorization, so its authorization count
-understates its footprint. Rite Aid is left out for the opposite reason — its store count was moving
+<p>CVS is left out of the store-count check on purpose. About 1,700 of its pharmacies sit inside Target stores, and Target's own authorization covers those. So CVS's count here is lower than its real footprint. Rite Aid is left out for the opposite reason — its store count was moving
 so fast in 2024–25 that any single-date comparison is unstable.</p>
-<p>A pharmacy's SNAP authorization says nothing about whether it dispenses prescriptions, and nothing
-here measures prescription volume or pharmacy access as such. The ZIP-code count above is for chain
+<p>A SNAP authorization says nothing about whether a pharmacy fills prescriptions. Nothing here measures prescription counts or pharmacy access. The ZIP-code count above is for chain
 pharmacies only, for the coverage reason set out earlier.</p>
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 611,164 stores with
+Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
 usable coordinates; a store counts as active in a year if an authorization covered 31 December.
 Corporate events from company filings and contemporaneous trade press. Code, pipeline and verification:
 <a href="https://github.com/Data4ThePeople/SNAP_Locations">Data4ThePeople/SNAP_Locations</a>.

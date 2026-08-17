@@ -13,12 +13,16 @@ IMG = DIR / "images"
 def main():
     d = json.loads(SRC.read_text())
     IMG.mkdir(parents=True, exist_ok=True)
-    figs = []
+    figs = {}
 
     def fig(n, slug, caption, fn, *a, **kw):
+        # Keyed by slug rather than list position. With a list, a duplicated
+        # number or an inserted figure shifted every later figs[i] lookup by one
+        # and silently printed the wrong chart under the text — which is exactly
+        # what happened in this series.
         p = IMG / f"{n:02d}-{slug}.png"
         fn(p, *a, **kw)
-        figs.append({"file": p.name, "caption": caption})
+        figs[slug] = {"file": p.name, "caption": caption}
         print(f"  {p.name}")
         return p
 
@@ -48,14 +52,18 @@ def main():
           "note": f"{r['still_open']:,} of {r['cohort']:,}",
           "slot": 1 if r["format"] == "Dollar Store" else
                   (2 if r["format"] == "Grocery (Small)" else 0)} for r in surv],
-        suffix="%", note_key="note")
+        suffix="%", note_key="note",
+        title="Dollar stores stayed. Small grocers did not.",
+        subtitle="share of the 2008-2012 cohort still authorized in 2025")
 
     fig(2, "chain-store-census",
         "SNAP authorizations against each company's own reported store count.",
         figures.table_png,
         ["Brand", "SNAP-authorized 2025", "Company-reported", "Ratio"],
         [[c["brand"], f"{c['authorized']:,}", f"{c['reported']:,}", f"{c['ratio']:.2f}"]
-         for c in d["chain_census"]], highlight_row=0)
+         for c in d["chain_census"]], highlight_row=0,
+        title="For the dollar chains, an authorization is a store",
+        subtitle="SNAP authorizations vs each company's reported store count")
 
     fig(3, "lapsed-and-returned",
         "Share of each format's stores that lost authorization and later regained it — "
@@ -65,7 +73,9 @@ def main():
           "slot": 1 if f == "Dollar Store" else 0}
          for f in ["Grocery (Medium)", "Grocery (Large)", "Convenience Store",
                    "Grocery (Small)", "Supermarket", "Super Store", "Dollar Store"]
-         if f in lap], suffix="%")
+         if f in lap], suffix="%",
+        title="Some stores drop out, then come back",
+        subtitle="share that lost authorization and later regained it")
 
     fig(4, "authorization-churn",
         "Authorizations ending 2009–2023 as a multiple of average active stock.",
@@ -74,14 +84,18 @@ def main():
           "slot": 1 if f == "Dollar Store" else 0}
          for f in ["Dollar Store", "Super Store", "Supermarket",
                    "Combination Grocery/Other", "Grocery (Medium)",
-                   "Convenience Store", "Grocery (Small)"] if f in vol], suffix="x")
+                   "Convenience Store", "Grocery (Small)"] if f in vol], suffix="x",
+        title="Small grocery churned. Dollar stores barely did.",
+        subtitle="authorizations ending 2009-2023, as a multiple of average stock")
 
     fig(5, "openings-vs-endings",
         "Dollar store authorizations beginning and ending each year.",
         figures.line_png, yrs,
         [{"name": "beginning", "values": fl["new"], "slot": 1},
          {"name": "ending", "values": fl["departed"], "slot": 2}],
-        ylabel="authorizations per year", annotate=[{"year": 2024, "text": "2024"}])
+        ylabel="authorizations per year", annotate=[{"year": 2024, "text": "2024"}],
+        title="Openings ran far ahead of endings until 2024",
+        subtitle="dollar store authorizations per year")
 
     ctx = d["context"]
     picks = ["Dollar Store", "Supermarket", "Super Store", "Grocery (Small)",
@@ -91,12 +105,16 @@ def main():
         "scale — there are about 119,000.",
         figures.line_png, ctx["Dollar Store"]["years"],
         [{"name": f, "values": ctx[f]["stock"], "slot": i + 1} for i, f in enumerate(picks)],
-        ylabel="active stores")
+        ylabel="active stores",
+        title="Dollar stores passed every grocery format",
+        subtitle="stores authorized on 31 December")
 
     fig(7, "endings-2024",
         "Authorizations ending in 2024, by brand.",
         figures.table_png, ["Brand", "Authorizations ending 2024"],
-        [[s["brand"], f"{s['n']:,}"] for s in d["spike_2024"][:5]], highlight_row=0)
+        [[s["brand"], f"{s['n']:,}"] for s in d["spike_2024"][:5]], highlight_row=0,
+        title="Two chains account for the 2024 jump",
+        subtitle="authorizations ending in 2024, by brand")
 
     bpick = [b for b in ["Dollar General", "Dollar Tree", "Family Dollar", "99 Cents Only"]
              if b in d["brands"]]
@@ -104,14 +122,18 @@ def main():
         "Active SNAP authorizations by dollar-store brand. 99 Cents Only reaches zero in 2024.",
         figures.line_png, d["brands"]["Dollar General"]["years"],
         [{"name": b, "values": d["brands"][b]["stock"], "slot": i + 1}
-         for i, b in enumerate(bpick)], ylabel="active stores")
+         for i, b in enumerate(bpick)], ylabel="active stores",
+        title="99 Cents Only reaches zero in 2024",
+        subtitle="stores authorized on 31 December, by brand")
 
     fig(9, "dollar-only-zips",
         "ZIP codes with a SNAP-authorized dollar store and no supermarket, superstore, "
         "or grocery store of any size.",
         figures.line_png, [r["yr"] for r in z],
         [{"name": "ZIPs", "values": [r["dollar_only"] for r in z], "slot": 2}],
-        ylabel="ZIP codes")
+        ylabel="ZIP codes",
+        title="More ZIP codes have a dollar store and no grocery",
+        subtitle="ZIP codes with a dollar store and no grocery of any size")
 
     g_rate = 100 * lap["Grocery (Small)"]["rate"]
     md = f"""# Dollar stores almost never leave SNAP. Small grocers almost always do.
@@ -127,14 +149,11 @@ def main():
 
 ---
 
-Everyone knows dollar stores grew. The more revealing question is what happened to the stores that
-were already there. Take every retailer that entered the SNAP program between 2008 and 2012, and ask
-how many are still in it at the end of 2025.
+Everyone knows dollar stores grew. The sharper question is what happened to the stores that were already there. So take every retailer that joined SNAP between 2008 and 2012. Then ask how many are still in the program at the end of 2025. Here is that count, by format:
 
-![{figs[2]['caption']}](images/{figs[2]['file']})
+![{figs["cohort-retention"]['caption']}](images/{figs["cohort-retention"]['file']})
 
-*{figs[2]['caption']} Counts are stores, not authorization spells, so a store that lapsed and
-returned is counted once.*
+*Counts are stores, not authorization spells, so a store that lapsed and returned is counted once.*
 
 Small grocery is the extreme: {sg['still_open']:,} of {sg['cohort']:,} are still in the program. A
 dollar store from those same years is **{d['survival_gap']['multiple']}× more likely** to still be
@@ -142,103 +161,80 @@ authorized.
 
 ## What an ended authorization actually means
 
-Before reading that as a survival rate, it is worth being exact about what this dataset records. It
-tracks *authorizations*, not storefronts. When a record ends, the store might have closed — or it
-might still be open and no longer taking EBT. Those are very different claims, and the raw data
-cannot tell them apart.
+Before calling that a survival rate, be exact about what this data records. It tracks *authorizations*, not storefronts. When a record ends, the store might have closed. Or it might still be open and just no longer take EBT. Those are very different claims. The raw data cannot tell them apart.
 
-Two things narrow it, and they point in opposite directions for chains and for independents.
+Two checks narrow it. They point in opposite directions for chains and for independents.
 
 **For the dollar chains, authorization is effectively a store census.**
 
-![{figs[2]['caption']}](images/{figs[2]['file']})
+![{figs["chain-store-census"]['caption']}](images/{figs["chain-store-census"]['file']})
 
-Essentially every Dollar General and Dollar Tree in the country accepts SNAP. So for these retailers
-the authorization record really is a store count, and an ending really does mean a closed store. That
-is what licenses closure language for them — but only for them.
+Nearly every Dollar General and Dollar Tree in the country takes SNAP. So for these chains the authorization record really is a store count. An ending really does mean a closed store. That is why we can say "closed" about them, and only about them.
 
 **For independents, the opposite caution applies.** Some stores drop out of the program and come
 back, which proves they were open the whole time.
 
-![{figs[3]['caption']}](images/{figs[3]['file']})
+![{figs["lapsed-and-returned"]['caption']}](images/{figs["lapsed-and-returned"]['file']})
 
-*{figs[3]['caption']} Median gaps run from 9 days for superstores to 85 for convenience stores.*
+*Median gaps run from 9 days for superstores to 85 for convenience stores.*
 
 A small grocer is **{d['lapse_gap']['multiple']}× more likely** than a dollar store to have dropped
 out and returned. And that {g_rate:.0f}% is only a floor: it counts stores that came back. Any store
 that left the program and stayed open is invisible here.
 
-So the honest reading of the headline chart is that it measures **program retention, not survival**.
-For dollar stores those are nearly the same thing. For small grocers they are not, and the gap
-between them is unknown — resolving it requires business-registry data rather than SNAP records.
+So the honest reading of the first chart is this. It measures **staying in the program, not staying in business**. For dollar stores those are nearly the same thing. For small grocers they are not. How big the gap is, we cannot say from these records.
 
 ## The pattern that produces the gap
 
-The story is usually told as dollar stores opening aggressively, and they do open steadily — but on
-that measure they are not even unusual. Supermarket openings vary less from year to year than dollar
-store openings do. What is distinctive is the other side of the ledger.
+The story is usually told as dollar stores opening fast. They do open steadily. But on that measure they are not unusual at all. Supermarket openings actually vary less from year to year. What sets dollar stores apart is the other side of the ledger. This is how many stores each format shed:
 
-![{figs[4]['caption']}](images/{figs[4]['file']})
+![{figs["authorization-churn"]['caption']}](images/{figs["authorization-churn"]['file']})
 
-*{figs[4]['caption']} Small grocery cycled through more than three times its own population; dollar
-stores shed about one store in seven.*
+*Small grocery cycled through more than three times its own population. Dollar stores shed about one store in seven.*
 
-Roughly {d['metronome']['mean_new']:,.0f} new dollar store authorizations a year against about
-{d['metronome']['mean_closed']:,.0f} endings produces a line that only goes one way.
+About {d['metronome']['mean_new']:,.0f} dollar stores joined each year. Only about {d['metronome']['mean_closed']:,.0f} left. A gap that wide produces a line that goes one way:
 
-![{figs[5]['caption']}](images/{figs[5]['file']})
+![{figs["openings-vs-endings"]['caption']}](images/{figs["openings-vs-endings"]['file']})
 
-*{figs[5]['caption']} The two lines cross for the first time in 2024.*
+*The two lines cross for the first time in 2024.*
 
-Set against the grocery formats, the result is stark. Dollar stores passed every individual grocery
-format years ago and are now the second most common type of SNAP retailer in the country, behind only
-convenience stores.
+Put next to the grocery formats, the result is stark. Dollar stores passed every single grocery format years ago. They are now the second most common SNAP retailer in the country. Only convenience stores beat them.
 
-![{figs[6]['caption']}](images/{figs[6]['file']})
+![{figs["format-stock"]['caption']}](images/{figs["format-stock"]['file']})
 
 ## 2024 breaks the pattern
 
 Endings jumped from a few hundred a year to **{fl['departed'][yrs.index(2024)]:,}** in 2024. This is
 the one place we can check the data against events that were independently reported.
 
-![{figs[7]['caption']}](images/{figs[7]['file']})
+![{figs["endings-2024"]['caption']}](images/{figs["endings-2024"]['file']})
 
-Dollar Tree spent 2024 closing Family Dollar locations, and 99 Cents Only liquidated entirely that
-spring. Both appear here on schedule, which is a useful confidence check: when something verifiable
-happens in retail, these records see it.
+Dollar Tree spent 2024 closing Family Dollar stores. 99 Cents Only shut down entirely that spring. Both show up here right on time. That is a useful check. When something real happens in retail, these records catch it.
 
-![{figs[8]['caption']}](images/{figs[8]['file']})
+![{figs["brands"]['caption']}](images/{figs["brands"]['file']})
 
 ## Where it matters
 
-Growth in aggregate is not the same as growth where it counts. The sharper question is how often a
-dollar store is the *only* option.
+Growth in total is not the same as growth where it matters. The sharper question is how often a dollar store is the *only* option nearby.
 
-![{figs[9]['caption']}](images/{figs[9]['file']})
+![{figs["dollar-only-zips"]['caption']}](images/{figs["dollar-only-zips"]['file']})
 
 In 2008 that described {z[0]['dollar_only']:,} ZIP codes. By 2024 it described
 **{z[-1]['dollar_only']:,}** — {100*z[-1]['dollar_only']/z[-1]['with_dollar']:.0f}% of every ZIP code
-that has a dollar store at all. Nationally there are now {d['headline']['dollar_2025']:,} dollar
-stores against {d['headline']['all_grocery_2025']:,} grocery stores of every size combined.
+that has a dollar store at all. Across the country there are now {d['headline']['dollar_2025']:,} dollar stores. Grocery stores of every size combined come to {d['headline']['all_grocery_2025']:,}.
 
 ## Limits
 
-Nothing here measures floor space, sales, or what is actually on the shelves. A dollar store and a
-supermarket each count as one record. USDA classifies stores by stocking breadth, and the 2016
-stocking-standards rule moved that bar mid-series — which affects grocery formats far more than dollar
-stores, and is the subject of the next piece.
+Nothing here measures floor space, sales, or what is on the shelves. A dollar store and a supermarket each count as one record. USDA sorts stores by how much they stock, and a 2018 rule moved that bar partway through this series. That affects grocery formats far more than dollar stores. The next piece takes it up.
 
-Store-level SNAP redemption dollars are not public. *Food Marketing Institute v. Argus Leader* (2019)
-placed them under FOIA Exemption 4, so we can see where authorized retailers are but never how much
-any one of them transacts.
+SNAP spending per store is not public. A 2019 Supreme Court case, *Food Marketing Institute v. Argus Leader*, put those figures under a FOIA exemption. So we can see where authorized stores are, but never how much any one of them takes in.
 
-Company-reported store counts are as of early 2025 to early 2026 and are compared against
-end-of-2025 authorizations, so the ratios are close rather than exact.
+Company store counts are from early 2025 to early 2026. We compare them against authorizations at the end of 2025. So the ratios are close, not exact.
 
 ---
 
 *Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, covering retailers authorized at
-any point in the window. Analysis uses 611,164 stores with usable coordinates. A store counts as
+any point in the window. Analysis uses 656,868 stores with usable coordinates. A store counts as
 active in a year if an authorization covered 31 December. Company store counts from Dollar General and
 Dollar Tree investor releases; Family Dollar via trade press. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
