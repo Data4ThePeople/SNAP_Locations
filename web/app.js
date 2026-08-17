@@ -37,7 +37,7 @@ const state = {
   unbranded: [0, 1, 1], // by ownership id: [chain(unused), independent, unknown]
   slots: [null, null, null], // each: {type:'group'|'brand', id} or null
   onlySlots: false,
-  dotSize: 1.6,
+  dotSize: 0.6,   // smallest on the scale; matches index.html
   region: 'conus',
   userMoved: false,
   view: null,
@@ -112,6 +112,16 @@ async function load() {
   state.brandOn = new Uint8Array(meta.brands.length + 1).fill(1);
   document.getElementById('brandSearch').placeholder =
     `Search ${meta.brands.length} retailers…`;
+  // Written from meta so the caveat cannot drift from the payload it describes.
+  const nfmt = (n) => n.toLocaleString('en-US');
+  document.getElementById('loading').textContent =
+    `Loading ${nfmt(meta.count)} stores…`;
+  const short = document.getElementById('nShort');
+  if (short && meta.excluded_shortlived_count != null) {
+    short.textContent = nfmt(meta.excluded_shortlived_count);
+    document.getElementById('pctShort').textContent =
+      `${meta.excluded_shortlived_pct}%`;
+  }
 
   selfCheck();
   buildFormatList();
@@ -280,15 +290,26 @@ function initDeck() {
     },
   });
 
+  const box = document.getElementById('map');
   let t = null;
-  addEventListener('resize', () => {
+  const refit = () => {
+    // Size first, and unconditionally. deck.gl only tracks the window, but this
+    // box changes size without the window doing anything: the legend strip is
+    // empty on first paint and grows once renderLegend runs, and the container
+    // queries re-lay the shell out at a fixed iframe size. Both left the canvas
+    // short of its parent with a band of panel colour under the map.
+    deckgl.setProps({ width: box.clientWidth, height: box.clientHeight });
     clearTimeout(t);
     t = setTimeout(() => {
+      // The view is only re-fitted while the reader has not taken over.
       if (state.userMoved) return;
       state.view = { ...viewFor(state.region), bearing: 0, pitch: 0 };
       deckgl.setProps({ initialViewState: state.view });
     }, 150);
-  });
+  };
+  addEventListener('resize', refit);
+  if (window.ResizeObserver) new ResizeObserver(refit).observe(box);
+  refit();
 }
 
 function flyTo(key) {
@@ -812,3 +833,23 @@ load().catch((err) => {
   document.getElementById('loading').textContent = 'Failed to load: ' + err.message;
   console.error(err);
 });
+
+
+// --- narrow-width tabs -------------------------------------------------------
+// Under 830px of embed width the two lists collapse to one tab at a time. Both
+// stay in the DOM and are hidden with CSS, so every checkbox the app rendered
+// keeps its state when the reader switches tabs. Above the breakpoint the tab
+// bar is display:none and this does nothing.
+(() => {
+  const tabs = document.getElementById('tabs');
+  const lists = document.getElementById('lists');
+  if (!tabs || !lists) return;
+  tabs.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-tab]');
+    if (!btn) return;
+    lists.dataset.tab = btn.dataset.tab;
+    tabs.querySelectorAll('[data-tab]').forEach((b) => {
+      b.setAttribute('aria-selected', String(b === btn));
+    });
+  });
+})();

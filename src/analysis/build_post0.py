@@ -92,7 +92,7 @@ open and simply stopped accepting SNAP.</p>
 
 <h2>Seven days, seven parts of one story.</h2>
 
-<p>Each piece stands alone. But they are built to be read in order, and that order is not the order we wrote them in. It is the order in which the argument builds. The first six are the story. The last is an epilogue about what it means for policy.</p>
+<p>Each piece stands alone, but the argument builds from one to the next. The first six are the story. The last is an epilogue about what it means for policy.</p>
 
 <ol class="chapters">{rows}</ol>
 
