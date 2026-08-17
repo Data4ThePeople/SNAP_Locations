@@ -122,7 +122,28 @@ def main():
                      "mult": round(stock[-1] / stock[0], 2) if stock[0] else None}
         print(f"   {f:<20} {stock[0]:>7,} -> {stock[-1]:>7,}   {growth[f]['mult']}x")
 
-    print("\n4. Checks")
+    print("\n4. Growth by ownership — do chains grow faster as well as last longer?")
+    growth_own = {}
+    for f in ALL_FMT:
+        growth_own[f] = {}
+        for o in ("chain", "independent"):
+            a, b = (con.execute(f"""
+                SELECT count(DISTINCT p.record_id) FROM panel p JOIN fact_spell s
+                USING(record_id) WHERE p.format = '{f}' AND p.ownership = '{o}'
+                  AND NOT s.date_anomaly AND s.auth_date <= make_date({y}, 12, 31)
+                  AND (s.end_date IS NULL OR s.end_date >= make_date({y}, 12, 31))
+                """).fetchone()[0] for y in (YEARS[0], YEARS[-1]))
+            growth_own[f][o] = {
+                "first": int(a), "latest": int(b),
+                "mult": round(b / a, 2) if a else None,
+                # A multiple off a tiny 2006 base is not a growth rate. The same
+                # floor that governs survival cells governs these.
+                "thin": a < MIN_N or b < MIN_N}
+        c, i = growth_own[f]["chain"], growth_own[f]["independent"]
+        print(f"   {f:<20} chain {str(c['mult']):>5}x (n={c['first']:>6,})   "
+              f"independent {str(i['mult']):>5}x (n={i['first']:>6,})")
+
+    print("\n5. Checks")
     # The ladder must actually be a ladder, or the whole piece is wrong.
     rates = [surv[f]["rate"] for f in LADDER]
     check("survival falls monotonically down the size ladder",
@@ -142,10 +163,29 @@ def main():
     thin = [f for f in ALL_FMT if surv[f]["thin"]]
     check("every headline format cell clears the sample floor", not thin,
           f"thin: {thin}" if thin else f"min n={min(surv[f]['n'] for f in ALL_FMT):,}")
+    # The closing section rests on chains beating independents on BOTH measures.
+    pairs = [f for f in ALL_FMT
+             if not growth_own[f]["chain"]["thin"] and not growth_own[f]["independent"]["thin"]
+             and not split[f]["chain"]["thin"] and not split[f]["independent"]["thin"]]
+    check("chains outgrow independents in every format where both are measurable",
+          all(growth_own[f]["chain"]["mult"] > growth_own[f]["independent"]["mult"]
+              for f in pairs), ", ".join(pairs))
+    check("chains also outlast independents in those same formats",
+          all(split[f]["chain"]["rate"] > split[f]["independent"]["rate"] for f in pairs),
+          ", ".join(pairs))
+    # The dollar store's claim to the corner is the section's punchline.
+    best_g = max(growth_own[f][o]["mult"] for f in ALL_FMT for o in ("chain", "independent")
+                 if not growth_own[f][o]["thin"])
+    best_s = max(split[f][o]["rate"] for f in ALL_FMT for o in ("chain", "independent")
+                 if not split[f][o]["thin"])
+    d_g, d_s = growth_own["Dollar Store"]["chain"]["mult"], split["Dollar Store"]["chain"]["rate"]
+    check("the dollar store leads on growth and on survival at once",
+          d_g == best_g and d_s == best_s,
+          f"dollar {d_g}x/{d_s}%  best {best_g}x/{best_s}%")
 
     out = {"ladder": LADDER, "breakers": BREAKERS, "min_n": MIN_N,
            "cohort": "2008-2012", "survival": surv, "by_ownership": split,
-           "growth": growth,
+           "growth": growth, "growth_by_ownership": growth_own,
            "thin_cells": [f"{f}/{o}" for f in ALL_FMT for o in ("chain", "independent")
                           if split[f][o]["thin"] and split[f][o]["n"] > 0]}
     OUT.mkdir(parents=True, exist_ok=True)

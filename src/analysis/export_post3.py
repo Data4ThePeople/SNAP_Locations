@@ -24,6 +24,7 @@ def main():
 
     L, B = d["ladder"], d["breakers"]
     sv, ow, gr = d["survival"], d["by_ownership"], d["growth"]
+    go = d["growth_by_ownership"]
     SHORT = {"Super Store": "Super store", "Supermarket": "Supermarket",
              "Grocery (Large)": "Large grocery", "Grocery (Medium)": "Medium grocery",
              "Grocery (Small)": "Small grocery", "Dollar Store": "Dollar store",
@@ -77,15 +78,29 @@ def main():
         subtitle="still authorized in 2025, by store type and ownership",
         note=NOTE)
 
-    fig(3, "growth",
-        "Change in the number of SNAP-authorized stores between 2006 and 2025, by "
-        "store type.",
-        figures.hbar_png,
-        [{"label": SHORT[f], "value": gr[f]["mult"],
-          "slot": 2 if f == "Dollar Store" else (1 if f == "Super Store" else 0)}
-         for f in sorted(L + B, key=lambda x: -gr[x]["mult"])], suffix="x",
-        title="The most durable format is also the slowest growing",
-        subtitle="SNAP-authorized stores in 2025 as a multiple of 2006")
+    # Every (format, ownership) pair where both measures clear the sample floor.
+    # Ownership is in the LABEL, not only in the colour, so the point is
+    # identifiable in print and to a colourblind reader without a legend.
+    def pts():
+        out = []
+        for f in L + B:
+            for o in ("chain", "independent"):
+                g, s = go[f][o], ow[f][o]
+                if g["thin"] or s["thin"]:
+                    continue
+                out.append({"name": f"{SHORT[f]} ({o[:5] if o == 'chain' else 'indep'})",
+                            "x": g["mult"], "y": s["rate"],
+                            "slot": 1 if o == "chain" else 3})
+        return out
+    fig(3, "growth-vs-survival",
+        "Growth against survival, by store type and ownership. Only pairs with "
+        f"at least {d['min_n']} stores on both measures are plotted.",
+        figures.scatter_png, pts(),
+        xlabel="growth: 2025 stores as a multiple of 2006", xsuffix="x",
+        ylabel="still authorized in 2025", ysuffix="%",
+        quadrant={"x": 1.0}, width=7.2, height=4.6,
+        title="Only one format did both",
+        note="Points left of the dashed line have fewer stores than in 2006.")
 
     ss, sg = sv["Super Store"], sv["Grocery (Small)"]
     ssc, dol = ow["Super Store"]["chain"], sv["Dollar Store"]
@@ -144,19 +159,37 @@ were the fuel chains, at 78.7%; the single-owner ones managed 14.2%.
 
 Neither format was breaking rule one. Neither was subject to it.
 
-## The large format wins at staying and loses at spreading
+## Staying power is not the same as growing
 
-One more thing falls out of the same table, and it is the opposite of what the first two rules suggest.
+Rule one said the super store was the safest place to be. That is true, and it is also the whole of
+what being large bought you. The super store grew **{gr['Super Store']['mult']}x** since 2006. Dollar
+stores grew **{gr['Dollar Store']['mult']}x**. Supermarkets managed {gr['Supermarket']['mult']}x.
 
-![{figs["growth"]['caption']}](images/{figs["growth"]['file']})
+So there are two different things a format can be good at, and they come apart. Put them on the same
+chart — growth across the bottom, survival up the side — and split every format by ownership.
 
-The super store is the most durable format in the data and close to the slowest growing:
-**{gr['Super Store']['mult']}x** since 2006, against **{gr['Dollar Store']['mult']}x** for dollar stores
-and {gr['Convenience Store']['mult']}x for convenience stores. Supermarkets barely moved at
-{gr['Supermarket']['mult']}x.
+![{figs["growth-vs-survival"]['caption']}](images/{figs["growth-vs-survival"]['file']})
 
-Durability and growth are not the same trait. The formats that lasted best are not the ones that spread.
-What spread was the format that found a way to be small and be a chain at the same time.
+Read it in three passes.
+
+**Chains sit above and to the right of their own independents, every time.** Super stores:
+{go['Super Store']['chain']['mult']}x and {ow['Super Store']['chain']['rate']}% for the chains, against
+{go['Super Store']['independent']['mult']}x and {ow['Super Store']['independent']['rate']}% for the
+independents. Supermarkets: {go['Supermarket']['chain']['mult']}x and
+{ow['Supermarket']['chain']['rate']}% against {go['Supermarket']['independent']['mult']}x and
+{ow['Supermarket']['independent']['rate']}%. Convenience stores:
+{go['Convenience Store']['chain']['mult']}x and {ow['Convenience Store']['chain']['rate']}% against
+{go['Convenience Store']['independent']['mult']}x and {ow['Convenience Store']['independent']['rate']}%.
+In every format where both can be measured, the chains grew faster **and** lasted longer.
+
+**Fast growth does not buy staying power.** Convenience chains grew
+{go['Convenience Store']['chain']['mult']}x, second only to dollar stores — and barely half of them,
+{ow['Convenience Store']['chain']['rate']}%, were still authorized thirteen years on. That is Day 3 in a
+single point: the format kept expanding while the businesses inside it turned over.
+
+**And one point sits on its own in the top right corner.** The dollar store has the fastest growth in the
+data and the highest survival in the data. Nothing else has both. The super store lasted nearly as well
+and hardly grew; the convenience chains grew nearly as fast and did not last.
 
 ## What it adds up to
 
@@ -169,9 +202,13 @@ store in the data, right down the size order.
 **Rule two: rule one does not apply to chains.** A dollar store the size of a corner shop held its
 authorization as reliably as a super store.
 
-Put the two together and you can see the shape of the last twenty years. The stores that went away were
-small and independent — they had neither advantage. The stores that grew were small and chained — they
-had the one that could be bought. And the large format, which had both, mostly stayed where it was.
+And on the second measure, growth, being a chain is the only thing that helped at all. Size did nothing
+for it: the largest format in the country grew {gr['Super Store']['mult']}x in twenty years.
+
+Put it together and you can see the shape of the last two decades. The stores that went away were small
+and independent — they had neither advantage. The large format had size, and used it to stay put rather
+than to spread. What actually spread was the format that worked out how to be small and be a chain at
+the same time, and it is the only thing in the data that is winning on both counts at once.
 
 Tomorrow we look at a format that had both advantages and lost anyway. It is the fastest collapse in the
 whole dataset, and it happened in the last four years.
