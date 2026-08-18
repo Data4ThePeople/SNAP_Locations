@@ -318,9 +318,15 @@ def main():
                  "'Grocery (Medium)','Combination Grocery/Other')")
         rest, _ = points(con, f"NOT ({SMALL})", 2025)
         small, ns = points(con, SMALL, 2025)
+        # Pink rather than the blue used everywhere else. Day 6 is also
+        # blue-dominant and the two frames read as the same picture side by
+        # side, which is how these will be seen on the site. Of the two hues
+        # not already in the set, pink sits dE 19.3 from the nearest colour in
+        # play against violet's 9.8 — violet is close to the very blue this is
+        # separating from — and clears the contrast floor on this ground.
         render(OUT / "day-7.png", 7,
                [{"xy": rest, "color": MUTED, "size": 0.5, "alpha": 0.4},
-                {"xy": small, "color": S[0], "size": 0.6,
+                {"xy": small, "color": S[4], "size": 0.6,
                  "label": f"small formats  {ns:,}"}],
                "Stores at most risk from new rule")
 
