@@ -124,7 +124,7 @@ def render(path, day, layers, caption):
         block.append(("\u25cf  " + L["label"], 14, L["color"], 1.55))
     for i, line in enumerate(textwrap.wrap(caption, 24)):
         block.append((line, 15, INK, 1.9 if i == 0 else 1.35))
-    block.append(("lower 48 shown  ·  USDA FNS", 11, INK_SOFT, 2.2))
+    block.append(("lower 48  ·  SNAP authorizations", 11, INK_SOFT, 2.2))
 
     LX = 0.135
     height = sum(sz * lead * PT for _, sz, _, lead in block)
@@ -190,12 +190,12 @@ def main():
         s = split(con, "p.format = 'Grocery (Small)'", 2006, 2025)
         render(OUT / "day-1.png", 1,
                [{"xy": s["added"][0], "color": MUTED, "size": 1.4, "alpha": 0.6,
-                 "label": f"opened since 2006  {s['added'][1]:,}"},
+                 "label": f"authorized since 2006  {s['added'][1]:,}"},
                 {"xy": s["kept"][0], "color": S[0], "size": 1.6,
-                 "label": f"there in 2006, still open  {s['kept'][1]:,}"},
+                 "label": f"authorized then and now  {s['kept'][1]:,}"},
                 {"xy": s["lost"][0], "color": S[3], "size": 1.6, "z": 3,
-                 "label": f"gone since 2006  {s['lost'][1]:,}"}],
-               "Small grocery stores")
+                 "label": f"left SNAP since 2006  {s['lost'][1]:,}"}],
+               "Small grocery")
 
     if want is None or 3 in want:
         chain, nc = points(con, "p.format = 'Convenience Store' AND p.ownership = 'chain'", 2025)
@@ -229,7 +229,7 @@ def main():
                [{"xy": s["kept"][0], "color": S[0], "size": 1.8,
                  "label": f"still authorized  {s['kept'][1]:,}"},
                 {"xy": s["lost"][0], "color": S[3], "size": 1.8, "z": 3,
-                 "label": f"gone since 2016  {s['lost'][1]:,}"}],
+                 "label": f"left SNAP since 2016  {s['lost'][1]:,}"}],
                "Chain pharmacies")
 
     if want is None or 6 in want:
@@ -241,9 +241,9 @@ def main():
         s = split(con, "p.ownership = 'chain'", 2006, 2025)
         render(OUT / "day-6.png", 6,
                [{"xy": s["kept"][0], "color": S[3], "size": 0.6, "alpha": 0.85,
-                 "label": f"chain, here in 2006  {s['kept'][1]:,}"},
+                 "label": f"chain, authorized in 2006  {s['kept'][1]:,}"},
                 {"xy": s["added"][0], "color": S[0], "size": 0.6, "alpha": 0.85,
-                 "label": f"chain, added since  {s['added'][1]:,}"}],
+                 "label": f"chain, authorized since  {s['added'][1]:,}"}],
                "Chains went 39% to 50%")
 
     if want is None or 7 in want:
