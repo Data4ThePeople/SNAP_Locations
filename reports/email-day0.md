@@ -156,7 +156,7 @@ Day 2 — Dollar stores cracked the code small grocers could not
 Up 307% since 2006 — the steepest growth of any store format.
 
 Day 3 — Convenience stores thrived. Most of their owners did not.
-14.2% of single-owner stores lasted thirteen years. 78.7% of the chains did.
+14.2% of single-owner stores lasted thirteen years. 78.7% of the fuel-selling chains did.
 
 Day 4 — The bigger the store, the better it did — unless it belonged to a chain
 78% of chain super stores kept their SNAP authorization. 46% of independent ones did.

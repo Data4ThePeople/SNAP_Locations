@@ -188,7 +188,7 @@ starting from scratch.
 
 Drilling into this format does not give a new answer. It gives the same one, in sharper relief.
 
-Small grocers lost because they were small and alone. Dollar stores won because they were small and part of a chain. Convenience stores split along exactly that line: the chains kept **{ch['rate']}%** of their stores over thirteen years, the single owners kept **{so['rate']}%**.
+Small grocers lost because they were small and alone. Dollar stores won because they were small and part of a chain. Convenience stores split along exactly that line: the fuel-selling chains kept **{ch['rate']}%** of their stores over thirteen years, the single owners kept **{so['rate']}%**.
 
 **A chain of small boxes wins both games at once.** Small enough to make money in a thin market where a supermarket cannot. Big enough to spread a fixed cost across thousands of locations. That was the dollar store's trick, and it works just as well with a fuel canopy over it.
 
