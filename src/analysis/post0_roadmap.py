@@ -127,13 +127,19 @@ def main():
         "post2": {"value": f"{abs(g('post2','cbp','cbp_under10_pct', default=24.9)):.0f}%",
                   "label": "fall in the number of small grocery businesses, by the "
                            "Census Bureau's count"},
+        # "store format", not "format": Farmers' Markets grew 963% on a base of
+        # 326, but a farmers' market is not a store. Among stores, dollar
+        # stores' 307% is the steepest by a factor of three.
         "post1": {"value": f"{g('post3','growth','Dollar Store','pct'):+}%",
                   "label": "change in the number of SNAP-authorized dollar stores "
-                           "since 2006 — the steepest growth of any format"},
+                           "since 2006 — the steepest growth of any store format"},
+        # "fuel-selling chains", not "the chains": 78.7% is the fuel-forward
+        # segment only. Convenience chains that do not sell fuel kept 33.1%,
+        # and all convenience chains together kept 52%.
         "post6": {"value": f"{p6_surv['single-owner stores']['rate']}%",
                   "label": "of single-owner convenience stores lasted thirteen years, "
                            f"against {p6_surv['chains that sell fuel']['rate']}% of the "
-                           "chains"},
+                           "fuel-selling chains"},
         # The chapter's point is that ownership beats size, so the card carries
         # the ownership gap inside a SINGLE size band. Holding the format fixed
         # is what makes the comparison mean anything.
@@ -179,7 +185,7 @@ def main():
         "post1": f"Up {g('post3','growth','Dollar Store','pct')}% since 2006 — the steepest "
                  "growth of any store format.",
         "post6": f"{p6_surv['single-owner stores']['rate']}% of single-owner stores lasted thirteen "
-                 f"years. {p6_surv['chains that sell fuel']['rate']}% of the chains did.",
+                 f"years. {p6_surv['chains that sell fuel']['rate']}% of the fuel-selling chains did.",
         "post3": f"{p3_own['Super Store']['chain']['rate']:.0f}% of chain super stores kept their "
                  f"SNAP authorization. {p3_own['Super Store']['independent']['rate']:.0f}% of "
                  "independent ones did.",
