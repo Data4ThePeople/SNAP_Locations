@@ -142,8 +142,14 @@ def main():
         "post4": {"value": f"{g('post4','chain','peak', default=0):,}",
                   "label": "peak SNAP-authorized chain pharmacies, now "
                            f"{g('post4','chain','latest', default=0):,}"},
+        # Deliberately open-ended: this piece is the summary, and its body is
+        # still being reworked. The number counts the pharmacy loss but the
+        # label reaches back to Day 2, so the card ties the series together
+        # rather than reporting one narrow finding.
         "post5": {"value": f"{g('post5','groups','lost', default=976):,}",
-                  "label": "ZIP codes lost their last SNAP-authorized chain pharmacy since 2021"},
+                  "label": "ZIP codes lost their last chain pharmacy since 2021. In "
+                           f"{g('post5','sequencing','had_before_pct', default=83.5):.0f}% "
+                           "of them a dollar store was already there"},
         # NOT the 5,000 that used to sit here. That figure is denials, and USDA
         # budgets for 4,500 of those stores to restock and reapply, so its own
         # projected net loss is about 500. This is the agency's reasoning for
