@@ -77,8 +77,9 @@ CHAPTERS = [
     (5, "post4", "Pharmacies",
      "The collapse of the chain pharmacy, which happened faster and more recently "
      "than any other change in the data.",
-     "The newest change, and the one with consequences beyond food. It also sets "
-     "up the final chapter, which is built on the places this collapse hit."),
+     "The newest change, and the one with consequences beyond food. It is also the "
+     "case the summary has to account for: a format with both advantages that "
+     "lost anyway."),
     (6, "post5", "The thread",
      "What twenty years of this adds up to, the places where all of it lands at "
      "once, and the explanation that turns out to be wrong.",
