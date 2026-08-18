@@ -153,9 +153,6 @@ stores losing their authorization each year actually fell {abs(exit_drop)}%. Tha
 different picture — not incumbent grocers being shoved out of the market, but new small grocers no
 longer showing up to take their place.</p>
 
-<p>And the fall sorts by <strong>store size</strong>. These are USDA's own categories, with nothing
-regrouped by us:</p>
-
 <table><thead><tr><th>USDA store type</th><th>Change in new sign-ups per year</th></tr></thead>
 <tbody>{ladder_rows}</tbody></table>
 
@@ -163,8 +160,9 @@ regrouped by us:</p>
 actually grew. That is the shape a stocking requirement would produce: the rule asks for a fixed
 amount of inventory, which is a large demand on a small store and no demand at all on a big one.</p>
 
-<p><strong>This is a candidate, not a proven cause.</strong> New sign-ups had been falling since
-2012, years before the rule took effect, so something else is at work too. And these records carry no field for
+<p><strong>While this would be a neat and tidy explanation for this table, sadly we can't prove it
+with the data we have.</strong> New sign-ups had been falling since 2012, years before the rule
+took effect, so something else is at work too. And these records carry no field for
 why an authorization ended. We can show the shape and the timing. We cannot show the reason.</p>
 
 <h2>It is not happening evenly</h2>
@@ -177,8 +175,9 @@ margin.</p>
 states with at least 150 at peak.</figcaption></figure>
 
 <p>New York went from {st[0]['then']:,} to {st[0]['now']:,}, a fall of
-{abs(st[0]['pct']):.0f}%. A state with that many small groceries is a state of bodegas and corner
-stores, and it took the largest share of whatever changed.</p>
+{abs(st[0]['pct']):.0f}%. Nearly all of that is New York City: the five boroughs (packed with
+bodegas and corner stores) held {d['nyc']['then']:,} of those stores in {arc['peak_year']} and
+account for {d['nyc']['share_of_loss']:.0%} of the loss.</p>
 
 <h2>What it adds up to</h2>
 
