@@ -148,11 +148,15 @@ def main():
         # budgets for 4,500 of those stores to restock and reapply, so its own
         # projected net loss is about 500. This is the agency's reasoning for
         # why the losses are acceptable, which is what the epilogue answers.
-        "post7": {"value": f"{g('post7','policy','impact','small_share_of_redemptions_pct')}% vs "
-                           f"{g('post7','policy','impact','small_share_of_retailers_pct')}%",
-                  "label": "of SNAP spending happens at the small stores this rule hits "
-                           "hardest — and they are the larger share of every SNAP "
-                           "retailer in the country"},
+        # "11% vs 71%" read as two measures of one thing. They are two different
+        # denominators — share of DOLLARS against share of STORES — so each
+        # number now carries its own noun.
+        "post7": {"value": f"{g('post7','policy','impact','small_share_of_retailers_pct')}% of stores, "
+                           f"{g('post7','policy','impact','small_share_of_redemptions_pct')}% of spending",
+                  "label": "the small stores this rule hits hardest are most of the SNAP "
+                           "retailers in the country and almost none of the SNAP money. "
+                           "USDA cites that gap as the reason losing them would not be a "
+                           "hardship"},
     }
 
     def headline(slug):

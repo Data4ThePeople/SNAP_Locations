@@ -150,7 +150,7 @@ Then the seven cards, in order. All are in `reports/post0/images/`.
 | Day 4 | `day-4.png` | Day 4 — The bigger the store, the better it did, unless it belonged to a chain. 78% of chain super stores kept authorization against 46% of independents. |
 | Day 5 | `day-5.png` | Day 5 — The one chain format that did not work. Chain pharmacies peaked at 20,341 and stand at 14,828. |
 | Day 6 | `day-6.png` | Day 6 — The pharmacy left. The grocery left. Two formats stayed. 976 ZIP codes lost their last chain pharmacy since 2021. |
-| Day 7 | `day-7.png` | Day 7 — In November, the rules change for the stores that are left. 11% of SNAP spending happens at the small stores the rule hits hardest, and they are 71% of all SNAP retailers. |
+| Day 7 | `day-7.png` | Day 7 — In November, the rules change for the stores that are left. The small stores this rule hits hardest are 71% of SNAP retailers and 11% of SNAP spending. |
 
 Do **not** link the cards. Days 1–7 are not published yet, and a dead link in a
 launch email is worse than no link. Add links in the daily sends instead.
