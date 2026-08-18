@@ -120,10 +120,9 @@ denial rate of {im['new_denial_rate_pct']}%, up from the {im['baseline_denial_ra
 <p>That is not the same as {im['stores_denied']:,} stores gone, and it is worth being precise about it.
 USDA expects most of those stores to buy the stock and apply again: it budgets for
 {im['reauthorizations_expected']:,} reauthorizations. Its own projected net loss is about
-<strong>{im['net_permanent_loss']:,} stores</strong>. Around
-<strong>{im['small_share_of_retailers_pct']}%</strong> of all SNAP
-retailers are the small formats most exposed: convenience stores, small grocers, and the combination
-stores that include dollar stores.</p>
+<strong>{im['net_permanent_loss']:,} stores</strong>. By USDA's count,
+<strong>{im['small_share_of_retailers_pct']}%</strong> of SNAP retailers are the small formats most
+exposed to the new standard.</p>
 
 <h2>Why USDA thinks that is acceptable</h2>
 
@@ -240,6 +239,11 @@ money a household gets. It is how food reaches people who have the fewest ways t
 
 <div class="caveat">
 <h3>Limits</h3>
+<p><strong>USDA's 71% is USDA's, and we cannot rebuild it.</strong> The impact analysis does not
+publish the store types behind that share, and its universe is 269,217 authorized retailers against the
+249,083 in this file — a different count, since theirs includes Alaska, Hawaii and the territories. On
+the store types here the nearest equivalent is 63%, and adding dollar stores overshoots to 78%. It is
+quoted as the agency's own reasoning, not as a measurement of ours.</p>
 <p><strong>The Thrifty Food Plan question is a question, not a finding.</strong> This data cannot see
 inside a store, so no estimate is made of how much of the plan's basket is stocked anywhere. Measuring
 that needs shelf-level audit data — the kind collected by in-store surveys such as NEMS-S, not by an
