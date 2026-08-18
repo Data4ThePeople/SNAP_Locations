@@ -168,6 +168,31 @@ def main():
                            "hardship"},
     }
 
+
+    # The card labels above are written to sit BESIDE a big number. Read as
+    # running sentences — which is what the email needs, because the card PNGs
+    # are unreadable on a phone — several of them do not parse. These are the
+    # same facts as one short sentence each.
+    email = {
+        "post2": f"A {abs(g('post2','cbp','cbp_under10_pct', default=24.9)):.0f}% fall in small "
+                 "grocery businesses, by the Census Bureau's count.",
+        "post1": f"Up {g('post3','growth','Dollar Store','pct')}% since 2006 — the steepest "
+                 "growth of any store format.",
+        "post6": f"{p6_surv['single-owner stores']['rate']}% of single-owner stores lasted thirteen "
+                 f"years. {p6_surv['chains that sell fuel']['rate']}% of the chains did.",
+        "post3": f"{p3_own['Super Store']['chain']['rate']:.0f}% of chain super stores kept their "
+                 f"SNAP authorization. {p3_own['Super Store']['independent']['rate']:.0f}% of "
+                 "independent ones did.",
+        "post4": f"Chain pharmacies peaked at {g('post4','chain','peak', default=0):,} and stand "
+                 f"at {g('post4','chain','latest', default=0):,}.",
+        "post5": f"Chains went from {g('post5','ownership_mix','chain','share_2006'):.0f}% to "
+                 f"{g('post5','ownership_mix','chain','share_2025'):.0f}% of every SNAP retailer "
+                 "in the country.",
+        "post7": f"The stores it hits hardest are {g('post7','policy','impact','small_share_of_retailers_pct')}% "
+                 f"of SNAP retailers and {g('post7','policy','impact','small_share_of_redemptions_pct')}% "
+                 "of SNAP spending.",
+    }
+
     def headline(slug):
         """The piece's own H1, read from what was published."""
         md = ROOT / "reports" / slug / f"{slug}.md"
@@ -180,7 +205,8 @@ def main():
 
     out = {
         "chapters": [{"day": d, "slug": s, "subject": sub, "headline": headline(s),
-                      "topic": t, "placement": w, "stat": stats.get(s, {})}
+                      "topic": t, "placement": w, "stat": stats.get(s, {}),
+                      "email": email.get(s, "")}
                      for d, s, sub, t, w in CHAPTERS],
         "dataset": {
             # Pipeline figures. These are properties of the load, not of any one
