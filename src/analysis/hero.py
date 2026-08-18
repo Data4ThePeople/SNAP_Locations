@@ -31,6 +31,31 @@ W_PX, H_PX = 1680, 1080
 DPI = 200
 SERIES = "THE STORES THAT STAYED"
 
+# One signature hue per chapter. These are seen side by side on the site, so
+# the frame is what makes them a set and the colour is what tells them apart.
+# Before this they were all blue-dominant and only looked varied by accident,
+# which is how Day 6 and Day 7 ended up reading as the same picture.
+#
+# The order is chosen, not listed: searching the permutations for the one that
+# maximises the smallest gap between consecutive days takes the worst adjacent
+# pair from dE 13.0 to 26.5, clear of the 15 normal-vision floor. Every hue
+# clears 4.4:1 on the ground.
+#
+# Day 6 repeats Day 0's blue on purpose — the summary returns to the whole
+# picture the opener showed — and they sit six apart with different layer
+# structures, so they do not read as a pair.
+HUE = {0: S[0],   # blue        every store
+       1: S[7],   # coral       small grocery, the loss
+       2: S[2],   # green       dollar stores
+       3: S[1],   # orange-red  convenience
+       4: S[6],   # violet      the size ladder
+       5: S[3],   # gold        chain pharmacies
+       6: S[0],   # blue        the synthesis
+       7: S[4]}   # pink        the new rule
+
+# Grey carries context on every frame: the layer a chapter is NOT about. Keeping
+# it hue-free means the signature is never competing with a second colour.
+
 ACTIVE = ("s.auth_date <= make_date({y}, 12, 31) AND "
           "(s.end_date IS NULL OR s.end_date >= make_date({y}, 12, 31))")
 
@@ -150,7 +175,7 @@ def render(path, day, layers, caption):
     import textwrap
     PT = 200 / 72 / H_PX          # one point, as a fraction of frame height
     block = [(" ".join(SERIES.split(" ")), 13, INK_SOFT, 2.4),
-             (f"DAY {day}" if day else "THE MAP", 24, S[0], 2.0)]
+             (f"DAY {day}" if day else "THE MAP", 24, HUE.get(day, S[0]), 2.0)]
     for L in [q for q in layers if q.get("label")]:
         block.append(("\u25cf  " + L["label"], 14, L["color"], 1.55))
     for i, line in enumerate(textwrap.wrap(caption, 24)):
@@ -218,25 +243,26 @@ def main():
             USING(record_id) WHERE NOT s.date_anomaly AND {ACTIVE.format(y=2025)}
             """).fetchone()[0]
         render(OUT / "day-0.png", 0,
-               [{"xy": allpts, "color": S[0], "size": 0.6, "alpha": 0.75}],
+               [{"xy": allpts, "color": HUE[0], "size": 0.6, "alpha": 0.75}],
                f"{national:,} stores in 2025")
 
     if want is None or 2 in want:
         old, n06 = points(con, "p.format = 'Dollar Store'", 2006)
         new, n25 = points(con, "p.format = 'Dollar Store'", 2025)
         render(OUT / "day-2.png", 2,
-               [{"xy": new, "color": S[0], "size": 1.1, "label": f"2025  {n25:,}"},
-                {"xy": old, "color": S[3], "size": 1.1, "label": f"2006  {n06:,}", "z": 3}],
+               [{"xy": new, "color": HUE[2], "size": 1.1, "label": f"2025  {n25:,}"},
+                {"xy": old, "color": MUTED, "size": 1.1, "alpha": 0.9,
+                 "label": f"2006  {n06:,}", "z": 3}],
                f"Dollar stores, 2006 to 2025")
 
     if want is None or 1 in want:
         s = split(con, "p.format = 'Grocery (Small)'", 2006, 2025)
         render(OUT / "day-1.png", 1,
-               [{"xy": s["added"][0], "color": MUTED, "size": 1.4, "alpha": 0.6,
+               [{"xy": s["added"][0], "color": MUTED, "size": 1.4, "alpha": 0.45,
                  "label": f"authorized since 2006  {s['added'][1]:,}"},
-                {"xy": s["kept"][0], "color": S[0], "size": 1.6,
+                {"xy": s["kept"][0], "color": MUTED, "size": 1.6, "alpha": 0.95,
                  "label": f"authorized then and now  {s['kept'][1]:,}"},
-                {"xy": s["lost"][0], "color": S[3], "size": 1.6, "z": 3,
+                {"xy": s["lost"][0], "color": HUE[1], "size": 1.6, "z": 3,
                  "label": f"left SNAP since 2006  {s['lost'][1]:,}"}],
                "Small grocery")
 
@@ -244,9 +270,9 @@ def main():
         chain, nc = points(con, "p.format = 'Convenience Store' AND p.ownership = 'chain'", 2025)
         indie, ni = points(con, "p.format = 'Convenience Store' AND p.ownership = 'independent'", 2025)
         render(OUT / "day-3.png", 3,
-               [{"xy": indie, "color": S[2], "size": 0.9,
+               [{"xy": indie, "color": MUTED, "size": 0.9, "alpha": 0.85,
                  "label": f"single owner  {ni:,}"},
-                {"xy": chain, "color": S[0], "size": 0.9,
+                {"xy": chain, "color": HUE[3], "size": 0.9,
                  "label": f"chain  {nc:,}"}],
                "Convenience stores, 2025")
 
@@ -258,20 +284,22 @@ def main():
                # Largest first so the smallest end up on top. Drawn the other
                # way the biggest dots, which are also the most numerous here,
                # covered both smaller tiers and the ladder vanished.
-               [{"xy": big, "color": S[0], "size": 2.4, "alpha": 0.55,
+               # An ordered variable, so one hue stepped by alpha and size
+               # rather than three competing colours.
+               [{"xy": big, "color": HUE[4], "size": 2.4, "alpha": 0.35,
                  "label": f"supermarket and up  {nb:,}"},
-                {"xy": mid, "color": S[2], "size": 1.2, "alpha": 0.85,
+                {"xy": mid, "color": HUE[4], "size": 1.2, "alpha": 0.65,
                  "label": f"medium and large  {nm:,}"},
-                {"xy": sml, "color": S[3], "size": 0.9,
+                {"xy": sml, "color": HUE[4], "size": 0.9, "alpha": 1.0,
                  "label": f"small grocery  {ns:,}"}],
                "Grocery by store size")
 
     if want is None or 5 in want:
         s = split(con, "p.brand IN ('Walgreens','CVS','Rite Aid','Duane Reade')", 2016, 2025)
         render(OUT / "day-5.png", 5,
-               [{"xy": s["kept"][0], "color": S[0], "size": 1.8,
+               [{"xy": s["kept"][0], "color": MUTED, "size": 1.8, "alpha": 0.9,
                  "label": f"still authorized  {s['kept'][1]:,}"},
-                {"xy": s["lost"][0], "color": S[3], "size": 1.8, "z": 3,
+                {"xy": s["lost"][0], "color": HUE[5], "size": 1.8, "z": 3,
                  "label": f"left SNAP since 2016  {s['lost'][1]:,}"}],
                "Chain pharmacies")
 
@@ -288,11 +316,11 @@ def main():
         # plus departures is 2006, survivors plus arrivals is 2025.
         s = split(con, "p.ownership = 'chain'", 2006, 2025)
         render(OUT / "day-6.png", 6,
-               [{"xy": s["lost"][0], "color": MUTED, "size": 0.6, "alpha": 0.7,
+               [{"xy": s["lost"][0], "color": MUTED, "size": 0.6, "alpha": 0.45,
                  "label": f"left SNAP since 2006  {s['lost'][1]:,}"},
-                {"xy": s["kept"][0], "color": S[3], "size": 0.6, "alpha": 0.85,
+                {"xy": s["kept"][0], "color": MUTED, "size": 0.6, "alpha": 0.95,
                  "label": f"authorized in 2006 and now  {s['kept'][1]:,}"},
-                {"xy": s["added"][0], "color": S[0], "size": 0.6, "alpha": 0.85,
+                {"xy": s["added"][0], "color": HUE[6], "size": 0.6, "alpha": 0.9,
                  "label": f"authorized since 2006  {s['added'][1]:,}"}],
                # "Chains went 39% to 50%" invited the reader to derive a share
                # from two counts it cannot be derived from. Says share now.
@@ -326,7 +354,7 @@ def main():
         # separating from — and clears the contrast floor on this ground.
         render(OUT / "day-7.png", 7,
                [{"xy": rest, "color": MUTED, "size": 0.5, "alpha": 0.4},
-                {"xy": small, "color": S[4], "size": 0.6,
+                {"xy": small, "color": HUE[7], "size": 0.6,
                  "label": f"small formats  {ns:,}"}],
                "Stores at most risk from new rule")
 
