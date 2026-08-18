@@ -81,7 +81,7 @@ says.</p>
 <p>It is a single web page. Nothing to install, nothing to sign into.</p>
 
 <ul class="plain">
-<li><strong>Filter by store type.</strong> All {ds['formats']} of USDA's categories — supermarkets,
+<li><strong>Filter by store type.</strong> All {ds['formats']} store categories — supermarkets,
 superstores, convenience stores, dollar stores, farmers' markets and the rest.</li>
 <li><strong>Filter by retailer.</strong> {ds['brands']} chains are named, so you can clear the map and bring back only the ones you want. Turn everything off, then switch on Kroger and Giant Eagle. Now you are looking at two companies against an empty country.</li>
 <li><strong>Move through time.</strong> One year at a time, {ds['first_year']} to {ds['last_year']}.

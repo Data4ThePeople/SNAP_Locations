@@ -61,7 +61,18 @@ ACTIVE = ("s.auth_date <= make_date({y}, 12, 31) AND "
 
 
 def points(con, where, year):
-    """(lon, lat) for every mappable store matching `where`, active at year end."""
+    """Lower-48 dots for mappable stores matching `where`, active at year end,
+    with the NATIONAL store count.
+
+    Dots and count part ways deliberately. The frame crops to the lower 48, but
+    a keyed count has to equal the figure the posts and cards publish, which is
+    the whole country — counting only the drawn dots put 13,934 on the Day 5
+    hero against 14,828 on its card. The corner note names both choices."""
+    n = con.execute(f"""
+        SELECT count(DISTINCT p.record_id)
+        FROM panel p JOIN fact_spell s USING(record_id)
+        WHERE {where} AND NOT s.date_anomaly AND {ACTIVE.format(y=year)}
+        """).fetchone()[0]
     rows = con.execute(f"""
         SELECT p.longitude, p.latitude FROM panel p JOIN fact_spell s USING(record_id)
         WHERE {where} AND NOT s.date_anomaly AND {ACTIVE.format(y=year)}
@@ -70,7 +81,7 @@ def points(con, where, year):
         GROUP BY 1, 2""").fetchall()
     lons = [r[0] for r in rows]
     lats = [r[1] for r in rows]
-    return usmap.albers(lons, lats), len(rows)
+    return usmap.albers(lons, lats), n
 
 
 def split(con, where, then, now):
@@ -79,6 +90,9 @@ def split(con, where, then, now):
     Two snapshots drawn over each other cannot show a loss — the later layer
     just covers the earlier one. Diffing the record ids does, and it is the
     honest picture for a chapter about stores going away.
+
+    As in points(), the dots are the lower 48 and the counts are national, so
+    a keyed count always equals the posts' published figure.
     """
     def ids(y):
         return f"""SELECT DISTINCT p.record_id FROM panel p JOIN fact_spell s
@@ -88,46 +102,18 @@ def split(con, where, then, now):
         WITH a AS ({ids(then)}), b AS ({ids(now)})
         SELECT p.longitude, p.latitude,
                CASE WHEN a.record_id IS NOT NULL AND b.record_id IS NOT NULL THEN 'kept'
-                    WHEN a.record_id IS NOT NULL THEN 'lost' ELSE 'added' END AS bucket
+                    WHEN a.record_id IS NOT NULL THEN 'lost' ELSE 'added' END AS bucket,
+               p.longitude BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
+               AND p.latitude BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]} AS in48
         FROM panel p
         LEFT JOIN a ON a.record_id = p.record_id
         LEFT JOIN b ON b.record_id = p.record_id
-        WHERE (a.record_id IS NOT NULL OR b.record_id IS NOT NULL)
-          AND p.longitude BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
-          AND p.latitude  BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}""").fetchall()
+        WHERE (a.record_id IS NOT NULL OR b.record_id IS NOT NULL)""").fetchall()
     out = {}
     for k in ("kept", "lost", "added"):
-        pts = [(r[0], r[1]) for r in rows if r[2] == k]
-        out[k] = (usmap.albers([q[0] for q in pts], [q[1] for q in pts]), len(pts))
-    return out
-
-
-def split(con, where, then, now):
-    """Three sets: authorized in `then` and still in `now`, lost since, added since.
-
-    Two snapshots drawn over each other cannot show a loss — the later layer
-    just covers the earlier one. Diffing the record ids does, and it is the
-    honest picture for a chapter about stores going away.
-    """
-    def ids(y):
-        return f"""SELECT DISTINCT p.record_id FROM panel p JOIN fact_spell s
-            USING(record_id) WHERE {where} AND NOT s.date_anomaly
-              AND {ACTIVE.format(y=y)}"""
-    rows = con.execute(f"""
-        WITH a AS ({ids(then)}), b AS ({ids(now)})
-        SELECT p.longitude, p.latitude,
-               CASE WHEN a.record_id IS NOT NULL AND b.record_id IS NOT NULL THEN 'kept'
-                    WHEN a.record_id IS NOT NULL THEN 'lost' ELSE 'added' END AS bucket
-        FROM panel p
-        LEFT JOIN a ON a.record_id = p.record_id
-        LEFT JOIN b ON b.record_id = p.record_id
-        WHERE (a.record_id IS NOT NULL OR b.record_id IS NOT NULL)
-          AND p.longitude BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
-          AND p.latitude  BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}""").fetchall()
-    out = {}
-    for k in ("kept", "lost", "added"):
-        pts = [(r[0], r[1]) for r in rows if r[2] == k]
-        out[k] = (usmap.albers([q[0] for q in pts], [q[1] for q in pts]), len(pts))
+        pts = [(r[0], r[1]) for r in rows if r[2] == k and r[3]]
+        out[k] = (usmap.albers([q[0] for q in pts], [q[1] for q in pts]),
+                  sum(1 for r in rows if r[2] == k))
     return out
 
 
@@ -180,7 +166,8 @@ def render(path, day, layers, caption):
         block.append(("\u25cf  " + L["label"], 14, L["color"], 1.55))
     for i, line in enumerate(textwrap.wrap(caption, 24)):
         block.append((line, 15, INK, 1.9 if i == 0 else 1.35))
-    block.append(("lower 48  ·  SNAP authorizations", 11, INK_SOFT, 2.2))
+    block.append(("lower 48 shown  ·  national counts  ·  SNAP authorizations",
+                  11, INK_SOFT, 2.2))
 
     LX = 0.135
     height = sum(sz * lead * PT for _, sz, _, lead in block)
@@ -235,13 +222,8 @@ def main():
 
     if want is None or 0 in want:
         # One colour, everything on it. The chain/independent split is Day 6's
-        # picture and using it here would spend that image early. The count is
-        # national; the frame is the lower 48, which the corner note says.
-        allpts, _ = points(con, "TRUE", 2025)
-        national = con.execute(f"""
-            SELECT count(DISTINCT p.record_id) FROM panel p JOIN fact_spell s
-            USING(record_id) WHERE NOT s.date_anomaly AND {ACTIVE.format(y=2025)}
-            """).fetchone()[0]
+        # picture and using it here would spend that image early.
+        allpts, national = points(con, "TRUE", 2025)
         render(OUT / "day-0.png", 0,
                [{"xy": allpts, "color": HUE[0], "size": 0.6, "alpha": 0.75}],
                f"{national:,} stores in 2025")
@@ -295,10 +277,19 @@ def main():
                "Grocery by store size")
 
     if want is None or 5 in want:
-        s = split(con, "p.brand IN ('Walgreens','CVS','Rite Aid','Duane Reade')", 2016, 2025)
+        # Post 4's own brand list, so "still authorized" is the same 14,828 the
+        # Day 5 card states. An earlier cut used four brands and counted only
+        # the drawn dots, which put 13,934 on the hero against 14,828 on the
+        # card. The grey layer is every 2025 store, not the 2016 survivors —
+        # its label says "still authorized", and a reader checks that against
+        # the card's 14,828, not against the 2016 intersection.
+        from analysis.post4_pharmacy import DRUG_BRANDS
+        drug = "p.brand IN (%s)" % ",".join(f"'{b}'" for b in DRUG_BRANDS)
+        now_xy, n_now = points(con, drug, 2025)
+        s = split(con, drug, 2016, 2025)
         render(OUT / "day-5.png", 5,
-               [{"xy": s["kept"][0], "color": MUTED, "size": 1.8, "alpha": 0.9,
-                 "label": f"still authorized  {s['kept'][1]:,}"},
+               [{"xy": now_xy, "color": MUTED, "size": 1.8, "alpha": 0.9,
+                 "label": f"still authorized  {n_now:,}"},
                 {"xy": s["lost"][0], "color": HUE[5], "size": 1.8, "z": 3,
                  "label": f"left SNAP since 2016  {s['lost'][1]:,}"}],
                "Chain pharmacies")
@@ -310,10 +301,11 @@ def main():
         #
         # All THREE buckets are plotted and keyed. An earlier cut dropped the
         # departures and labelled the survivors "chain, authorized in 2006",
-        # which read as the 2006 total — 62,213 — when it is the 37,149 of them
-        # that were still authorized in 2025. The 25,064 that left were nowhere
+        # which read as the 2006 total — 62,402 — when it is the 37,264 of them
+        # that were still authorized in 2025. The 25,138 that left were nowhere
         # on the frame. With all three, both totals are recoverable: survivors
-        # plus departures is 2006, survivors plus arrivals is 2025.
+        # plus departures is 2006 (62,402), survivors plus arrivals is 2025
+        # (124,983) — the counts post 5 publishes.
         s = split(con, "p.ownership = 'chain'", 2006, 2025)
         render(OUT / "day-6.png", 6,
                [{"xy": s["lost"][0], "color": MUTED, "size": 0.6, "alpha": 0.45,

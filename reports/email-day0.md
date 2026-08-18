@@ -103,7 +103,7 @@ We turned that file into a map you can explore, and then spent seven pieces work
 ### 7 — What the map does
 
 ```
-Filter by store type. All 18 of USDA's categories — supermarkets, superstores, convenience stores, dollar stores, farmers' markets and the rest.
+Filter by store type. All 18 store categories — supermarkets, superstores, convenience stores, dollar stores, farmers' markets and the rest.
 
 Filter by retailer. 291 chains are named. Turn everything off, then switch on Kroger and Giant Eagle, and you are looking at two companies against an empty country.
 
@@ -189,7 +189,7 @@ So this series is about where the stores are and what kind they are. That is a r
 ### 12 — Footer
 
 ```
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. 661,456 stores, 703,441 authorization spells, of which 37,908 stores hold more than one. 656,868 have coordinates good enough to map.
+Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. 661,456 stores, 703,441 authorization spells, of which 37,941 stores hold more than one. 656,868 have coordinates good enough to map.
 
 The map, the pipeline that builds it, and every figure in this series:
 github.com/Data4ThePeople/SNAP_Locations
