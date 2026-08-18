@@ -58,9 +58,9 @@ def main():
 made before the deadline</p>
 
 <div class="ledger">
-  <div><b>{im['small_share_of_redemptions_pct']}% vs {im['small_share_of_retailers_pct']}%</b><span>of
-    SNAP spending happens at the small stores this rule hits hardest — which are
-    {im['small_share_of_retailers_pct']}% of every SNAP retailer in the country</span></div>
+  <div><b>{im['small_share_of_retailers_pct']}% of stores, {im['small_share_of_redemptions_pct']}% of
+    spending</b><span>the small stores this rule hits hardest are most of the SNAP retailers in the
+    country and almost none of the SNAP money</span></div>
   <div><b>${im['cost_year_one_small']}</b><span>what USDA estimates it costs a small store to comply in the first
     year</span></div>
   <div><b>{n['compliance']}</b><span>the day every SNAP retailer has to meet it</span></div>
@@ -193,6 +193,29 @@ tightened, the entry line moved and the exit line did not.</figcaption></figure>
 <p><strong>Third: the access consequences will concentrate in the places in this series.</strong> Losing
 one authorized store matters little in a city. It matters a great deal in a ZIP code of
 {den['lost_no_grocery']['median_pop']:,} people with no grocery store left.</p>
+
+<p><strong>Fourth, and this is the one that matters: it will push in the direction things were already
+going.</strong></p>
+
+<p>Day 4 found two rules running through this whole series. Bigger stores kept their authorization —
+among independent stores, survival ran straight down the size order, from 46% for a super store to 4%
+for a small grocery. And a chain did not need to be big: a dollar store held its authorization as
+reliably as a super store did.</p>
+
+<p>Now read the new standard against those two rules. It asks for a fixed quantity of stock — seven
+varieties in each of four categories, a perishable in three of them. A fixed demand is close to nothing
+for a large store and a great deal for a small one. It is also far easier for a chain, which has
+distribution, buying power and refrigeration it already owns, than for an independent buying at retail
+and finding somewhere to put a cooler.</p>
+
+<p>That is the same axis. The rule does not create the trend this series has been describing. It leans
+on it.</p>
+
+<p>And USDA's own analysis amounts to a decision to accept that. The small stores are
+{im['small_share_of_retailers_pct']}% of SNAP retailers and {im['small_share_of_redemptions_pct']}% of
+SNAP spending, and from that the agency reasons that losing some of them will not cause hardship. As a
+reading of an average, that is defensible. It is also a judgment that twenty years of consolidation is
+not a thing worth slowing down.</p>
 
 <h2>Who argued about this, and who did not</h2>
 

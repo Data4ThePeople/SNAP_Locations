@@ -38,10 +38,12 @@ def main():
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{im['small_share_of_redemptions_pct']}% vs {im['small_share_of_retailers_pct']}%",
-          "label": "of SNAP spending happens at the small stores this rule hits "
-                   f"hardest — which are {im['small_share_of_retailers_pct']}% of "
-                   "every SNAP retailer in the country"},
+        # Two different denominators — share of STORES against share of DOLLARS —
+        # so each number carries its own noun rather than being joined by "vs".
+        [{"value": f"{im['small_share_of_retailers_pct']}% of stores, "
+                   f"{im['small_share_of_redemptions_pct']}% of spending",
+          "label": "the small stores this rule hits hardest are most of the SNAP "
+                   "retailers in the country and almost none of the SNAP money"},
          {"value": f"${im['cost_year_one_small']}",
           "label": "what USDA estimates it costs a small store to comply in the "
                    "first year"},
@@ -90,7 +92,7 @@ def main():
 *An epilogue. The Thrifty Food Plan, the new SNAP stocking standard, and a prediction made before the
 deadline.*
 
-**{im['small_share_of_redemptions_pct']}% vs {im['small_share_of_retailers_pct']}%** of SNAP spending happens at the small stores this rule hits hardest — which are {im['small_share_of_retailers_pct']}% of all SNAP retailers.
+**{im['small_share_of_retailers_pct']}% of stores, {im['small_share_of_redemptions_pct']}% of spending** — the small stores this rule hits hardest are most of the SNAP retailers in the country and almost none of the SNAP money.
 **${im['cost_year_one_small']}** what USDA estimates it costs a small store to comply in the first year.
 **{n['compliance']}** the day every SNAP retailer has to meet it.
 
@@ -209,6 +211,28 @@ It is tempting to shorten this to "chains will be fine, independents will not." 
 **Third: the access consequences will concentrate in the places in this series.** Losing one authorized
 store matters little in a city. It matters a great deal in a ZIP code of
 {den['lost_no_grocery']['median_pop']:,} people with no grocery store left.
+
+**Fourth, and this is the one that matters: it will push in the direction things were already going.**
+
+Day 4 found two rules running through this whole series. Bigger stores kept their authorization — among
+independent stores, survival ran straight down the size order, from 46% for a super store to 4% for a
+small grocery. And a chain did not need to be big: a dollar store held its authorization as reliably as
+a super store did.
+
+Now read the new standard against those two rules. It asks for a fixed quantity of stock — seven
+varieties in each of four categories, a perishable in three of them. A fixed demand is close to nothing
+for a large store and a great deal for a small one. It is also far easier for a chain, which has
+distribution, buying power and refrigeration it already owns, than for an independent buying at retail
+and finding somewhere to put a cooler.
+
+That is the same axis. The rule does not create the trend this series has been describing. It leans on
+it.
+
+And USDA's own analysis amounts to a decision to accept that. The small stores are
+{im['small_share_of_retailers_pct']}% of SNAP retailers and {im['small_share_of_redemptions_pct']}% of
+SNAP spending, and from that the agency reasons that losing some of them will not cause hardship. As a
+reading of an average, that is defensible. It is also a judgment that twenty years of consolidation is
+not a thing worth slowing down.
 
 ## Who argued about this, and who did not
 
