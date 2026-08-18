@@ -95,8 +95,8 @@ Patterns · {arc['peak']:,} small grocery stores in {arc['peak_year']}, {arc['la
 
 <div class="ledger">
   <div><b>{abs(cb['cbp_under10_pct']):.0f}%</b><span>fall in small grocery businesses, {cb['base_year']} to {cb['last_year']}, by the Census Bureau's count</span></div>
-  <div><b>{abs(cb['snap_small_pct']):.0f}%</b><span>fall in SNAP's own Small Grocery category over the same years</span></div>
-  <div><b>{abs(entry_drop)}%</b><span>fall in small grocers signing up for SNAP each year</span></div>
+  <div><b>{abs(cb['snap_small_pct']):.0f}%</b><span>fall in SNAP's own Small Grocery category, {cb['base_year']} to {cb['last_year']}</span></div>
+  <div><b>{abs(entry_drop)}%</b><span>fall in small grocers signing up for SNAP each year, 2012–13 to 2018–19</span></div>
 </div>
 
 <p>Small grocery stores are leaving the SNAP program in large numbers. The obvious way to read that

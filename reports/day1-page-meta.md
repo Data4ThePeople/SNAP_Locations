@@ -106,7 +106,7 @@ the shape, so a screen reader gets the same facts a sighted reader does.
 ### `images/00-key-figures.png` (1720×422) — headline figures
 
 ```
-Three headline figures: a 25% fall in the number of small grocery businesses from 2012 to 2023, by the Census Bureau's count. A 46% fall in SNAP's own Small Grocery category over the same years. A 58% fall in the number of small grocers signing up for SNAP each year.
+Three headline figures: a 25% fall in the number of small grocery businesses from 2012 to 2023, by the Census Bureau's count. A 46% fall in SNAP's own Small Grocery category, 2012 to 2023. A 58% fall in the number of small grocers signing up for SNAP each year, 2012–13 to 2018–19.
 ```
 
 ### `images/01-small-grocery-arc.png` (1255×688) — the arc
