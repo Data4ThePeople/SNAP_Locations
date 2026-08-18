@@ -77,6 +77,35 @@ def split(con, where, then, now):
     return out
 
 
+def split(con, where, then, now):
+    """Three sets: authorized in `then` and still in `now`, lost since, added since.
+
+    Two snapshots drawn over each other cannot show a loss — the later layer
+    just covers the earlier one. Diffing the record ids does, and it is the
+    honest picture for a chapter about stores going away.
+    """
+    def ids(y):
+        return f"""SELECT DISTINCT p.record_id FROM panel p JOIN fact_spell s
+            USING(record_id) WHERE {where} AND NOT s.date_anomaly
+              AND {ACTIVE.format(y=y)}"""
+    rows = con.execute(f"""
+        WITH a AS ({ids(then)}), b AS ({ids(now)})
+        SELECT p.longitude, p.latitude,
+               CASE WHEN a.record_id IS NOT NULL AND b.record_id IS NOT NULL THEN 'kept'
+                    WHEN a.record_id IS NOT NULL THEN 'lost' ELSE 'added' END AS bucket
+        FROM panel p
+        LEFT JOIN a ON a.record_id = p.record_id
+        LEFT JOIN b ON b.record_id = p.record_id
+        WHERE (a.record_id IS NOT NULL OR b.record_id IS NOT NULL)
+          AND p.longitude BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
+          AND p.latitude  BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}""").fetchall()
+    out = {}
+    for k in ("kept", "lost", "added"):
+        pts = [(r[0], r[1]) for r in rows if r[2] == k]
+        out[k] = (usmap.albers([q[0] for q in pts], [q[1] for q in pts]), len(pts))
+    return out
+
+
 def render(path, day, layers, caption):
     """`layers` = [{xy, color, size, alpha}] drawn in order, first at the back."""
     fig = plt.figure(figsize=(W_PX / DPI, H_PX / DPI), dpi=DPI, facecolor=PAPER)
@@ -247,18 +276,27 @@ def main():
                "Chain pharmacies")
 
     if want is None or 6 in want:
-        # Not chain against independent. Two dense categories over the whole
-        # country cannot show a 59/41 split — whichever draws last buries the
-        # other, and swapping the order just reverses which side disappears.
-        # The chapter's claim is the SHIFT, so the frame shows the shift: chain
-        # stores that were already here against the ones added since.
+        # Not chain against independent: two dense categories over the whole
+        # country cannot show a 59/41 split, because whichever draws last buries
+        # the other. This shows what happened to the chain estate instead.
+        #
+        # All THREE buckets are plotted and keyed. An earlier cut dropped the
+        # departures and labelled the survivors "chain, authorized in 2006",
+        # which read as the 2006 total — 62,213 — when it is the 37,149 of them
+        # that were still authorized in 2025. The 25,064 that left were nowhere
+        # on the frame. With all three, both totals are recoverable: survivors
+        # plus departures is 2006, survivors plus arrivals is 2025.
         s = split(con, "p.ownership = 'chain'", 2006, 2025)
         render(OUT / "day-6.png", 6,
-               [{"xy": s["kept"][0], "color": S[3], "size": 0.6, "alpha": 0.85,
-                 "label": f"chain, authorized in 2006  {s['kept'][1]:,}"},
+               [{"xy": s["lost"][0], "color": MUTED, "size": 0.6, "alpha": 0.7,
+                 "label": f"left SNAP since 2006  {s['lost'][1]:,}"},
+                {"xy": s["kept"][0], "color": S[3], "size": 0.6, "alpha": 0.85,
+                 "label": f"authorized in 2006 and now  {s['kept'][1]:,}"},
                 {"xy": s["added"][0], "color": S[0], "size": 0.6, "alpha": 0.85,
-                 "label": f"chain, authorized since  {s['added'][1]:,}"}],
-               "Chains went 39% to 50%")
+                 "label": f"authorized since 2006  {s['added'][1]:,}"}],
+               # "Chains went 39% to 50%" invited the reader to derive a share
+               # from two counts it cannot be derived from. Says share now.
+               "Chain share of all SNAP stores: 39% to 50%")
 
     if want is None or 7 in want:
         # The formats the new stocking standard falls hardest on: the ones
@@ -274,7 +312,6 @@ def main():
                 {"xy": small, "color": S[0], "size": 0.6,
                  "label": f"small formats  {ns:,}"}],
                "Stores the new rule hits")
-
 
 if __name__ == "__main__":
     main()
