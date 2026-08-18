@@ -220,7 +220,10 @@ def main():
             "stores": 661_456,
             "mappable": 656_868,
             "spells": 703_441,
-            "multi_spell": 37_908,
+            # Over all 661,456 stores and 703,441 spells, matching the totals it
+            # is quoted beside. The mappable panel's count is 37,908, asserted
+            # in panel.py.
+            "multi_spell": 37_941,
             "formats": 18,
             "brands": 291,
             "active_2025": 249_083,

@@ -103,7 +103,7 @@ We have turned that file into a map you can explore, and then spent {n_all} piec
 
 It is a single web page. Nothing to install, nothing to sign into.
 
-- **Filter by store type.** All {ds['formats']} of USDA's categories — supermarkets, superstores,
+- **Filter by store type.** All {ds['formats']} store categories — supermarkets, superstores,
   convenience stores, dollar stores, farmers' markets and the rest.
 - **Filter by retailer.** {ds['brands']} chains are named, so you can clear the map and bring back only the ones you want. Turn everything off, then switch on Kroger and Giant Eagle. Now you are looking at two companies against an empty country.
 - **Move through time.** One year at a time, {ds['first_year']} to {ds['last_year']}. The map redraws
