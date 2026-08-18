@@ -18,7 +18,7 @@ Every Store That Accepted SNAP, 2006–2025
 ## 2. Page subtitle
 
 ```
-An interactive map of all 661,456 retailers USDA authorized to accept food stamps over twenty years — by store type, by chain, and by the year each one arrived or left.
+An interactive map of all 661,456 retailers USDA authorized to accept food stamps over twenty years — by store type, by chain, and by the year each one arrived or left. The companion to our series, The Stores That Stayed.
 ```
 
 ## 3. Hero image
@@ -79,6 +79,7 @@ SNAP retailers, food stamp map, USDA SNAP data, food access, grocery store closu
       "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
       "dateModified": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
       "articleSection": "Visualization",
+      "isPartOf": { "@type": "CreativeWorkSeries", "name": "The Stores That Stayed" },
       "inLanguage": "en-US",
       "isAccessibleForFree": true,
       "keywords": ["SNAP retailers", "food stamp map", "USDA SNAP data", "food access", "grocery store closures", "dollar stores"],

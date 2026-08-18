@@ -61,10 +61,11 @@ def main():
     n_all = NUM[len(ch)]
     N_all = n_all.capitalize()
     n_story = NUM[len(ch) - 1]   # the last piece is an epilogue, not a chapter
-    md = f"""# Twenty years of SNAP retailers, mapped — and what we found in it
+    md = f"""# The Stores That Stayed
 
-*Every store authorized to accept SNAP anywhere in the United States, {ds['first_year']}–{ds['last_year']}.
-{ds['stores']:,} stores. An interactive map, and {n_all} days of analysis built on it.*
+*Twenty years of SNAP retailers, mapped. Every store authorized to accept SNAP anywhere in the United
+States, {ds['first_year']}–{ds['last_year']} — {ds['stores']:,} of them. An interactive map, and {n_all}
+days of analysis built on it.*
 
 **{ds['stores']:,}** stores authorized to accept SNAP at some point in the last twenty years.
 **{ds['active_2025']:,}** still authorized at the end of {ds['last_year']}.
