@@ -21,8 +21,14 @@ data/raw/*.zip
 # Cached Census API pulls — re-fetch with the analysis scripts.
 data/raw/*.json
 
-# Standalone bundle (8.4MB) — rebuild with `python src/build_standalone.py`.
-dist/
+# Build outputs. The standalone bundle is the exception: it is the artifact the
+# visualisation is embedded from, so it is tracked deliberately. Rebuild it with
+# `python src/build_standalone.py` and re-commit whenever web/ or the map data
+# changes — a stale bundle is the failure mode, since it looks fine and silently
+# serves an older map. It is ~8.5MB of gzip+base64 that git cannot delta-compress,
+# so every rebuild adds roughly that much to history for good.
+dist/*
+!dist/snap-map.html
 
 # Cached deck.gl runtime for the standalone build.
 data/vendor/
