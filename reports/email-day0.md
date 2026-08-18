@@ -12,19 +12,23 @@ Every store that takes SNAP, mapped
 ```
 
 34 characters, so it survives the mobile cut (~35–40). Concrete, no hype, and
-"takes SNAP" is how people actually say it.
+"takes SNAP" is how people actually say it. The series name does the branding
+inside the email; a cold subject line is the wrong place for it, because
+"The Stores That Stayed" tells a first-time reader nothing about what they are
+opening.
 
 Alternates if you want to A/B:
 
 ```
+The Stores That Stayed: every SNAP retailer, mapped
+```
+```
 661,456 stores. Twenty years. One map.
 ```
-```
-We mapped every SNAP retailer since 2006
-```
 
-The first alternate leads with the number, which suits a data-native list. The
-second is the plainest statement of what happened.
+The first pairs the series name with the concrete promise, which is the version
+to use if you expect the name to become the brand. The second leads with the
+number, which suits a data-native list.
 
 ## Preview text (preheader)
 
@@ -50,13 +54,17 @@ Your standard masthead.
 ### 2 — Headline
 
 ```
-Twenty years of SNAP retailers, mapped
+The Stores That Stayed
 ```
+
+Series title. Set it as the headline, and consider carrying it as a small kicker
+above the headline in each of the seven daily sends — "The Stores That Stayed ·
+Day 3" — so the run reads as one thing.
 
 ### 3 — Deck
 
 ```
-Every store authorized to accept SNAP anywhere in the United States, 2006–2025. 661,456 stores. An interactive map, and seven days of analysis built on it.
+Twenty years of SNAP retailers, mapped. Every store authorized to accept SNAP anywhere in the United States, 2006–2025 — 661,456 of them. An interactive map, and seven days of analysis built on it.
 ```
 
 ### 4 — Hero image, linked

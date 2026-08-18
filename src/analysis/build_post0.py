@@ -57,13 +57,13 @@ ol.chapters,ul.chapters{padding:0;margin:1.6rem 0}
     n_all = NUM[len(ch)]
     N_all = n_all.capitalize()
     n_story = NUM[len(ch) - 1]   # the last piece is an epilogue, not a chapter
-    html = f"""{HEAD}<title>Twenty years of SNAP retailers, mapped — and what we found in it</title>
+    html = f"""{HEAD}<title>The Stores That Stayed</title>
 <style>{CSS}{extra}</style>
 <main>
-<h1>Twenty years of SNAP retailers, mapped — and what we found in it</h1>
-<p class="sub">Every store authorized to accept SNAP anywhere in the United States,
-{ds['first_year']}–{ds['last_year']} · {ds['stores']:,} stores · an interactive map, and {n_all} days of
-analysis built on it</p>
+<h1>The Stores That Stayed</h1>
+<p class="sub">Twenty years of SNAP retailers, mapped · every store authorized to accept SNAP anywhere
+in the United States, {ds['first_year']}–{ds['last_year']} · {ds['stores']:,} stores · an interactive
+map, and {n_all} days of analysis built on it</p>
 
 <div class="ledger">
   <div><b>{ds['stores']:,}</b><span>stores authorized to accept SNAP at some point in the last twenty years</span></div>
