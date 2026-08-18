@@ -79,8 +79,8 @@ CHAPTERS = [
      "The newest change, and the one with consequences beyond food. It also sets "
      "up the final chapter, which is built on the places this collapse hit."),
     (6, "post5", "The thread",
-     "The places where all of these trends land at once, what they have in common, "
-     "and the explanation that turns out to be wrong.",
+     "What twenty years of this adds up to, the places where all of it lands at "
+     "once, and the explanation that turns out to be wrong.",
      "The synthesis, and the last chapter of the story. It tests the obvious "
      "reading — that one format pushed the others out — against a control group, "
      "and finds something harder to act on."),
@@ -142,14 +142,15 @@ def main():
         "post4": {"value": f"{g('post4','chain','peak', default=0):,}",
                   "label": "peak SNAP-authorized chain pharmacies, now "
                            f"{g('post4','chain','latest', default=0):,}"},
-        # Deliberately open-ended: this piece is the summary, and its body is
-        # still being reworked. The number counts the pharmacy loss but the
-        # label reaches back to Day 2, so the card ties the series together
-        # rather than reporting one narrow finding.
-        "post5": {"value": f"{g('post5','groups','lost', default=976):,}",
-                  "label": "ZIP codes lost their last chain pharmacy since 2021. In "
-                           f"{g('post5','sequencing','had_before_pct', default=83.5):.0f}% "
-                           "of them a dollar store was already there"},
+        # The summary card. Chains crossing from a minority of SNAP retailers to
+        # a majority is the one-number version of the whole run, and it appears
+        # nowhere else in the series. Reported over ALL stores including the
+        # unclassified, so the real shift is at least this large.
+        "post5": {"value": f"{g('post5','ownership_mix','chain','share_2006'):.0f}% → "
+                           f"{g('post5','ownership_mix','chain','share_2025'):.0f}%",
+                  "label": "chains' share of every SNAP retailer in the country, 2006 "
+                           "to 2025. Size decided who survived; being a chain decided "
+                           "it more"},
         # NOT the 5,000 that used to sit here. That figure is denials, and USDA
         # budgets for 4,500 of those stores to restock and reapply, so its own
         # projected net loss is about 500. This is the agency's reasoning for

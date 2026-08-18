@@ -217,6 +217,34 @@ def main():
         print(f"     of the pharmacy-loss ZIPs with no grocery at all (n={r[1]}),"
               f" median population is {int(r[0] or 0):,}")
 
+    # The one-number summary of the whole run: how far the mix shifted toward
+    # chains. Reported over ALL stores including the unclassified ones, which
+    # makes it conservative — some unknowns are certainly chains, so the real
+    # shift is at least this large.
+    print("\nOwnership mix, first year against last")
+    mix = {}
+    for lbl, w in (("chain", "p.ownership = 'chain'"),
+                   ("independent", "p.ownership = 'independent'"),
+                   ("unknown", "p.ownership = 'unknown'"),
+                   ("all", "TRUE")):
+        a, b = (con.execute(f"""
+            SELECT count(DISTINCT p.record_id) FROM panel p JOIN fact_spell s
+            USING(record_id) WHERE {w} AND NOT s.date_anomaly
+              AND s.auth_date <= make_date({y}, 12, 31)
+              AND (s.end_date IS NULL OR s.end_date >= make_date({y}, 12, 31))
+            """).fetchone()[0] for y in (2006, 2025))
+        mix[lbl] = {"y2006": int(a), "y2025": int(b), "change": int(b - a)}
+    for k in ("chain", "independent", "unknown"):
+        mix[k]["share_2006"] = round(100 * mix[k]["y2006"] / mix["all"]["y2006"], 1)
+        mix[k]["share_2025"] = round(100 * mix[k]["y2025"] / mix["all"]["y2025"], 1)
+        print(f"   {k:<12} {mix[k]['y2006']:>8,} -> {mix[k]['y2025']:>8,}  "
+              f"{mix[k]['share_2006']:>5}% -> {mix[k]['share_2025']:>5}%")
+    out["ownership_mix"] = mix
+    check("chains crossed from a minority of SNAP retailers to a majority",
+          int(mix["chain"]["share_2006"] < 50 <= mix["chain"]["share_2025"]), 1)
+    check("chains took more of the growth than independents",
+          int(mix["chain"]["change"] > mix["independent"]["change"]), 1)
+
     out["series"] = {}
     for slug in ("post1", "post2", "post4"):
         p = OUT / f"{slug}.json"

@@ -113,7 +113,7 @@ def main():
         title="A third have fewer than ten thousand people",
         subtitle="share of ZIP codes below each population line")
 
-    md = f"""# The pharmacy left. The grocery left. Two formats stayed.
+    md = f"""# Twenty years, one pattern
 
 *SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The last in this series.*
 
