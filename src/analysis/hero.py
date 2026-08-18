@@ -76,24 +76,44 @@ def render(path, day, layers, caption):
     ax.set_xlim(x0 - px, x1 + px)
     ax.set_ylim(y0 - py, y1 + py)
 
-    # matplotlib Text has no letter-spacing, so the lockup is spaced by hand.
-    spaced = " ".join(SERIES.split(" "))
-    ax.text(0.045, 0.950, spaced, transform=ax.transAxes, family="DejaVu Sans Mono",
-            fontsize=9, color=INK_SOFT, va="top")
-    ax.text(0.045, 0.912, f"DAY {day}" if day else "THE MAP", transform=ax.transAxes,
-            family="DejaVu Sans Mono", fontsize=9, color=S[0], va="top",
-            fontweight="bold")
+    # Type sits INSIDE a centre-safe box, never in the corners: Prismic crops the
+    # hero responsively and a square crop of a 1680x1080 keeps only x 0.18-0.82.
+    #
+    # The lines are assembled first and the panel is sized to them, rather than
+    # the panel being a fixed rectangle. A fixed one either floated well clear of
+    # short content or let a wrapped caption run out of the bottom, and the
+    # caption length changes with every chapter.
+    #
+    # A panel is needed at all because the dense half of the map moves between
+    # chapters — type that is legible over the empty west on one hero sits on
+    # top of Chicago on the next.
+    import textwrap
+    PT = 200 / 72 / H_PX          # one point, as a fraction of frame height
+    block = [(" ".join(SERIES.split(" ")), 13, INK_SOFT, 2.4),
+             (f"DAY {day}" if day else "THE MAP", 24, S[0], 2.0)]
+    for L in [q for q in layers if q.get("label")]:
+        block.append(("\u25cf  " + L["label"], 14, L["color"], 1.55))
+    for i, line in enumerate(textwrap.wrap(caption, 24)):
+        block.append((line, 15, INK, 1.9 if i == 0 else 1.35))
+    block.append(("lower 48 shown  ·  USDA FNS", 11, INK_SOFT, 2.2))
 
-    ax.text(0.045, 0.052, caption, transform=ax.transAxes, family="DejaVu Sans Mono",
-            fontsize=9.5, color=INK, va="bottom")
-    ax.text(0.955, 0.052, "lower 48 shown", transform=ax.transAxes,
-            family="DejaVu Sans Mono", fontsize=8, color=INK_SOFT, ha="right",
-            va="bottom")
-    keyed = [L for L in layers if L.get("label")]
-    for i, L in enumerate(reversed(keyed)):
-        ax.text(0.045, 0.052 + 0.040 * (i + 1), "\u25cf  " + L["label"],
-                transform=ax.transAxes, family="DejaVu Sans Mono", fontsize=8.5,
-                color=L["color"], va="bottom")
+    LX = 0.135
+    height = sum(sz * lead * PT for _, sz, _, lead in block)
+    top = 0.500 + height / 2          # vertically centred on the frame
+    pad_x, pad_y = 0.030, 0.030
+    widest = max(len(s) for s, _, _, _ in block)
+    wide_pt = max(sz for s, sz, _, _ in block if len(s) == widest)
+    panel_w = widest * 0.6023 * wide_pt * PT * (H_PX / W_PX) + pad_x * 2
+    ax.add_patch(plt.Rectangle((LX - pad_x, top - height - pad_y),
+                               panel_w, height + pad_y * 2, transform=ax.transAxes,
+                               facecolor=PAPER, alpha=0.80, edgecolor="none", zorder=8))
+
+    y = top
+    for text, size, color, lead in block:
+        y -= size * lead * PT
+        ax.text(LX, y, text, transform=ax.transAxes, family="DejaVu Sans Mono",
+                fontsize=size, color=color, va="bottom", zorder=9,
+                fontweight="bold" if size == 24 else "normal")
 
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, facecolor=PAPER, dpi=DPI)
@@ -127,7 +147,7 @@ def main():
             """).fetchone()[0]
         render(OUT / "day-0.png", 0,
                [{"xy": allpts, "color": S[0], "size": 0.6, "alpha": 0.75}],
-               f"{national:,} stores authorized to accept SNAP at the end of 2025")
+               f"{national:,} stores in 2025")
 
     if want is None or 2 in want:
         old, n06 = points(con, "p.format = 'Dollar Store'", 2006)
@@ -135,7 +155,7 @@ def main():
         render(OUT / "day-2.png", 2,
                [{"xy": new, "color": S[0], "size": 1.1, "label": f"2025  {n25:,}"},
                 {"xy": old, "color": S[3], "size": 1.1, "label": f"2006  {n06:,}", "z": 3}],
-               f"SNAP-authorized dollar stores, 2006 against 2025")
+               f"Dollar stores, 2006 to 2025")
 
 
 if __name__ == "__main__":
