@@ -56,6 +56,26 @@ def main():
     chapter_md = "\n".join(
         f"![Day {c['day']} — {c['headline']}](images/day-{c['day']}.png)\n" for c in ch)
 
+    # A text version of the same seven cards. The PNGs are 1720px wide and get
+    # scaled into a 600px email column and then again on a phone, which leaves
+    # the stat line too small to read. This is what goes in the email instead —
+    # generated from the same data, so retitling a piece cannot leave the two
+    # versions saying different things.
+    cards = DIR / "cards.md"
+    lines = ["# The seven days — text version for email", "",
+             "Generated from the cards. Do not hand-edit; rerun export_post0.", ""]
+    for c in ch:
+        lines.append(f"**Day {c['day']} — {c['headline']}**  ")
+        lines.append(c["email"])
+        lines.append("")
+    lines += ["---", "", "## Plain text, no markdown", ""]
+    for c in ch:
+        lines.append(f"Day {c['day']} — {c['headline']}")
+        lines.append(c["email"])
+        lines.append("")
+    cards.write_text("\n".join(lines))
+    print(f"  {cards.name}  (text version of the cards, for email)")
+
     srcs = "\n".join(f"- {s}" for s in d["sources"])
 
     n_all = NUM[len(ch)]

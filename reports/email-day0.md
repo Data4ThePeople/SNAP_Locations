@@ -140,20 +140,43 @@ Intro line:
 Each piece stands alone, but the argument builds from one to the next. The first six are the story. The last is an epilogue about what it means for policy.
 ```
 
-Then the seven cards, in order. All are in `reports/post0/images/`.
+Then the seven days as **text, not images**. The cards are 1720px wide, scaled
+into a 600px column and scaled again on a phone, which leaves the stat line too
+small to read on mobile — which is where most of this will be opened.
 
-| block | file | alt text |
-|---|---|---|
-| Day 1 | `day-1.png` | Day 1 — One in four of the smallest grocery stores is gone. 25% fall in small grocery businesses by the Census Bureau's count. |
-| Day 2 | `day-2.png` | Day 2 — Dollar stores cracked the code small grocers could not. Dollar store numbers up 307% since 2006. |
-| Day 3 | `day-3.png` | Day 3 — Convenience stores thrived. Most of their owners did not. 14.2% of single-owner stores lasted thirteen years, against 78.7% of chains. |
-| Day 4 | `day-4.png` | Day 4 — The bigger the store, the better it did, unless it belonged to a chain. 78% of chain super stores kept authorization against 46% of independents. |
-| Day 5 | `day-5.png` | Day 5 — The one chain format that did not work. Chain pharmacies peaked at 20,341 and stand at 14,828. |
-| Day 6 | `day-6.png` | Day 6 — Twenty years, one pattern. Chains went from 39% to 50% of every SNAP retailer in the country between 2006 and 2025. |
-| Day 7 | `day-7.png` | Day 7 — In November, the rules change for the stores that are left. The small stores this rule hits hardest are 71% of SNAP retailers and 11% of SNAP spending. |
+Copy the block from **reports/post0/cards.md**. It carries a markdown version
+and a plain-text version, both generated from the same data as the cards, so
+retitling a piece later cannot leave the email saying something different.
 
-Do **not** link the cards. Days 1–7 are not published yet, and a dead link in a
-launch email is worse than no link. Add links in the daily sends instead.
+```
+Day 1 — One in four of the smallest grocery stores is gone
+A 25% fall in small grocery businesses, by the Census Bureau's count.
+
+Day 2 — Dollar stores cracked the code small grocers could not
+Up 307% since 2006 — the steepest growth of any store format.
+
+Day 3 — Convenience stores thrived. Most of their owners did not.
+14.2% of single-owner stores lasted thirteen years. 78.7% of the chains did.
+
+Day 4 — The bigger the store, the better it did — unless it belonged to a chain
+78% of chain super stores kept their SNAP authorization. 46% of independent ones did.
+
+Day 5 — The one chain format that did not work
+Chain pharmacies peaked at 20,341 and stand at 14,828.
+
+Day 6 — Twenty years, one pattern
+Chains went from 39% to 50% of every SNAP retailer in the country.
+
+Day 7 — In November, the rules change for the stores that are left
+The stores it hits hardest are 71% of SNAP retailers and 11% of SNAP spending.
+```
+
+Set the day line bold with the description regular underneath. Do not link them
+— Days 1 to 7 are not published yet, and a dead link in a launch email is worse
+than no link. Add links in the daily sends.
+
+The card PNGs are still in `reports/post0/images/` if you want one as a visual
+break, but they are built for the web page, not for a phone.
 
 ### 11 — What we are not claiming
 
