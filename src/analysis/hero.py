@@ -299,19 +299,31 @@ def main():
                "Chain share of all SNAP stores: 39% to 50%")
 
     if want is None or 7 in want:
-        # The formats the new stocking standard falls hardest on: the ones
-        # carrying the least stock today. No share is quoted on the image — the
-        # RIA does not publish the category list behind its own 71%.
+        # Only ONE count is keyed here, deliberately.
+        #
+        # Day 7's card quotes USDA's "71% of stores, 11% of spending" from the
+        # rule's impact analysis. That is USDA's figure, on USDA's categories,
+        # over USDA's universe of 269,217 authorized retailers. Ours is 249,083
+        # — a different denominator, since theirs includes Alaska, Hawaii and
+        # the territories — and no format set here reaches 71% anyway: the four
+        # small formats give 63.4%, and adding dollar stores overshoots to
+        # 78.4%. The RIA does not publish the category list behind its number.
+        #
+        # Keying both layers would let a reader derive 63.4% off the image and
+        # read it against the 71% on the card, which would look like the series
+        # contradicting itself when it is really two different measurements. So
+        # the backdrop is drawn as context and left uncounted, and the frame
+        # claims only what it can source: where these stores are.
         SMALL = ("p.format IN ('Convenience Store','Grocery (Small)',"
                  "'Grocery (Medium)','Combination Grocery/Other')")
-        rest, nr = points(con, f"NOT ({SMALL})", 2025)
+        rest, _ = points(con, f"NOT ({SMALL})", 2025)
         small, ns = points(con, SMALL, 2025)
         render(OUT / "day-7.png", 7,
-               [{"xy": rest, "color": MUTED, "size": 0.5, "alpha": 0.45,
-                 "label": f"every other format  {nr:,}"},
+               [{"xy": rest, "color": MUTED, "size": 0.5, "alpha": 0.4},
                 {"xy": small, "color": S[0], "size": 0.6,
                  "label": f"small formats  {ns:,}"}],
-               "Stores the new rule hits")
+               "Stores at most risk from new rule")
+
 
 if __name__ == "__main__":
     main()

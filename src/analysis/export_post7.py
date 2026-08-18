@@ -146,9 +146,8 @@ The four categories are {n['category_names']}. The variety requirement more than
 
 USDA has published its own forecast, in an impact analysis filed with the rule. **{im['stores_needing_varieties']:,} stores** have to add varieties to keep selling to SNAP households. Of those, the agency expects about **{im['stores_denied']:,} to be denied** — a denial rate of {im['new_denial_rate_pct']}%, up from the {im['baseline_denial_rate_pct']}% and roughly {im['baseline_annual_denials']:,} denials a normal year produces.
 
-That is not the same as {im['stores_denied']:,} stores gone, and it is worth being precise about it. USDA expects most of those stores to buy the stock and apply again: it budgets for {im['reauthorizations_expected']:,} reauthorizations. Its own projected net loss is about **{im['net_permanent_loss']:,} stores**. Around **{im['small_share_of_retailers_pct']}%** of all SNAP retailers are the
-small formats most exposed: convenience stores, small grocers, and the combination stores that include
-dollar stores.
+That is not the same as {im['stores_denied']:,} stores gone, and it is worth being precise about it. USDA expects most of those stores to buy the stock and apply again: it budgets for {im['reauthorizations_expected']:,} reauthorizations. Its own projected net loss is about **{im['net_permanent_loss']:,} stores**. By USDA's count, **{im['small_share_of_retailers_pct']}%** of SNAP retailers are the small
+formats most exposed to the new standard.
 
 ## Why USDA thinks that is acceptable
 
@@ -255,6 +254,12 @@ markets are the ones never designed to sell a week of groceries, then the questi
 money a household gets. It is how food reaches people who have the fewest ways to go and get it.
 
 ## Limits
+
+**USDA's 71% is USDA's, and we cannot rebuild it.** The impact analysis does not publish the store
+types behind that share, and its universe is 269,217 authorized retailers against the 249,083 in this
+file — a different count, since theirs includes Alaska, Hawaii and the territories. On the store types
+here the nearest equivalent is 63%, and adding dollar stores overshoots to 78%. It is quoted as the
+agency's own reasoning, not as a measurement of ours.
 
 **The Thrifty Food Plan question is a question, not a finding.** This data cannot see inside a store, so no
 estimate is made of how much of the plan's basket is stocked anywhere. Measuring that needs shelf-level
