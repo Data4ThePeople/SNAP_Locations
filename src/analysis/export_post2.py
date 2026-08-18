@@ -123,35 +123,41 @@ in {arc['peak_year']}. They bottomed at {arc['trough']:,} in {arc['trough_year']
 
 ![{figs["small-grocery-arc"]['caption']}](images/{figs["small-grocery-arc"]['file']})
 
-That is a fall of **{abs(cb['snap_small_pct']):.0f}%**. Before repeating it, we checked it against a
-source that counts businesses instead of paperwork. The Census Bureau counts every grocery store
-with staff, whether or not it takes EBT.
+That is a fall of **{abs(cb['snap_small_pct']):.0f}%**. Before taking that number at face value, we
+checked it against a source that counts businesses instead of paperwork. The Census Bureau counts
+every grocery store with staff, whether or not it takes EBT.
 
 ![{figs["census-vs-snap"]['caption']}](images/{figs["census-vs-snap"]['file']})
 
 The census says the smallest grocery businesses fell **{abs(cb['cbp_under5_pct'])}%** if you count
 those with under five staff, and **{abs(cb['cbp_under10_pct'])}%** under ten. Not 46%.
 
-The gap is not stores quietly leaving the program. It is USDA's own dividing line moving. Look at
-the fourth bar: **Small and Medium grocery together fell {abs(cb['snap_small_mid_pct'])}%**, within
-a point or two of the census. If small grocers were dropping out of SNAP in numbers, that combined
-figure would have fallen much further than the census too. It did not. Stores were most likely being filed as Medium instead of Small.
+Why the two counts disagree, we cannot say for certain — more than one thing is likely at work.
+The definitions are simply different: the census sorts stores by staff, SNAP by what is on the
+shelf. A store can stay open and choose to stop taking SNAP, and in these records it looks the same
+as one that closed. And USDA can file as Medium a store it once would have called Small — which it
+had fresh reason to do after 2018, when the program began requiring 36 items on the shelf at all
+times. That last one is visible in the record: for a decade about {med_lo:.0f}% of new grocery
+stores were filed as Medium. In 2018–21 it was **{med_hi:.0f}%**. A store carrying that much stock
+is, in USDA's own words, closer to a "moderate selection" than a small one.
 
-You can watch the line move. For a decade about {med_lo:.0f}% of new grocery stores were filed as
-Medium. In 2018–21 that jumped to **{med_hi:.0f}%**, exactly when USDA started requiring 36 items on
-the shelf at all times. A store carrying that much stock is, in USDA's own words, closer to a
-"moderate selection" than a small one.
+Given all the unknowns, we ran one more check: SNAP's Small and Medium grocery categories combined,
+so a store reclassified from one to the other cannot move the number. Together they fell
+**{abs(cb['snap_small_mid_pct'])}%** — the fourth bar, within a point of the census.
 
-**So the real loss of "small" grocery stores over the past decade and change is probably closer to a quarter.** And a quarter is a lot. Grocery of every size fell only {abs(cb['cbp_total_pct'])}%, so the losses sit almost entirely in the smallest stores — the ones most likely to be the only shop in a small town.
+**That gives two independent readings of the same event: the smallest grocery stores are down at least a quarter since 2012.** Treat that as the conservative estimate — the true loss could be higher. But a quarter is still a lot. Grocery of every size fell only {abs(cb['cbp_total_pct'])}%, so the losses sit almost entirely in the smallest stores — the ones most likely to be the only shop in a small town.
 
 ## It happened by stores not opening
 
-The next question is how they went. If small grocers were being pushed out, departures should have
-spiked. They did the opposite.
+The next question is how they went. If small grocers were being pushed out, we would expect a rise
+in the number of stores dropping their SNAP authorization. That is not what happened.
 
-New small grocers signing up for SNAP fell from about {sg['before']:,.0f} a year to
-{sg['after']:,.0f} — **{entry_drop}%**. Stores leaving fell {abs(exit_drop)}%. Small grocery did
-not start dying much faster. It stopped being replaced.
+The decline was driven by the other side of the ledger: a steep fall in new grocers signing up to
+replace natural attrition. Sign-ups dropped from about {sg['before']:,.0f} a year to
+{sg['after']:,.0f} — a **{abs(entry_drop)}%** decline in six years. The number of stores losing
+their authorization each year actually fell {abs(exit_drop)}%. That paints a different picture —
+not incumbent grocers being shoved out of the market, but new small grocers no longer showing up
+to take their place.
 
 And the fall sorts by **store size**. These are USDA's own categories, with nothing regrouped by us:
 
