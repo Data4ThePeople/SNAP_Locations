@@ -44,7 +44,7 @@ def main():
     palette.validate(3, "dark", verbose=False)
 
     arc, cb = d["arc"], d["cbp"]
-    mix, st = d["entry_mix"], d["states"]
+    st = d["states"]
     eu = {r["store_type"]: r for r in d["entry_change_usda"]}
     lap = next(r for r in d["lapse"] if r["format"] == "Grocery (Small)")
     yrs = d["flows"]["years"]
@@ -57,8 +57,6 @@ def main():
     dep_before = (dep[2012] + dep[2013]) / 2
     dep_after = (dep[2018] + dep[2019]) / 2
     exit_drop = round(100 * (dep_after / dep_before - 1))
-    med_lo = min(m["medium_share"] for m in mix)
-    med_hi = max(m["medium_share"] for m in mix)
 
     c_arc = charts.line_chart(
         yrs, [{"name": "small grocery stores", "values": d["flows"]["stock"], "slot": 1}],
@@ -66,11 +64,11 @@ def main():
         title="Authorized small grocers fell by nearly half")
 
     c_gap = charts.bar_chart([
-        {"label": "Census, all grocery", "value": cb["cbp_total_pct"], "slot": 0},
+        {"label": "Census, all grocery", "value": cb["cbp_total_pct"], "slot": 1},
         {"label": "Census, under 5 staff", "value": cb["cbp_under5_pct"], "slot": 1},
         {"label": "Census, under 10 staff", "value": cb["cbp_under10_pct"], "slot": 1},
-        {"label": "SNAP Small + Medium", "value": cb["snap_small_mid_pct"], "slot": 3},
-        {"label": "SNAP Small only", "value": cb["snap_small_pct"], "slot": 2},
+        {"label": "SNAP, all grocery", "value": cb["snap_all_pct"], "slot": 2},
+        {"label": "SNAP, Small only", "value": cb["snap_small_pct"], "slot": 2},
     ], suffix="%", direction="left",
         title="The businesses fell a quarter. SNAP's Small category fell twice that.",
         subtitle=f"change {cb['base_year']} to {cb['last_year']}")
@@ -125,21 +123,20 @@ against SNAP authorizations.</figcaption></figure>
 <strong>{abs(cb['cbp_under5_pct'])}%</strong> if you count those with under five staff, and
 <strong>{abs(cb['cbp_under10_pct'])}%</strong> under ten. Not 46%.</p>
 
-<p>Why the two counts disagree, we cannot say for certain — more than one thing is likely at work.
-The definitions are simply different: the census sorts stores by staff, SNAP by what is on the
-shelf. A store can stay open and choose to stop taking SNAP, and in these records it looks the same
-as one that closed. And USDA can file as Medium a store it once would have called Small — which it
-had fresh reason to do after 2018, when the program began requiring 36 items on the shelf at all
-times. That last one is visible in the record: for a decade about {med_lo:.0f}% of new grocery
-stores were filed as Medium. In 2018–21 it was <strong>{med_hi:.0f}%</strong>. A store carrying
-that much stock is, in USDA's own words, closer to a "moderate selection" than a small one.</p>
+<p>Why the two counts disagree, we can't say for certain. But here is what we do know.</p>
 
-<p>Given all the unknowns, we ran one more check: SNAP's Small and Medium grocery categories
-combined, so a store reclassified from one to the other cannot move the number. Together they fell
-<strong>{abs(cb['snap_small_mid_pct'])}%</strong> — the fourth bar, within a point of the
-census.</p>
+<p>First, the USDA only counts stores authorized to accept SNAP. The census counts stores. As we
+discussed yesterday, these are not the same. A store could drop SNAP if it became too onerous to
+maintain eligibility and still continue to operate.</p>
 
-<p><strong>That gives two independent readings of the same event: the smallest grocery stores are down at least a quarter since 2012.</strong> Treat that as the conservative estimate — the true loss could be higher. But a quarter is still a lot. Grocery of every size fell only {abs(cb['cbp_total_pct'])}%, so the losses sit almost entirely in the smallest stores — the ones most likely to be the only shop in a small town.</p>
+<p>Second, the size definitions are totally different. USDA defines a small grocer as one that
+"carries a small selection of all four staple food categories." The census categorizes stores by
+employee count. Different measures (one not even quantitative) would produce different results.</p>
+
+<p>So, if we are trying to quantify the decline in small grocery stores, we'd use the census's data
+as a conservative estimate. But that is easy for us to write as we sit at our desks next to a
+fridge full of food. If you rely on SNAP, the <strong>{abs(cb['snap_small_pct']):.0f}%</strong>
+decline in small grocery stores is the real number.</p>
 
 <h2>It happened by stores not opening</h2>
 
@@ -162,7 +159,7 @@ amount of inventory, which is a large demand on a small store and no demand at a
 
 <p><strong>While this would be a neat and tidy explanation for this table, sadly we can't prove it
 with the data we have.</strong> New sign-ups had been falling since 2012, years before the rule
-took effect, so something else is at work too. And these records carry no field for
+took effect in 2018, so something else is at work too. And these records carry no field for
 why an authorization ended. We can show the shape and the timing. We cannot show the reason.</p>
 
 <h2>It is not happening evenly</h2>
