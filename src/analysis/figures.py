@@ -162,8 +162,14 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
 
 
 def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
-             subtitle=""):
-    """`rows` = [{label, value, slot?, note?}], drawn top-to-bottom as given."""
+             subtitle="", direction="right"):
+    """`rows` = [{label, value, slot?, note?}], drawn top-to-bottom as given.
+
+    direction="left" anchors the bars to a right-hand baseline and grows them
+    leftward, with labels on the right. Pass the values signed (negative for a
+    decline): a series of drops then reads as drops, "-64%" and pointing down
+    the scale, instead of as positive magnitudes.
+    """
     h = 0.42 * len(rows) + 0.55 + (0.42 if title else 0)
     fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
     ax.set_facecolor(PAPER)
@@ -171,25 +177,31 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
         ax.spines[side].set_visible(False)
     ax.tick_params(left=False, bottom=False, labelbottom=False, labelleft=False)
     ys = range(len(rows))
-    hi = max(r["value"] for r in rows)
+    hi = max(abs(r["value"]) for r in rows)
+    left = direction == "left"
+    sgn = -1 if left else 1
     for y, r in zip(ys, rows):
         slot = r.get("slot", 1)
         # Slot 0 is a non-identity neutral: context bars should not
         # spend a categorical hue, and green would read as "good".
         c = MUTED if slot == 0 else S[slot - 1]
-        ax.barh(y, r["value"], height=0.56, color=c, zorder=3)
-        ax.text(-0.014 * hi, y, r["label"], ha="right", va="center",
-                fontsize=8.5, family=MONO, color=INK_MID)
+        v = sgn * abs(r["value"]) if left else r["value"]
+        ax.barh(y, v, height=0.56, color=c, zorder=3)
+        ax.text(-sgn * 0.014 * hi, y, r["label"], ha="left" if left else "right",
+                va="center", fontsize=8.5, family=MONO, color=INK_MID)
         txt = f"{r['value']:,.1f}{suffix}".replace(".0" + suffix, suffix)
-        ax.text(r["value"] + 0.012 * hi, y, txt, ha="left", va="center",
-                fontsize=8.5, family=MONO, color=INK)
+        ax.text(v + sgn * 0.012 * hi, y, txt, ha="right" if left else "left",
+                va="center", fontsize=8.5, family=MONO, color=INK)
         if note_key and r.get(note_key):
-            ax.text(r["value"] + 0.17 * hi, y, str(r[note_key]), ha="left", va="center",
+            ax.text(v + sgn * 0.17 * hi, y, str(r[note_key]),
+                    ha="right" if left else "left", va="center",
                     fontsize=7.5, family=MONO, color=INK_SOFT)
     ax.set_ylim(len(rows) - 0.5, -0.6)
-    ax.set_xlim(0, hi * 1.52)
-    # Widest row label, converted to points, plus the label-to-bar gap.
-    gutter = max(len(str(r["label"])) for r in rows) * 8.5 * MONO_ADVANCE + 7
+    ax.set_xlim((-hi * 1.52, 0) if left else (0, hi * 1.52))
+    # Widest row label, converted to points, plus the label-to-bar gap. With the
+    # labels on the right nothing overhangs the left edge, so no gutter.
+    gutter = 0 if left else \
+        max(len(str(r["label"])) for r in rows) * 8.5 * MONO_ADVANCE + 7
     _titles(fig, ax, title, subtitle, gutter_pt=gutter)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)

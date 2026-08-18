@@ -114,30 +114,41 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
 
 
 def bar_chart(rows, width=720, row_h=30, slot=1, suffix="", note_key=None,
-              title="", subtitle=""):
+              title="", subtitle="", direction="right"):
     """Horizontal bars, `rows` = [{label, value, note}]. One hue: length is the
-    encoding, so spending the identity channel on it would be redundant."""
+    encoding, so spending the identity channel on it would be redundant.
+
+    direction="left" anchors the bars to a right-hand baseline and grows them
+    leftward, with labels on the right. Pass the values signed (negative for a
+    decline): a series of drops then reads as drops, "-64%" and pointing down
+    the scale, instead of as positive magnitudes."""
     head = (TITLE_H if title else 0) + (SUB_H if subtitle else 0)
     h = PAD["t"] + PAD["b"] + row_h * len(rows) + head
-    x0, x1 = 186, width - 74
-    hi = max(r["value"] for r in rows) * 1.02
+    left = direction == "left"
+    x0, x1 = (74, width - 186) if left else (186, width - 74)
+    hi = max(abs(r["value"]) for r in rows) * 1.02
     parts = [f'<svg viewBox="0 0 {width} {h}" role="img" class="chart">']
     parts.extend(_heading(title, subtitle, 0, PAD["t"] - 2 + (TITLE_H - 8 if title else 0)))
     for i, r in enumerate(rows):
         y = PAD["t"] + head + row_h * i
-        bw = (x1 - x0) * r["value"] / hi
-        parts.append(f'<text x="{x0-10}" y="{y+row_h/2+4:.0f}" text-anchor="end" '
+        bw = (x1 - x0) * abs(r["value"]) / hi
+        lx, la = (x1 + 10, "start") if left else (x0 - 10, "end")
+        parts.append(f'<text x="{lx}" y="{y+row_h/2+4:.0f}" text-anchor="{la}" '
                      f'class="blabel">{escape(r["label"])}</text>')
         # 4px rounded data-end, anchored to the baseline.
         sl = r.get("slot", slot)
         fill = "var(--muted)" if sl == 0 else f"var(--s{sl})"
-        parts.append(f'<rect x="{x0}" y="{y+5:.0f}" width="{max(bw,2):.1f}" '
+        bx = x1 - bw if left else x0
+        parts.append(f'<rect x="{bx:.1f}" y="{y+5:.0f}" width="{max(bw,2):.1f}" '
                      f'height="{row_h-12}" rx="4" fill="{fill}"/>')
-        parts.append(f'<text x="{x0+bw+8:.1f}" y="{y+row_h/2+4:.0f}" class="bvalue">'
+        vx, va = (x1 - bw - 8, "end") if left else (x0 + bw + 8, "start")
+        parts.append(f'<text x="{vx:.1f}" y="{y+row_h/2+4:.0f}" text-anchor="{va}" '
+                     f'class="bvalue">'
                      f'{r["value"]:,.1f}{suffix}'.replace(".0" + suffix, suffix) + '</text>')
         if note_key and r.get(note_key):
-            parts.append(f'<text x="{x0+bw+58:.1f}" y="{y+row_h/2+4:.0f}" class="note">'
-                         f'{escape(str(r[note_key]))}</text>')
+            nx, na = (x1 - bw - 58, "end") if left else (x0 + bw + 58, "start")
+            parts.append(f'<text x="{nx:.1f}" y="{y+row_h/2+4:.0f}" text-anchor="{na}" '
+                         f'class="note">{escape(str(r[note_key]))}</text>')
     parts.append("</svg>")
     return "\n".join(parts)
 

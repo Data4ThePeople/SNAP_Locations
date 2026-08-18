@@ -13,8 +13,8 @@ SRC = ROOT / "reports" / "data" / "post2.json"
 DIR = ROOT / "reports" / "post2"
 IMG = DIR / "images"
 
-# Super Store is deliberately absent. Its new authorizations fell 36%, but that is
-# Walmart alone — 168 a year to 10 — pausing a supercenter program that was
+# Super Store is deliberately absent. Its new authorizations fell 36%, and most
+# of that is Walmart — 168 a year to 10 — pausing a supercenter program that was
 # already built out. A supercenter clears any stocking floor without trying, so
 # the rule cannot be what moved it, and leaving the row in a table about store
 # size invites the reader to think it can. Called out in the limits instead.
@@ -33,14 +33,20 @@ def main():
         figs[slug] = {"file": p.name, "caption": caption}
         print(f"  {p.name}")
 
-    arc, cb, dr = d["arc"], d["cbp"], d["drivers"]
+    arc, cb = d["arc"], d["cbp"]
     mix, st = d["entry_mix"], d["states"]
     eu = {r["store_type"]: r for r in d["entry_change_usda"]}
     lap = next(r for r in d["lapse"] if r["format"] == "Grocery (Small)")
     yrs = d["flows"]["years"]
 
-    entry_drop = round(100 * (dr["new_after"] / dr["new_before"] - 1))
-    exit_drop = round(100 * (dr["dep_after"] / dr["dep_before"] - 1))
+    # One comparison everywhere: the 2012-13 vs 2018-19 windows the size-ladder
+    # table uses, so the prose cannot disagree with the figure below it.
+    sg = eu["Small Grocery Store"]
+    entry_drop = round(sg["pct"])
+    dep = dict(zip(yrs, d["flows"]["departed"]))
+    dep_before = (dep[2012] + dep[2013]) / 2
+    dep_after = (dep[2018] + dep[2019]) / 2
+    exit_drop = round(100 * (dep_after / dep_before - 1))
     med_lo = min(m["medium_share"] for m in mix)
     med_hi = max(m["medium_share"] for m in mix)
 
@@ -61,17 +67,17 @@ def main():
         title="Authorized small grocers fell by nearly half")
 
     fig(2, "census-vs-snap",
-        f"Percentage decline, {cb['base_year']} to {cb['last_year']}. Census business counts "
+        f"Percentage change, {cb['base_year']} to {cb['last_year']}. Census business counts "
         "against SNAP authorizations.",
         figures.hbar_png, [
-            {"label": "Census, all grocery", "value": abs(cb["cbp_total_pct"]), "slot": 0},
-            {"label": "Census, under 5 staff", "value": abs(cb["cbp_under5_pct"]), "slot": 1},
-            {"label": "Census, under 10 staff", "value": abs(cb["cbp_under10_pct"]), "slot": 1},
-            {"label": "SNAP Small + Medium", "value": abs(cb["snap_small_mid_pct"]), "slot": 3},
-            {"label": "SNAP Small only", "value": abs(cb["snap_small_pct"]), "slot": 2}],
-        suffix="%",
+            {"label": "Census, all grocery", "value": cb["cbp_total_pct"], "slot": 0},
+            {"label": "Census, under 5 staff", "value": cb["cbp_under5_pct"], "slot": 1},
+            {"label": "Census, under 10 staff", "value": cb["cbp_under10_pct"], "slot": 1},
+            {"label": "SNAP Small + Medium", "value": cb["snap_small_mid_pct"], "slot": 3},
+            {"label": "SNAP Small only", "value": cb["snap_small_pct"], "slot": 2}],
+        suffix="%", direction="left",
         title="The businesses fell a quarter. SNAP's Small category fell twice that.",
-        subtitle=f"decline {cb['base_year']} to {cb['last_year']}")
+        subtitle=f"change {cb['base_year']} to {cb['last_year']}")
 
     fig(3, "size-ladder",
         "Change in new SNAP sign-ups per year, 2012-13 average against 2018-19 average, by "
@@ -85,10 +91,11 @@ def main():
         f"Largest percentage falls in authorized small grocers, {arc['peak_year']} to 2025, "
         "among states with at least 150 at peak.",
         figures.hbar_png,
-        [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": abs(r["pct"]),
+        [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": r["pct"],
           "slot": 2 if r["state"] == "NY" else 0} for r in st[:8]], suffix="%",
+        direction="left",
         title="New York lost the most, by a wide margin",
-        subtitle=f"fall in authorized small grocers, {arc['peak_year']} to 2025")
+        subtitle=f"change in authorized small grocers, {arc['peak_year']} to 2025")
 
     md = f"""# One in four of the smallest grocery stores is gone
 
@@ -142,9 +149,9 @@ the shelf at all times. A store carrying that much stock is, in USDA's own words
 The next question is how they went. If small grocers were being pushed out, departures should have
 spiked. They did the opposite.
 
-New small grocers signing up for SNAP fell from about {dr['new_before']:,.0f} a year to
-{dr['new_after']:,.0f} — **{entry_drop}%**. Stores leaving fell {abs(exit_drop)}%. The exit rate
-never spiked. Small grocery did not start dying faster. It stopped being replaced.
+New small grocers signing up for SNAP fell from about {sg['before']:,.0f} a year to
+{sg['after']:,.0f} — **{entry_drop}%**. Stores leaving fell {abs(exit_drop)}%. Small grocery did
+not start dying much faster. It stopped being replaced.
 
 And the fall sorts by **store size**. These are USDA's own categories, with nothing regrouped by us:
 
@@ -154,8 +161,8 @@ The small formats collapsed. The large ones did not move, and the largest grocer
 grew. That is the shape a stocking requirement would produce: the rule asks for a fixed amount of
 inventory, which is a large demand on a small store and no demand at all on a big one.
 
-**This is a candidate, not a proven cause.** New sign-ups start falling in 2014, before the rule took
-effect, so something else is at work too. And these records carry no field for why an authorization
+**This is a candidate, not a proven cause.** New sign-ups had been falling since 2012, years before
+the rule took effect, so something else is at work too. And these records carry no field for why an authorization
 ended. We can show the shape and the timing. We cannot show the reason.
 
 ## It is not happening evenly
@@ -191,7 +198,7 @@ were plainly open the whole time.
 The Census Bureau counts businesses with paid employees. A grocery store run entirely by its owner
 with no payroll is not in that count, so the comparison covers employer businesses only.
 
-One category is left out of that table. New Super Store authorizations also fell, by 36%, but that is Walmart on its own — from about 168 a year to 10 — pausing a supercenter program that was already close to complete. A store that size meets any stocking requirement without trying, so the rule cannot be what moved it.
+One category is left out of that table. New Super Store authorizations also fell, by 36%, and most of that is Walmart — from about 168 a year to 10 — pausing a supercenter program that was already close to complete. A store that size meets any stocking requirement without trying, so the rule cannot be what moved it.
 
 The stocking rule is offered as a likely explanation, on timing and shape. These records carry no reason code, so this source alone cannot confirm it.
 
