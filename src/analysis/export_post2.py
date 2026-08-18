@@ -53,11 +53,14 @@ def main():
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
         [{"value": f"{abs(cb['cbp_under10_pct']):.0f}%",
-          "label": "fall in small grocery businesses, by the Census Bureau's count"},
+          "label": f"fall in small grocery businesses, {cb['base_year']} to "
+                   f"{cb['last_year']}, by the Census Bureau's count"},
          {"value": f"{abs(cb['snap_small_pct']):.0f}%",
-          "label": "fall in SNAP's own Small Grocery category"},
+          "label": f"fall in SNAP's own Small Grocery category, {cb['base_year']} "
+                   f"to {cb['last_year']}"},
          {"value": f"{abs(entry_drop)}%",
-          "label": "fall in small grocers signing up for SNAP each year"}])
+          "label": "fall in small grocers signing up for SNAP each year, "
+                   "2012–13 to 2018–19"}])
 
     fig(1, "small-grocery-arc",
         "Small grocery stores with an active SNAP authorization on 31 December of each year.",
@@ -104,8 +107,10 @@ def main():
 
 **{abs(cb['cbp_under10_pct']):.0f}%** fall in the number of small grocery businesses,
 {cb['base_year']} to {cb['last_year']}, by the Census Bureau's count.
-**{abs(cb['snap_small_pct']):.0f}%** fall in SNAP's own Small Grocery category over the same years.
-**{abs(entry_drop)}%** fall in the number of small grocers signing up for SNAP each year.
+**{abs(cb['snap_small_pct']):.0f}%** fall in SNAP's own Small Grocery category,
+{cb['base_year']} to {cb['last_year']}.
+**{abs(entry_drop)}%** fall in the number of small grocers signing up for SNAP each year,
+2012–13 to 2018–19.
 
 ![Headline figures](images/00-key-figures.png)
 
