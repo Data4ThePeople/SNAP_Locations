@@ -77,10 +77,10 @@ def main():
         title="A third have fewer than ten thousand people",
         subtitle="share of ZIP codes below each population line")
 
-    html = f"""{HEAD}<title>The pharmacy left. The grocery left. Two formats stayed.</title>
+    html = f"""{HEAD}<title>Twenty years, one pattern</title>
 <style>{CSS}</style>
 <main>
-<h1>The pharmacy left. The grocery left. Two formats stayed.</h1>
+<h1>Twenty years, one pattern</h1>
 <p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
 records, with 2020 census population by ZCTA · the last in this series</p>
 
