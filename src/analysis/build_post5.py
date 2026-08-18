@@ -32,6 +32,7 @@ def main():
     dollar_pct = round(100 * (arc["dollar"][-1] / arc["dollar"][0] - 1))
     f_pct = round(100 * (f_sc["y2025"] / f_sc["y2006"] - 1))
     grp, pres, gr, seq = d["groups"], d["presence"], d["growth"], d["sequencing"]
+    mix = d["ownership_mix"]
     den, tl = d["density"], d["total_loss"]
     pr = {p["label"]: p for p in pres}
     s1 = d["series"].get("post1", {})
@@ -82,19 +83,23 @@ def main():
 <main>
 <h1>Twenty years, one pattern</h1>
 <p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
-records, with 2020 census population by ZCTA · the last in this series</p>
+records, with 2020 census population by ZCTA · the last chapter; an epilogue follows</p>
 
 <div class="ledger">
+  <div><b>{mix['chain']['share_2006']:.0f}% → {mix['chain']['share_2025']:.0f}%</b><span>chains' share of every SNAP retailer in the country, 2006 to 2025</span></div>
   <div><b>{grp['lost']:,}</b><span>ZIP codes lost their last SNAP-authorized chain pharmacy since 2021</span></div>
-  <div><b>{dollar_pct:+}%</b><span>change in dollar stores in those same ZIP codes since 2006</span></div>
   <div><b>{den['lost_no_grocery']['median_pop']:,}</b><span>median population of those that now have no grocery at all</span></div>
 </div>
 
-<p>The five earlier pieces in this series each followed one format. Dollar stores almost never leave
-the program. Small grocers left in numbers, and mostly stopped being replaced. Pharmacy chains held
-flat for years and then collapsed. Read on their own they are unrelated retail stories.</p>
+<p>Five days got us here. Small grocers left in numbers and mostly stopped being replaced. Dollar
+stores almost never left. Convenience stores multiplied while their owners turned over. Put every format
+on one scale and two rules appeared: bigger stores kept their authorization, and a chain did not need to
+be big. Then the pharmacy chains, which had both advantages, collapsed anyway.</p>
 
-<p>They are not unrelated in the places where they land. Take the <strong>{grp['lost']:,} ZIP codes</strong> that lost their last SNAP-authorized chain pharmacy between 2021 and 2025. Now look at every other kind of food store in those same places, over twenty years.</p>
+<p>Read on their own they are five unrelated retail stories. They are not unrelated in the places where
+they land.</p>
+
+<p>Take the <strong>{grp['lost']:,} ZIP codes</strong> that lost their last SNAP-authorized chain pharmacy between 2021 and 2025. Now look at every other kind of food store in those same places, over twenty years.</p>
 
 <figure>{c_arc}{charts.legend(s_arc)}
 <figcaption>SNAP-authorized stores by format, aggregated across the {grp['lost']:,} ZIP codes that lost

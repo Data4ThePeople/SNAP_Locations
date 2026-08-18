@@ -43,6 +43,7 @@ def main():
 
     arc, ac = d["arc"], d["arc_change"]
     grp, pres, gr, seq = d["groups"], d["presence"], d["growth"], d["sequencing"]
+    mix = d["ownership_mix"]
     den, tl = d["density"], d["total_loss"]
     s2 = d["series"].get("post2", {})
     entry_pct = abs(round(100 * (s2["drivers"]["new_after"] / s2["drivers"]["new_before"] - 1))) \
@@ -53,10 +54,10 @@ def main():
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{grp['lost']:,}",
+        [{"value": f"{mix['chain']['share_2006']:.0f}% → {mix['chain']['share_2025']:.0f}%",
+          "label": "chains' share of every SNAP retailer in the country, 2006 to 2025"},
+         {"value": f"{grp['lost']:,}",
           "label": "ZIP codes lost their last SNAP-authorized chain pharmacy since 2021"},
-         {"value": f"{dollar_pct:+}%",
-          "label": "change in dollar stores in those same ZIP codes since 2006"},
          {"value": f"{den['lost_no_grocery']['median_pop']:,}",
           "label": "median population of those that now have no grocery at all"}])
 
@@ -115,21 +116,25 @@ def main():
 
     md = f"""# Twenty years, one pattern
 
-*SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The last in this series.*
+*SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The last chapter; an epilogue follows.*
 
+**{mix['chain']['share_2006']:.0f}% → {mix['chain']['share_2025']:.0f}%** chains' share of every SNAP retailer in the country, 2006 to 2025.
 **{grp['lost']:,}** ZIP codes lost their last SNAP-authorized chain pharmacy since 2021.
-**{dollar_pct:+}%** change in dollar stores in those same ZIP codes since 2006.
 **{den['lost_no_grocery']['median_pop']:,}** median population of those that now have no grocery at all.
 
 ![Headline figures](images/00-key-figures.png)
 
 ---
 
-The five earlier pieces each followed one format. Dollar stores almost never leave the program. Small
-grocers left in numbers, and mostly stopped being replaced. Pharmacy chains held flat for years and
-then collapsed. Read on their own they are unrelated retail stories.
+Five days got us here. Small grocers left in numbers and mostly stopped being replaced. Dollar stores
+almost never left. Convenience stores multiplied while their owners turned over. Put every format on one
+scale and two rules appeared: bigger stores kept their authorization, and a chain did not need to be
+big. Then the pharmacy chains, which had both advantages, collapsed anyway.
 
-They are not unrelated in the places where they land. Take the **{grp['lost']:,} ZIP codes** that lost their last SNAP-authorized chain pharmacy between 2021 and 2025. Now look at every other kind of food store in those same places, over twenty years.
+Read on their own they are five unrelated retail stories. They are not unrelated in the places where
+they land.
+
+Take the **{grp['lost']:,} ZIP codes** that lost their last SNAP-authorized chain pharmacy between 2021 and 2025. Now look at every other kind of food store in those same places, over twenty years.
 
 ![{figs["twenty-year-arc"]['caption']}](images/{figs["twenty-year-arc"]['file']})
 
