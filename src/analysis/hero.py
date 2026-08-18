@@ -108,14 +108,16 @@ def render(path, day, layers, caption):
     # Type sits INSIDE a centre-safe box, never in the corners: Prismic crops the
     # hero responsively and a square crop of a 1680x1080 keeps only x 0.18-0.82.
     #
-    # The lines are assembled first and the panel is sized to them, rather than
-    # the panel being a fixed rectangle. A fixed one either floated well clear of
-    # short content or let a wrapped caption run out of the bottom, and the
-    # caption length changes with every chapter.
+    # A panel is needed because the dense half of the map moves between chapters
+    # — type legible over the empty west on one hero lands on Chicago on the
+    # next — and it is sized to the text rather than being a fixed rectangle,
+    # because the caption length changes with every chapter.
     #
-    # A panel is needed at all because the dense half of the map moves between
-    # chapters — type that is legible over the empty west on one hero sits on
-    # top of Chicago on the next.
+    # The text is DRAWN FIRST and the panel fitted to its measured extents. The
+    # panel used to be estimated from the line with the most characters times
+    # its own point size, which is not the widest line once sizes are mixed: a
+    # short line set large beats a long line set small, and the estimate put the
+    # backing narrower than the type it was meant to sit behind.
     import textwrap
     PT = 200 / 72 / H_PX          # one point, as a fraction of frame height
     block = [(" ".join(SERIES.split(" ")), 13, INK_SOFT, 2.4),
@@ -129,20 +131,32 @@ def render(path, day, layers, caption):
     LX = 0.135
     height = sum(sz * lead * PT for _, sz, _, lead in block)
     top = 0.500 + height / 2          # vertically centred on the frame
-    pad_x, pad_y = 0.030, 0.030
-    widest = max(len(s) for s, _, _, _ in block)
-    wide_pt = max(sz for s, sz, _, _ in block if len(s) == widest)
-    panel_w = widest * 0.6023 * wide_pt * PT * (H_PX / W_PX) + pad_x * 2
-    ax.add_patch(plt.Rectangle((LX - pad_x, top - height - pad_y),
-                               panel_w, height + pad_y * 2, transform=ax.transAxes,
-                               facecolor=PAPER, alpha=0.80, edgecolor="none", zorder=8))
 
-    y = top
+    drawn, y = [], top
     for text, size, color, lead in block:
         y -= size * lead * PT
-        ax.text(LX, y, text, transform=ax.transAxes, family="DejaVu Sans Mono",
-                fontsize=size, color=color, va="bottom", zorder=9,
-                fontweight="bold" if size == 24 else "normal")
+        drawn.append(ax.text(LX, y, text, transform=ax.transAxes,
+                             family="DejaVu Sans Mono", fontsize=size, color=color,
+                             va="bottom", zorder=9,
+                             fontweight="bold" if size == 24 else "normal"))
+
+    fig.canvas.draw()
+    inv = ax.transAxes.inverted()
+    x0 = y0 = 1e9
+    x1 = y1 = -1e9
+    for txt in drawn:
+        bb = txt.get_window_extent(renderer=fig.canvas.get_renderer())
+        (ax0, ay0), (ax1, ay1) = inv.transform([(bb.x0, bb.y0), (bb.x1, bb.y1)])
+        x0, y0 = min(x0, ax0), min(y0, ay0)
+        x1, y1 = max(x1, ax1), max(y1, ay1)
+    pad_x, pad_y = 0.026, 0.028
+    ax.add_patch(plt.Rectangle((x0 - pad_x, y0 - pad_y),
+                               (x1 - x0) + pad_x * 2, (y1 - y0) + pad_y * 2,
+                               transform=ax.transAxes, facecolor=PAPER, alpha=0.80,
+                               edgecolor="none", zorder=8))
+    if x1 + pad_x > 0.82:
+        print(f"    note: text block reaches x={x1 + pad_x:.2f}, outside the "
+              f"0.18-0.82 crop-safe band")
 
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, facecolor=PAPER, dpi=DPI)
