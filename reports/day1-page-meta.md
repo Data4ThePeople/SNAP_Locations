@@ -118,7 +118,7 @@ Line chart of small grocery stores with an active SNAP authorization on 31 Decem
 ### `images/02-census-vs-snap.png` (1409×615) — census against SNAP
 
 ```
-Horizontal bar chart of percentage change from 2012 to 2023, with bars growing leftward from a right-hand baseline to show declines. Census, all grocery: minus 6.7%. Census, under 5 staff: minus 22.5%. Census, under 10 staff: minus 24.9%. SNAP Small plus Medium: minus 25.9%. SNAP Small only: minus 46.1%. Title: The businesses fell a quarter. SNAP's Small category fell twice that.
+Horizontal bar chart of percentage change from 2012 to 2023, with bars growing leftward from a right-hand baseline to show declines, census bars in blue and SNAP bars in orange. Census, all grocery: minus 6.7%. Census, under 5 staff: minus 22.5%. Census, under 10 staff: minus 24.9%. SNAP, all grocery: minus 8.3%. SNAP, Small only: minus 46.1%. Title: The businesses fell a quarter. SNAP's Small category fell twice that.
 ```
 
 ### `images/03-size-ladder.png` (1087×645) — the size ladder
