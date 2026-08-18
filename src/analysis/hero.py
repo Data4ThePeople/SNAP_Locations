@@ -48,6 +48,35 @@ def points(con, where, year):
     return usmap.albers(lons, lats), len(rows)
 
 
+def split(con, where, then, now):
+    """Three sets: authorized in `then` and still in `now`, lost since, added since.
+
+    Two snapshots drawn over each other cannot show a loss — the later layer
+    just covers the earlier one. Diffing the record ids does, and it is the
+    honest picture for a chapter about stores going away.
+    """
+    def ids(y):
+        return f"""SELECT DISTINCT p.record_id FROM panel p JOIN fact_spell s
+            USING(record_id) WHERE {where} AND NOT s.date_anomaly
+              AND {ACTIVE.format(y=y)}"""
+    rows = con.execute(f"""
+        WITH a AS ({ids(then)}), b AS ({ids(now)})
+        SELECT p.longitude, p.latitude,
+               CASE WHEN a.record_id IS NOT NULL AND b.record_id IS NOT NULL THEN 'kept'
+                    WHEN a.record_id IS NOT NULL THEN 'lost' ELSE 'added' END AS bucket
+        FROM panel p
+        LEFT JOIN a ON a.record_id = p.record_id
+        LEFT JOIN b ON b.record_id = p.record_id
+        WHERE (a.record_id IS NOT NULL OR b.record_id IS NOT NULL)
+          AND p.longitude BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
+          AND p.latitude  BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}""").fetchall()
+    out = {}
+    for k in ("kept", "lost", "added"):
+        pts = [(r[0], r[1]) for r in rows if r[2] == k]
+        out[k] = (usmap.albers([q[0] for q in pts], [q[1] for q in pts]), len(pts))
+    return out
+
+
 def render(path, day, layers, caption):
     """`layers` = [{xy, color, size, alpha}] drawn in order, first at the back."""
     fig = plt.figure(figsize=(W_PX / DPI, H_PX / DPI), dpi=DPI, facecolor=PAPER)
@@ -156,6 +185,81 @@ def main():
                [{"xy": new, "color": S[0], "size": 1.1, "label": f"2025  {n25:,}"},
                 {"xy": old, "color": S[3], "size": 1.1, "label": f"2006  {n06:,}", "z": 3}],
                f"Dollar stores, 2006 to 2025")
+
+    if want is None or 1 in want:
+        s = split(con, "p.format = 'Grocery (Small)'", 2006, 2025)
+        render(OUT / "day-1.png", 1,
+               [{"xy": s["added"][0], "color": MUTED, "size": 1.4, "alpha": 0.6,
+                 "label": f"opened since 2006  {s['added'][1]:,}"},
+                {"xy": s["kept"][0], "color": S[0], "size": 1.6,
+                 "label": f"there in 2006, still open  {s['kept'][1]:,}"},
+                {"xy": s["lost"][0], "color": S[3], "size": 1.6, "z": 3,
+                 "label": f"gone since 2006  {s['lost'][1]:,}"}],
+               "Small grocery stores")
+
+    if want is None or 3 in want:
+        chain, nc = points(con, "p.format = 'Convenience Store' AND p.ownership = 'chain'", 2025)
+        indie, ni = points(con, "p.format = 'Convenience Store' AND p.ownership = 'independent'", 2025)
+        render(OUT / "day-3.png", 3,
+               [{"xy": indie, "color": S[2], "size": 0.9,
+                 "label": f"single owner  {ni:,}"},
+                {"xy": chain, "color": S[0], "size": 0.9,
+                 "label": f"chain  {nc:,}"}],
+               "Convenience stores, 2025")
+
+    if want is None or 4 in want:
+        big, nb = points(con, "p.format IN ('Super Store','Supermarket')", 2025)
+        mid, nm = points(con, "p.format IN ('Grocery (Large)','Grocery (Medium)')", 2025)
+        sml, ns = points(con, "p.format = 'Grocery (Small)'", 2025)
+        render(OUT / "day-4.png", 4,
+               # Largest first so the smallest end up on top. Drawn the other
+               # way the biggest dots, which are also the most numerous here,
+               # covered both smaller tiers and the ladder vanished.
+               [{"xy": big, "color": S[0], "size": 2.4, "alpha": 0.55,
+                 "label": f"supermarket and up  {nb:,}"},
+                {"xy": mid, "color": S[2], "size": 1.2, "alpha": 0.85,
+                 "label": f"medium and large  {nm:,}"},
+                {"xy": sml, "color": S[3], "size": 0.9,
+                 "label": f"small grocery  {ns:,}"}],
+               "Grocery by store size")
+
+    if want is None or 5 in want:
+        s = split(con, "p.brand IN ('Walgreens','CVS','Rite Aid','Duane Reade')", 2016, 2025)
+        render(OUT / "day-5.png", 5,
+               [{"xy": s["kept"][0], "color": S[0], "size": 1.8,
+                 "label": f"still authorized  {s['kept'][1]:,}"},
+                {"xy": s["lost"][0], "color": S[3], "size": 1.8, "z": 3,
+                 "label": f"gone since 2016  {s['lost'][1]:,}"}],
+               "Chain pharmacies")
+
+    if want is None or 6 in want:
+        # Not chain against independent. Two dense categories over the whole
+        # country cannot show a 59/41 split — whichever draws last buries the
+        # other, and swapping the order just reverses which side disappears.
+        # The chapter's claim is the SHIFT, so the frame shows the shift: chain
+        # stores that were already here against the ones added since.
+        s = split(con, "p.ownership = 'chain'", 2006, 2025)
+        render(OUT / "day-6.png", 6,
+               [{"xy": s["kept"][0], "color": S[3], "size": 0.6, "alpha": 0.85,
+                 "label": f"chain, here in 2006  {s['kept'][1]:,}"},
+                {"xy": s["added"][0], "color": S[0], "size": 0.6, "alpha": 0.85,
+                 "label": f"chain, added since  {s['added'][1]:,}"}],
+               "Chains went 39% to 50%")
+
+    if want is None or 7 in want:
+        # The formats the new stocking standard falls hardest on: the ones
+        # carrying the least stock today. No share is quoted on the image — the
+        # RIA does not publish the category list behind its own 71%.
+        SMALL = ("p.format IN ('Convenience Store','Grocery (Small)',"
+                 "'Grocery (Medium)','Combination Grocery/Other')")
+        rest, nr = points(con, f"NOT ({SMALL})", 2025)
+        small, ns = points(con, SMALL, 2025)
+        render(OUT / "day-7.png", 7,
+               [{"xy": rest, "color": MUTED, "size": 0.5, "alpha": 0.45,
+                 "label": f"every other format  {nr:,}"},
+                {"xy": small, "color": S[0], "size": 0.6,
+                 "label": f"small formats  {ns:,}"}],
+               "Stores the new rule hits")
 
 
 if __name__ == "__main__":
