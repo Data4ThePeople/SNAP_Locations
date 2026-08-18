@@ -207,6 +207,34 @@ def main():
     for t in out["states"][-3:]:
         print(f"     {t['state']}  {t['then']:>5,} -> {t['now']:>5,}  {t['pct']:>+6.1f}%")
 
+    # New York's fall, split into the five boroughs and the rest of the state.
+    # USDA's county field names the boroughs directly (Kings, Queens, Bronx,
+    # New York, Richmond), so no geocoding is involved.
+    nyc = con.execute(f"""
+        WITH act AS (
+          SELECT y.yr, p.record_id,
+                 p.county IN ('KINGS','QUEENS','BRONX','NEW YORK','RICHMOND') AS boro
+          FROM (VALUES ({peak}),(2025)) y(yr)
+          JOIN fact_spell f ON f.auth_date <= make_date(y.yr,12,31)
+            AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+            AND NOT f.date_anomaly
+          JOIN panel p ON p.record_id = f.record_id
+          WHERE p.state='NY' AND p.format='Grocery (Small)'
+          GROUP BY 1,2,3)
+        SELECT boro, sum(CASE WHEN yr={peak} THEN 1 ELSE 0 END) AS then_n,
+               sum(CASE WHEN yr=2025 THEN 1 ELSE 0 END) AS now_n
+        FROM act GROUP BY 1""").fetchall()
+    d = {bool(b): (int(a), int(c)) for b, a, c in nyc}
+    ny = next(s for s in out["states"] if s["state"] == "NY")
+    out["nyc"] = {"then": d[True][0], "now": d[True][1],
+                  "share_of_loss": round((d[True][0] - d[True][1])
+                                         / (ny["then"] - ny["now"]), 3)}
+    print(f"     of which NYC boroughs  {out['nyc']['then']:>5,} -> "
+          f"{out['nyc']['now']:>5,}  ({100*out['nyc']['share_of_loss']:.0f}% of NY's loss)")
+    check("borough and rest-of-state counts sum to the NY totals",
+          d[True][0] + d[False][0] == ny["then"]
+          and d[True][1] + d[False][1] == ny["now"], 1)
+
     # ------------------------------------------------------- 6b. who the bar actually hit
     # The rule applies to any retailer authorized on inventory (Criterion A), not
     # to grocery stores specifically, so its mark should show up across formats.
