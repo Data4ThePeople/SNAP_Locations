@@ -58,8 +58,9 @@ CHAPTERS = [
     (2, "post1", "Dollar stores",
      "The steadiest trend in the data: sixteen years of near-constant dollar store "
      "openings, and a survival rate no other format comes close to.",
-     "Having established what went away, look at what grew in its place. The "
-     "surprise is not the growth. It is that they almost never leave the program."),
+     "Having established what went away, look at what grew in its place — faster "
+     "than any other format in the data, and with a survival rate none of them "
+     "come close to."),
     (3, "post6", "Gas stations",
      "Splitting the convenience store category by who runs the store, and the fuel "
      "margins that made the gas station newly profitable after 2020.",
