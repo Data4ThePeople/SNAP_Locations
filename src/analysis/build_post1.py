@@ -130,8 +130,8 @@ follows: for dollar stores, authorization counts are store counts.</p>
 <h2>They grew enormously</h2>
 
 <p>Dollar stores went from {stock[0]:,} SNAP-authorized stores in {yrs[0]} to {stock[-1]:,} in
-{yrs[-1]}. That is a <strong>{growth_pct:+}%</strong> change, while every grocery format either
-shrank or stood still.</p>
+{yrs[-1]}. That is a <strong>{growth_pct:+}%</strong> change, while no grocery format managed even
+a tenth of that.</p>
 
 <figure>{c_ctx}{charts.legend(s_ctx)}
 <figcaption>Stores authorized on 31 December of each year, by format.</figcaption></figure>
@@ -186,7 +186,7 @@ one option among several. It is the option.</p>
 
 <p>Which is where we go next: the country's <strong>{conv_2025:,} convenience stores</strong>, the
 single largest group in this data, and how they have thrived without anything like the chain
-concentration dollar stores enjoy. Only {m_cv['chain']:.0f}% of them belong to a chain at all.</p>
+concentration dollar stores enjoy. Only {m_cv['chain_2025']:.0f}% of them belong to a chain at all.</p>
 
 <p><strong>Tomorrow: the convenience store.</strong></p>
 
