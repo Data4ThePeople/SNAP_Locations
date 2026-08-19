@@ -214,6 +214,133 @@ def main():
         counties.append({"yr": yr, "with_dollar": r[2], "dollar_only": r[3]})
     out["dollar_only_zip"] = zips
     out["dollar_only_county"] = counties
+
+    # How a ZIP code joins the dollar-only list matters more than that it did:
+    # a grocery leaving and a dollar store arriving where no grocery ever was
+    # are opposite stories. Split the 2008 -> 2024 walk into its movements, per
+    # ZIP, checking "ever had a grocery" on every 31 December in the window so
+    # a grocery that came and went mid-window still counts as a loss. Each ZIP
+    # is attributed to one state across both years so the walk reconciles.
+    walk = con.execute(f"""
+        WITH zstate AS (SELECT zip_code, min(state) st FROM panel
+                        WHERE zip_code IS NOT NULL AND length(zip_code)=5 GROUP BY 1),
+        snap AS (
+          SELECT y.yr, p.zip_code, bool_or(p.format='Dollar Store') d,
+                 bool_or(p.format IN {GROCERY}) g
+          FROM (VALUES (2008),(2024)) y(yr)
+          JOIN fact_spell f ON f.auth_date <= make_date(y.yr,12,31)
+            AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+            AND NOT f.date_anomaly
+          JOIN panel p ON p.record_id = f.record_id
+          WHERE p.zip_code IS NOT NULL AND length(p.zip_code)=5
+          GROUP BY 1, 2),
+        ever AS (
+          SELECT p.zip_code, bool_or(p.format IN {GROCERY}) g_ever,
+                 bool_or(p.format = 'Convenience Store') c_ever
+          FROM panel p JOIN fact_spell f USING(record_id)
+          JOIN generate_series(2008, 2024) y(yr)
+            ON f.auth_date <= make_date(y.yr,12,31)
+           AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+          WHERE NOT f.date_anomaly AND p.zip_code IS NOT NULL
+            AND length(p.zip_code)=5
+          GROUP BY 1),
+        a AS (SELECT zip_code FROM snap WHERE yr=2008 AND d AND NOT g),
+        b AS (SELECT zip_code FROM snap WHERE yr=2024 AND d AND NOT g)
+        SELECT z.st,
+          count(*) FILTER (WHERE a.zip_code IS NOT NULL) AS start08,
+          count(*) FILTER (WHERE a.zip_code IS NOT NULL AND b.zip_code IS NULL) AS exited,
+          count(*) FILTER (WHERE b.zip_code IS NOT NULL AND a.zip_code IS NULL
+                             AND NOT e.g_ever) AS new_never,
+          count(*) FILTER (WHERE b.zip_code IS NOT NULL AND a.zip_code IS NULL
+                             AND NOT e.g_ever AND e.c_ever) AS new_never_conv,
+          count(*) FILTER (WHERE b.zip_code IS NOT NULL AND a.zip_code IS NULL
+                             AND e.g_ever) AS new_lost,
+          count(*) FILTER (WHERE b.zip_code IS NOT NULL) AS end24
+        FROM (SELECT zip_code FROM a UNION SELECT zip_code FROM b) u
+        JOIN zstate z USING(zip_code)
+        LEFT JOIN a USING(zip_code) LEFT JOIN b USING(zip_code)
+        LEFT JOIN ever e USING(zip_code)
+        GROUP BY 1""").fetchall()
+    nat = [sum(r[i] for r in walk) for i in range(1, 7)]
+    out["dollar_only_split"] = {
+        "start": nat[0], "exited": nat[1], "new_never": nat[2],
+        "new_never_conv": nat[3], "new_lost": nat[4], "end": nat[5],
+        "joined": nat[2] + nat[4]}
+    sp = out["dollar_only_split"]
+    print(f"     walk: {sp['start']:,} in 2008, -{sp['exited']:,} left the list, "
+          f"+{sp['new_never']:,} never had a grocery ({sp['new_never_conv']:,} had "
+          f"convenience), +{sp['new_lost']:,} had one and lost it -> {sp['end']:,}")
+    check("the national walk reconciles",
+          int(sp["start"] - sp["exited"] + sp["joined"] == sp["end"]), 1)
+    check("national endpoints match the trend line",
+          int(sp["start"] == zips[0]["dollar_only"]
+              and sp["end"] == zips[-1]["dollar_only"]), 1)
+    # Deterministic tie-break (NC and AR both added 129): larger 2024 count,
+    # then alphabetical, so the table cannot reshuffle between runs.
+    top = sorted(walk, key=lambda r: (-(r[6] - r[1]), -r[6], r[0]))[:10]
+    out["dollar_only_states"] = [
+        {"state": st, "y2008": s8, "exited": ex, "new_never": nn,
+         "new_lost": nl, "y2024": e24}
+        for st, s8, ex, nn, _nc, nl, e24 in top]
+    # The columns need unpacking. "Left the list" is nearly always a grocery
+    # becoming authorized, not the dollar store going. "Never had a grocery"
+    # arrivals are all NEW dollar stores by construction (a ZIP with a dollar
+    # store and no grocery in 2008 would already be on the list). "Grocery left
+    # SNAP" arrivals are mixed: some had the dollar store all along, most
+    # gained one too. The post explains this, so the numbers live here.
+    sub = con.execute(f"""
+        WITH a AS (
+          SELECT zip_code, bool_or(format='Dollar Store') d, bool_or(format IN {GROCERY}) g
+          FROM (SELECT DISTINCT p.zip_code, p.format FROM panel p JOIN fact_spell f USING(record_id)
+                WHERE NOT f.date_anomaly AND f.auth_date <= DATE '2008-12-31'
+                  AND (f.end_date IS NULL OR f.end_date >= DATE '2008-12-31'))
+          WHERE zip_code IS NOT NULL AND length(zip_code)=5 GROUP BY 1),
+        b AS (
+          SELECT zip_code, bool_or(format='Dollar Store') d, bool_or(format IN {GROCERY}) g
+          FROM (SELECT DISTINCT p.zip_code, p.format FROM panel p JOIN fact_spell f USING(record_id)
+                WHERE NOT f.date_anomaly AND f.auth_date <= DATE '2024-12-31'
+                  AND (f.end_date IS NULL OR f.end_date >= DATE '2024-12-31'))
+          WHERE zip_code IS NOT NULL AND length(zip_code)=5 GROUP BY 1),
+        e AS (
+          SELECT p.zip_code, bool_or(p.format IN {GROCERY}) g_ever
+          FROM panel p JOIN fact_spell f USING(record_id)
+          JOIN generate_series(2008,2024) y(yr) ON f.auth_date <= make_date(y.yr,12,31)
+           AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+          WHERE NOT f.date_anomaly AND p.zip_code IS NOT NULL AND length(p.zip_code)=5
+          GROUP BY 1)
+        SELECT
+          count(*) FILTER (WHERE a.d AND NOT a.g AND NOT coalesce(b.d AND NOT b.g, false)
+                             AND coalesce(b.g, false)) AS exit_grocery_came,
+          count(*) FILTER (WHERE a.d AND NOT a.g AND NOT coalesce(b.d AND NOT b.g, false)
+                             AND NOT coalesce(b.g, false)) AS exit_dollar_gone,
+          count(*) FILTER (WHERE b.d AND NOT b.g AND NOT coalesce(a.d AND NOT a.g, false)
+                             AND e.g_ever AND coalesce(a.d, false)) AS lost_had_dollar,
+          count(*) FILTER (WHERE b.d AND NOT b.g AND NOT coalesce(a.d AND NOT a.g, false)
+                             AND e.g_ever AND NOT coalesce(a.d, false)) AS lost_new_dollar
+        FROM a FULL JOIN b USING(zip_code) LEFT JOIN e USING(zip_code)""").fetchone()
+    out["dollar_only_split"].update({
+        "exit_grocery_came": int(sub[0]), "exit_dollar_gone": int(sub[1]),
+        "lost_had_dollar": int(sub[2]), "lost_new_dollar": int(sub[3])})
+    print(f"     exits: {sub[0]:,} grocery became authorized, {sub[1]:,} dollar store gone")
+    print(f"     grocery-left arrivals: {sub[2]:,} already had a dollar store, "
+          f"{sub[3]:,} gained one after 2008")
+    check("exit reasons sum to the exits", int(sub[0] + sub[1] == sp["exited"]), 1)
+    check("grocery-left arrival kinds sum", int(sub[2] + sub[3] == sp["new_lost"]), 1)
+
+    # The post says these two things in prose, so they are checked here.
+    lossy = [r["state"] for r in out["dollar_only_states"]
+             if r["new_lost"] > r["new_never"]]
+    check("Illinois is the only top-10 state where losses outnumber arrivals",
+          int(lossy == ["IL"]), 1)
+    check("Texas is on the top-10 list", int(any(
+        r["state"] == "TX" for r in out["dollar_only_states"])), 1)
+    print(f"     {'state':>6} {'2008':>6} {'left':>6} {'never':>7} {'lost':>6} {'2024':>6}")
+    for r in out["dollar_only_states"]:
+        print(f"     {r['state']:>6} {r['y2008']:>6,} {-r['exited']:>6,} "
+              f"{r['new_never']:>+7,} {r['new_lost']:>+6,} {r['y2024']:>6,}")
+        check(f"{r['state']} walk reconciles",
+              int(r["y2008"] - r["exited"] + r["new_never"] + r["new_lost"]
+                  == r["y2024"]), 1)
     print(f"     {'yr':>5} {'ZIPs w/ dollar':>15} {'no grocery':>11} {'share':>7}"
           f"   {'counties':>9} {'no grocery':>11}")
     for z, c in zip(zips, counties):

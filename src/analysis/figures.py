@@ -395,8 +395,13 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
     if note:
         cpl = max(20, int(width * 72 * 0.94 / (MONO_ADVANCE * 7.0)))
         note_lines = max(1, -(-len(note) // cpl))
+    # Headers may wrap: a "\n" in a header stacks it on two lines, anchored so
+    # the BOTTOM line sits where a single-line header would. The extra lines
+    # grow upward, so the figure reserves headroom and the title block shifts up.
+    head_lines = max(hd.count("\n") + 1 for hd in headers)
     h = (0.34 * (n + 1.6) + (0.42 if title else 0) + (0.24 if subtitle else 0)
-         + (0.16 + 0.13 * note_lines if note else 0))
+         + (0.16 + 0.13 * note_lines if note else 0)
+         + 0.135 * (head_lines - 1))
     fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
     ax.set_facecolor(PAPER)
     ax.axis("off")
@@ -417,7 +422,7 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
     # axes height varies with row count, so a fractional offset would put the
     # title on top of the header row in a tall table and far above it in a short
     # one. Subtitle sits closest to the header, title above it.
-    dy = 6
+    dy = 6 + 9.5 * (head_lines - 1)
     if subtitle:
         ax.annotate(subtitle, (0, 1.0), xycoords=ax.transAxes,
                     textcoords="offset points", xytext=(0, dy), ha="left",
@@ -442,8 +447,9 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
     # only headers were measured.
     for i in range(1, ncol):
         gap = (xs[i] - xs[i - 1]) * ax_px
-        widest, w_px = headers[i].upper(), _text_px(
-            fig, headers[i].upper(), family=MONO, fontsize=7.5)
+        widest, w_px = max(
+            ((ln, _text_px(fig, ln, family=MONO, fontsize=7.5))
+             for ln in headers[i].upper().split("\n")), key=lambda t: t[1])
         for row in rows:
             if i < len(row):
                 cw = _text_px(fig, str(row[i]), family=MONO, fontsize=8.5)
@@ -454,8 +460,11 @@ def table_png(path, headers, rows, width=6.6, align=None, highlight_row=None,
                   f"{w_px:.0f}px in a {gap:.0f}px column; shorten it or drop a column")
 
     for i, hd in enumerate(headers):
-        ax.text(xs[i], top, hd.upper(), ha=align[i], va="top", fontsize=7.5,
-                family=MONO, color=INK_SOFT, transform=ax.transAxes)
+        for j, ln in enumerate(reversed(hd.upper().split("\n"))):
+            ax.annotate(ln, (xs[i], top), xycoords=ax.transAxes,
+                        textcoords="offset points", xytext=(0, 9.5 * j),
+                        ha=align[i], va="top", fontsize=7.5,
+                        family=MONO, color=INK_SOFT, annotation_clip=False)
     ax.plot([0, 1], [top - rh * 0.62] * 2, color=INK, lw=1.1,
             transform=ax.transAxes, clip_on=False)
 
