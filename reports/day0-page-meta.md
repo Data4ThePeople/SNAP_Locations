@@ -122,7 +122,7 @@ Series card for Day 1 — One in four of the smallest grocery stores is gone. Ke
 ### `images/day-2.png` — Day 2 card
 
 ```
-Series card for Day 2 — Dollar stores cracked the code small grocers could not. Key figure: up 307% since 2006, the steepest growth of any store format.
+Series card for Day 2 — Dollar store domination. Key figure: up 307% since 2006, the steepest growth of any store format.
 ```
 
 ### `images/day-3.png` — Day 3 card
