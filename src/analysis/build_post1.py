@@ -109,10 +109,28 @@ records · {d['headline']['dollar_2025']:,} dollar stores authorized at the end 
 numbers work. The dollar store is a small format too — same small box, narrow range, few staff. It
 did the opposite.</p>
 
+<h2>This time, an authorization is a store</h2>
+
+<p>Yesterday we had to be careful: when a small grocer leaves the SNAP file, the records cannot say
+whether it closed or just stopped taking EBT. Dollar stores are a different case. Nearly all of them
+belong to a handful of public chains — Dollar General, Dollar Tree, Family Dollar — and those
+companies tell their investors exactly how many stores they run. So set the SNAP authorization
+counts at the end of 2025 against the companies' own reported store counts:</p>
+
+<figure><table><thead><tr><th>Chain</th><th>SNAP-authorized</th><th>Reported stores</th><th>Ratio</th></tr>
+</thead><tbody>{cen_tbl}</tbody></table>
+<figcaption>SNAP authorizations at the end of 2025 against each company's most recently reported
+store count, early 2025 to February 2026.</figcaption></figure>
+
+<p>Essentially every Dollar General and Dollar Tree in the country takes SNAP. Because the two
+counts line up, we can read store openings and closings for these chains straight out of the SNAP
+file — something yesterday's data could not give us. Keep that in mind through everything that
+follows: for dollar stores, authorization counts are store counts.</p>
+
 <h2>They grew enormously</h2>
 
 <p>Dollar stores went from {stock[0]:,} SNAP-authorized stores in {yrs[0]} to {stock[-1]:,} in
-{yrs[-1]}. That is <strong>{growth:.1f} times</strong> as many, while every grocery format either
+{yrs[-1]}. That is a <strong>{growth_pct:+}%</strong> change, while every grocery format either
 shrank or stood still.</p>
 
 <figure>{c_ctx}{charts.legend(s_ctx)}
@@ -137,15 +155,8 @@ stores, not authorization spells, so a store that lapsed and returned is counted
 {100*sg['rate']:.1f}% of small grocers are.</strong> A dollar store from those years is <strong>{gap['multiple']}× more likely</strong>
 to still be in the program.</p>
 
-<p>For these chains that really does mean the store is still open. Their authorization counts match
-the store counts they report to investors almost exactly:</p>
-
-<table><thead><tr><th>Chain</th><th>SNAP-authorized</th><th>Reported stores</th><th>Ratio</th></tr>
-</thead><tbody>{cen_tbl}</tbody></table>
-
-<p>Essentially every Dollar General and Dollar Tree in the country takes SNAP. That buys us something the small grocery data cannot give us. Because the two counts line up, we can read store openings and closings for these chains straight out of the SNAP file. For a small grocer we cannot: an ended authorization might mean the shop closed, or might mean it just stopped taking EBT.</p>
-
-<p>It also says something about the economics. These are public companies, and they do close stores that stop working. In 2024 dollar store endings jumped from a few hundred a year to {fl['departed'][fl['years'].index(2024)]:,} — Dollar Tree shutting Family Dollar locations ({sp[0]['n']}) and 99 Cents Only liquidating ({sp[1]['n']}). So the survival rate is not a company failing to notice. When a listed retailer culls that hard the moment the numbers stop working, and still has {100*ds['rate']:.0f}% of a cohort trading thirteen years later, the fair read is that these stores pay.</p>
+<p>And since an authorization here is a store, those stores are still open. That says something
+about the economics. These are public companies, and they do close stores that stop working. In 2024 dollar store endings jumped from a few hundred a year to {fl['departed'][fl['years'].index(2024)]:,} — Dollar Tree shutting Family Dollar locations ({sp[0]['n']}) and 99 Cents Only liquidating ({sp[1]['n']}). So the survival rate is not a company failing to notice. When a listed retailer culls that hard the moment the numbers stop working, and still has {100*ds['rate']:.0f}% of a cohort trading thirteen years later, the fair read is that these stores pay.</p>
 
 <h2>More of the country has one and nothing else</h2>
 
