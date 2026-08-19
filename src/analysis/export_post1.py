@@ -53,7 +53,7 @@ def main():
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{growth:.1f}x",
+        [{"value": f"{growth_pct:+}%",
           "label": f"change in SNAP-authorized dollar stores since {yrs[0]}"},
          {"value": f"{100*ds['rate']:.0f}%",
           "label": "of dollar stores authorized in 2008-2012 are still authorized today"},
@@ -61,11 +61,20 @@ def main():
           "label": "of ZIP codes with a dollar store have no grocery store at all, "
                    f"up from {100*z[0]['dollar_only']/z[0]['with_dollar']:.0f}% in {z[0]['yr']}"}])
 
-    fig(1, "growth", "Stores authorized on 31 December of each year, by format.",
+    fig(1, "chain-census",
+        "SNAP authorizations at the end of 2025 against each company's most recently reported "
+        "store count, early 2025 to February 2026.",
+        figures.table_png, ["Chain", "SNAP-authorized", "Reported stores", "Ratio"],
+        [[c["brand"], f"{c['authorized']:,}", f"{c['reported']:,}", f"{c['ratio']:.2f}"]
+         for c in cen],
+        title="For these chains, an authorization really is a store",
+        subtitle="SNAP authorizations, 31 Dec 2025 · company counts, early 2025 to Feb 2026")
+
+    fig(2, "growth", "Stores authorized on 31 December of each year, by format.",
         figures.line_png, yrs, s_ctx, ylabel="stores authorized on 31 December",
         title="Dollar stores passed every grocery format")
 
-    fig(2, "retention",
+    fig(3, "retention",
         "Share of the 2008–2012 entry cohort still authorized at the end of 2025. Counts are "
         "stores, not authorization spells, so a store that lapsed and returned is counted once.",
         figures.hbar_png,
@@ -74,13 +83,6 @@ def main():
           else (1 if r["format"] == "Grocery (Small)" else 0)} for r in surv], suffix="%",
         title="Dollar stores stayed. Small grocers did not.",
         subtitle="share of the 2008-2012 cohort still authorized in 2025")
-
-    fig(3, "chain-census",
-        "SNAP authorizations against each company's own reported store count.",
-        figures.table_png, ["Chain", "SNAP-authorized", "Reported stores", "Ratio"],
-        [[c["brand"], f"{c['authorized']:,}", f"{c['reported']:,}", f"{c['ratio']:.2f}"]
-         for c in cen],
-        title="For these chains, an authorization really is a store")
 
     fig(4, "dollar-only-zips",
         "ZIP codes with a SNAP-authorized dollar store and no supermarket, superstore, or "
@@ -109,10 +111,25 @@ Yesterday's piece ended on a question. Small grocery is a small format that coul
 work. The dollar store is a small format too — same small box, narrow range, few staff. It did the
 opposite.
 
+## This time, an authorization is a store
+
+Yesterday we had to be careful: when a small grocer leaves the SNAP file, the records cannot say
+whether it closed or just stopped taking EBT. Dollar stores are a different case. Nearly all of them
+belong to a handful of public chains — Dollar General, Dollar Tree, Family Dollar — and those
+companies tell their investors exactly how many stores they run. So set the SNAP authorization
+counts at the end of 2025 against the companies' own reported store counts:
+
+![{figs["chain-census"]['caption']}](images/{figs["chain-census"]['file']})
+
+Essentially every Dollar General and Dollar Tree in the country takes SNAP. Because the two counts
+line up, we can read store openings and closings for these chains straight out of the SNAP file —
+something yesterday's data could not give us. Keep that in mind through everything that follows: for
+dollar stores, authorization counts are store counts.
+
 ## They grew enormously
 
 Dollar stores went from {stock[0]:,} SNAP-authorized stores in {yrs[0]} to {stock[-1]:,} in
-{yrs[-1]}. That is **{growth:.1f} times** as many, while every grocery format either shrank or stood
+{yrs[-1]}. That is a **{growth_pct:+}%** change, while every grocery format either shrank or stood
 still.
 
 ![{figs["growth"]['caption']}](images/{figs["growth"]['file']})
@@ -132,14 +149,8 @@ in the program at the end of 2025.
 **{100*ds['rate']:.0f}% of dollar stores are still authorized. Meanwhile, just {100*sg['rate']:.1f}% of small grocers are.** A dollar store from those years is **{gap['multiple']}× more likely** to still be in the
 program.
 
-For these chains that really does mean the store is still open. Their authorization counts match the
-store counts they report to investors almost exactly:
-
-![{figs["chain-census"]['caption']}](images/{figs["chain-census"]['file']})
-
-Essentially every Dollar General and Dollar Tree in the country takes SNAP. That buys us something the small grocery data cannot give us. Because the two counts line up, we can read store openings and closings for these chains straight out of the SNAP file. For a small grocer we cannot: an ended authorization might mean the shop closed, or might mean it just stopped taking EBT.
-
-It also says something about the economics. These are public companies, and they do close stores that stop working. In 2024 dollar store endings jumped from a few hundred a year to {fl['departed'][fl['years'].index(2024)]:,} — Dollar Tree shutting Family Dollar locations ({sp[0]['n']}) and 99 Cents Only liquidating ({sp[1]['n']}). So the survival rate is not a company failing to notice. When a listed retailer culls that hard the moment the numbers stop working, and still has {100*ds['rate']:.0f}% of a cohort trading thirteen years later, the fair read is that these stores pay.
+And since an authorization here is a store, those stores are still open. That says something about
+the economics. These are public companies, and they do close stores that stop working. In 2024 dollar store endings jumped from a few hundred a year to {fl['departed'][fl['years'].index(2024)]:,} — Dollar Tree shutting Family Dollar locations ({sp[0]['n']}) and 99 Cents Only liquidating ({sp[1]['n']}). So the survival rate is not a company failing to notice. When a listed retailer culls that hard the moment the numbers stop working, and still has {100*ds['rate']:.0f}% of a cohort trading thirteen years later, the fair read is that these stores pay.
 
 ## More of the country has one and nothing else
 
