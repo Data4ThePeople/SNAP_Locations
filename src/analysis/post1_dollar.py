@@ -94,9 +94,12 @@ def main():
               f"  {100*r['rate']:>5.1f}% still open")
     ds = next(r for r in out["survival"] if r["format"] == "Dollar Store")
     sg = next(r for r in out["survival"] if r["format"] == "Grocery (Small)")
+    # From the unrounded counts: dividing the two already-rounded rates
+    # (0.782/0.045) inflated this to 17.4x when the exact figure is 17.2x.
+    exact = (ds["still_open"] / ds["cohort"]) / (sg["still_open"] / sg["cohort"])
     out["survival_gap"] = {"dollar": ds["rate"], "small_grocery": sg["rate"],
-                           "multiple": round(ds["rate"] / sg["rate"], 1)}
-    print(f"\n     A dollar store from that cohort is {ds['rate']/sg['rate']:.1f}x more likely"
+                           "multiple": round(exact, 1)}
+    print(f"\n     A dollar store from that cohort is {exact:.1f}x more likely"
           f" to still be open than a small grocer.")
 
     # ---------------------------------------------------------------- 3. brands
@@ -251,6 +254,18 @@ def main():
         tot = sum(rows.values())
         mix[fmt] = {"total": int(tot),
                     **{k: round(100 * v / tot, 1) for k, v in rows.items()}}
+        # Chain share of the stores active at the end of 2025, not of every
+        # store the file has ever seen. Chains gained share over the twenty
+        # years, so the all-time figure (20% for convenience) understates
+        # today's (35%) — and the post quotes it next to a 2025 store count.
+        act = dict(con.execute(f"""
+            SELECT p.ownership, count(DISTINCT f.record_id)
+            FROM fact_spell f JOIN panel p USING(record_id)
+            WHERE p.format = ? AND NOT f.date_anomaly
+              AND f.auth_date <= DATE '2025-12-31'
+              AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
+            GROUP BY 1""", [fmt]).fetchall())
+        mix[fmt]["chain_2025"] = round(100 * act.get("chain", 0) / sum(act.values()), 1)
         parts = "  ".join(f"{k} {100*v/tot:.0f}%"
                           for k, v in sorted(rows.items(), key=lambda r: -r[1]))
         print(f"     {fmt:<20} {tot:>8,}   {parts}")
