@@ -212,9 +212,11 @@ the program:</p>
 whether an authorized grocery was ever there — checked on every 31 December in the
 window.</figcaption></figure>
 
-<p>The mix differs by state. Here is the walk from 2008 to 2024 for the ten states that added the
-most — each starts with the ZIP codes it had, loses a few that left the list, and adds the two
-kinds of arrivals:</p>
+<p>The mix differs by state. Here is the walk across from 2008 to 2024 for the ten states that
+added the most ZIP codes with a dollar store and no grocery store. Each starts with the ZIP codes
+in this group in 2008, deducts those that fell out of it, then adds the two kinds of additions: new
+dollar stores in ZIP codes that never had a grocery store that took SNAP, and ZIP codes that once
+had a grocery store that took SNAP and no longer do.</p>
 
 <figure><table><thead><tr><th>State</th><th>2008</th><th>Left the list</th>
 <th>New dollar store, never a grocery</th><th>Grocery left SNAP</th><th>2024</th></tr>
