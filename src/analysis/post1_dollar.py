@@ -155,6 +155,27 @@ def main():
     check("Dollar General authorizations match its own store count",
           census[0]["authorized"], census[0]["reported"], tol=400)
 
+    # The same census at the START of the window, where it does NOT hold.
+    # Dollar General was already essentially all in by 2006, but Family Dollar
+    # ran ~6,000 stores with 130 authorized and Dollar Tree ~2,914 with 595 —
+    # they joined SNAP over the following years. So growth in authorizations
+    # overstates growth in stores, and the post says so in its Limits.
+    reported_2006 = {  # company 10-Ks: DG FY2006; FD ~6,000 (5,898 at FY2005
+        # year-end, both 10-K); DT 10-K as of January 2006.
+        "Dollar General": 8_229, "Family Dollar": 6_000, "Dollar Tree": 2_914}
+    early = []
+    for b, rep in reported_2006.items():
+        n = con.execute("SELECT sum(n) FROM stock WHERE yr=2006 AND brand=?",
+                        [b]).fetchone()[0]
+        early.append({"brand": b, "authorized": int(n or 0), "reported": rep})
+        print(f"         {b:16} 2006: authorized {int(n or 0):>7,}  "
+              f"reported {rep:>7,}  ratio {(n or 0)/rep:.2f}")
+    out["chain_census_2006"] = early
+    check("Dollar General was already nearly fully authorized in 2006",
+          int(early[0]["authorized"] > 0.95 * early[0]["reported"]), 1)
+    check("Family Dollar was mostly NOT authorized in 2006",
+          int(early[1]["authorized"] < 0.1 * early[1]["reported"]), 1)
+
     # (b) A store that lapses and returns was demonstrably open while unauthorized.
     print("\n     (b) stores that lapsed and came back — open, but not authorized:")
     lap = con.execute("""

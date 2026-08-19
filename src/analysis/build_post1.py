@@ -41,6 +41,7 @@ def main():
     sg = next(r for r in surv if r["format"] == "Grocery (Small)")
     ss = next(r for r in surv if r["format"] == "Super Store")
     ctx, gap, cen = d["context"], d["survival_gap"], d["chain_census"]
+    e06 = d["chain_census_2006"]
     lap = d["lapse"]
     # Active on 31 December 2025; the largest single format in the file.
     conv_2025 = 117_055
@@ -123,31 +124,13 @@ records · {d['headline']['dollar_2025']:,} dollar stores authorized at the end 
 numbers work. The dollar store is a small format too — same small box, narrow range, few staff. It
 did the opposite.</p>
 
-<h2>This time, an authorization is very nearly a store</h2>
-
-<p>Yesterday we had to be careful: when a small grocer leaves the SNAP file, the records cannot say
-whether it closed or just stopped taking EBT. Dollar stores are a different case. Nearly all of them
-belong to a handful of public chains — Dollar General, Dollar Tree, Family Dollar — and those
-companies tell their investors exactly how many stores they run. So set the SNAP authorization
-counts at the end of 2025 against the companies' own reported store counts:</p>
-
-<figure><table><thead><tr><th>Chain</th><th>SNAP-authorized</th><th>Reported stores</th><th>Ratio</th></tr>
-</thead><tbody>{cen_tbl}</tbody></table>
-<figcaption>SNAP authorizations at the end of 2025 against each company's most recently reported
-store count, early 2025 to February 2026.</figcaption></figure>
-
-<p>Essentially every Dollar General and Dollar Tree in the country takes SNAP. Because the two
-counts line up this closely, store openings and closings for these chains show through the SNAP
-file almost one for one — something yesterday's data could not give us. We cannot say the two
-counts are the same thing, but we hold very high conviction that they move together. Keep that in
-mind through everything that follows: for dollar stores, authorization counts track store
-counts.</p>
-
 <h2>They grew enormously</h2>
 
 <p>Dollar stores went from {stock[0]:,} SNAP-authorized stores in {yrs[0]} to {stock[-1]:,} in
 {yrs[-1]}. That is a <strong>{growth_pct:+}%</strong> change, while no grocery format managed even
-a tenth of that.</p>
+a tenth of that. One caution before reading it as store growth: at the start of the window not
+every dollar store took SNAP, so part of the early climb is existing stores joining the program
+rather than new stores opening. The Limits below size that gap.</p>
 
 <figure>{c_ctx}{charts.legend(s_ctx)}
 <figcaption>Stores authorized on 31 December of each year, by format.</figcaption></figure>
@@ -202,10 +185,12 @@ no SNAP-authorized grocer and no dollar store — some had nothing but a gas-sta
 store that took SNAP. For a town like that, the dollar store opening is a very good thing,
 providing considerably more food options than a gas station carries.</p>
 
-<p>So we did the math. Of the ZIP codes that joined this list between {z[0]['yr']} and
-{z[-1]['yr']}, {100*ds_sp['new_never']/ds_sp['joined']:.0f}% never had a grocer that accepted SNAP
-to begin with, while {100*ds_sp['new_lost']/ds_sp['joined']:.0f}% had one at some point and it left
-the program:</p>
+<p>So we did the math. The list is not one-way: of the {ds_sp['start']:,} ZIP codes on it in
+{z[0]['yr']}, {ds_sp['exited']} left it by {z[-1]['yr']} — nearly always because a grocery became
+authorized there — while {ds_sp['joined']:,} joined, which nets out to the {ds_sp['end']:,}. Of the
+{ds_sp['joined']:,} that joined, {100*ds_sp['new_never']/ds_sp['joined']:.0f}% never had a grocer
+that accepted SNAP to begin with, while {100*ds_sp['new_lost']/ds_sp['joined']:.0f}% had one at
+some point and it left the program:</p>
 
 <figure>{c_split}
 <figcaption>The {ds_sp['joined']:,} ZIP codes that joined the list between 2008 and 2024, split by
@@ -259,14 +244,32 @@ concentration dollar stores enjoy. Only {m_cv['chain_2025']:.0f}% of them belong
 <h3>Limits</h3>
 <p>Nothing here measures floor space, sales, or what is on the shelves. A dollar store and a
 supermarket each count as one record.</p>
-<p><strong>The chain-store check is what licenses closure language, and only for these chains.</strong>
-For an independent store an ended authorization may mean the shop closed or may mean it stopped taking
-EBT. {100*lap_sg['rate']:.1f}% of small grocers lost their authorization and later regained it, median
-gap {lap_sg['median_gap_days']} days — those were open the whole time.</p>
+<p><strong>How closely do authorization counts track actual stores? At the end of the window,
+almost exactly.</strong> Nearly all dollar stores belong to a handful of public chains that tell
+their investors how many stores they run, which allows a check no other format offers:</p>
+<figure><table><thead><tr><th>Chain</th><th>SNAP-authorized</th><th>Reported stores</th><th>Ratio</th></tr>
+</thead><tbody>{cen_tbl}</tbody></table>
+<figcaption>SNAP authorizations at the end of 2025 against each company's most recently reported
+store count, early 2025 to February 2026.</figcaption></figure>
+<p>Essentially every Dollar General and Dollar Tree in the country takes SNAP. We cannot say
+authorizations and stores are the same thing — a closed store can linger in the file until USDA
+catches up — but at the end of 2025 the two clearly move together.</p>
+<p><strong>They did not at the start of the window.</strong> In 2006, Dollar General was already
+essentially all in: {e06[0]['authorized']:,} of its {e06[0]['reported']:,} reported stores were
+authorized. Family Dollar and Dollar Tree were not — Family Dollar ran about
+{e06[1]['reported']:,} stores that year with just {e06[1]['authorized']} authorized, and Dollar
+Tree about {e06[2]['reported']:,} with {e06[2]['authorized']}. Both joined the program over the
+years that followed. So the <strong>{growth_pct:+}%</strong> is growth in <em>authorized</em>
+dollar stores; the growth in dollar stores themselves is closer to a doubling. The direction and
+the ranking of the story stand either way, but the two numbers are not interchangeable.</p>
+<p><strong>For independent stores there is no such check.</strong> An ended authorization may mean
+the shop closed or may mean it stopped taking EBT. {100*lap_sg['rate']:.1f}% of small grocers lost
+their authorization and later regained it, median gap {lap_sg['median_gap_days']} days — those were
+open the whole time.</p>
 <p>Store-level SNAP spending is not public. A 2019 Supreme Court case put those figures under a FOIA
 exemption, so we can see where authorized stores are but never how much any one of them takes in.</p>
 <p>In the ZIP code split, "a grocery left SNAP" means exactly that — its authorization ended. The
-store itself may still trade without SNAP. And ZIP codes are places, not people: many of the ZIP
+store itself may still operate without SNAP. And ZIP codes are places, not people: many of the ZIP
 codes that gained their first authorized store are lightly populated, so counts of places do not
 translate directly into counts of shoppers.</p>
 
@@ -278,7 +281,8 @@ the end of 2025, so the ratios are close, not exact.</p>
 Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, covering retailers authorized at
 any point in the window. Analysis uses 656,868 stores with usable coordinates. A store counts as
 active in a year if an authorization covered 31 December. Company store counts from Dollar General and
-Dollar Tree investor releases; Family Dollar via trade press. The 2017 rollback is Section 765 of
+Dollar Tree investor releases; Family Dollar via trade press; 2006 store counts from each company's
+fiscal 2006 Form 10-K. The 2017 rollback is Section 765 of
 P.L. 115-31. Code, pipeline and verification:
 <a href="https://github.com/Data4ThePeople/SNAP_Locations">Data4ThePeople/SNAP_Locations</a>.
 </footer>
