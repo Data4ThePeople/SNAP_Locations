@@ -72,7 +72,6 @@ def main():
         "against SNAP authorizations.",
         figures.hbar_png, [
             {"label": "Census, all grocery", "value": cb["cbp_total_pct"], "slot": 1},
-            {"label": "Census, under 5 staff", "value": cb["cbp_under5_pct"], "slot": 1},
             {"label": "Census, under 10 staff", "value": cb["cbp_under10_pct"], "slot": 1},
             {"label": "SNAP, all grocery", "value": cb["snap_all_pct"], "slot": 2},
             {"label": "SNAP, Small only", "value": cb["snap_small_pct"], "slot": 2}],
@@ -132,8 +131,8 @@ every grocery store with staff, whether or not it takes EBT.
 
 ![{figs["census-vs-snap"]['caption']}](images/{figs["census-vs-snap"]['file']})
 
-The census says the smallest grocery businesses fell **{abs(cb['cbp_under5_pct'])}%** if you count
-those with under five staff, and **{abs(cb['cbp_under10_pct'])}%** under ten. Not 46%.
+The census says the smallest grocery businesses — those with under ten staff — fell
+**{abs(cb['cbp_under10_pct'])}%**. Not 46%.
 
 Why the two counts disagree, we can't say for certain. But here is what we do know.
 
