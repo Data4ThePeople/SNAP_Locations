@@ -37,10 +37,13 @@ def main():
     mu = fm["companies"]["Murphy USA"]
     cy = fm["companies"]["Casey's General Stores"]
     mac = fm["macro"]
-    bg, top = d["brand_growth"], d["brand_growth"]["brands"][:10]
     ks = sorted(int(k) for k in d["shares"])
     sh0, sh1 = d["shares"][str(ks[0])], d["shares"][str(ks[-1])]
     conv_total = d["convenience_total"]
+    # Convenience stores active at the end of 2025: the three convenience
+    # segments, leaving out the dollar stores drawn alongside them.
+    conv25 = sum(d["stock"]["series"][k][-1] for k in
+                 ("chains that sell fuel", "other chains", "single-owner stores"))
     myrs = sorted(set(map(int, mu["series"])) & set(map(int, cy["series"])))
 
     # Percentages, not just multiples: 47,761 -> 76,496 is +60%, which is not
@@ -57,23 +60,20 @@ def main():
          {"value": f"+{round(mu['pct'])}%",
           "label": "growth in Murphy USA's fuel margin per gallon after 2020"}])
 
+    # Indexed to 2006 = 100: the raw counts only show that single-owner stores
+    # are the biggest group, which buries the growth comparison the section is
+    # actually making.
+    idx = {k: [round(100 * v / d["stock"]["series"][k][0], 1)
+               for v in d["stock"]["series"][k]] for k in ORDER}
     fig(1, "growth-by-owner",
-        "Stores authorized on 31 December of each year, by who runs the store. Dollar stores "
-        "are shown for scale.",
+        "Stores authorized on 31 December of each year, indexed to 100 in 2006, by who runs "
+        "the store. Dollar stores are shown as the benchmark.",
         figures.line_png, d["stock"]["years"],
-        [{"name": k, "values": d["stock"]["series"][k], "slot": SLOT[k]} for k in ORDER],
-        ylabel="stores authorized on 31 December",
-        title="Both grew. Chains grew about four times faster.")
+        [{"name": k, "values": idx[k], "slot": SLOT[k]} for k in ORDER],
+        ylabel="authorized stores, indexed to 2006 = 100",
+        title="Only the fuel chains kept pace with the dollar store")
 
-    fig(2, "chain-growth",
-        "The ten largest fuel-selling convenience chains, and how fast each grew in a "
-        "typical year.",
-        figures.table_png, ["Chain", "Stores in 2025", "Typical year"],
-        [[r["brand"], f"{r['y1']:,}", f"+{r['median_growth']:.1f}%"] for r in top],
-        title="Every big fuel chain grew. None of them shrank.",
-        subtitle="median year-over-year change in SNAP-authorized stores")
-
-    fig(3, "fuel-margin",
+    fig(2, "fuel-margin",
         "Retail fuel margin in cents per gallon, from each company's annual 10-K filings.",
         figures.line_png, myrs,
         [{"name": "Murphy USA", "values": [mu["series"][str(y)] for y in myrs], "slot": 1},
@@ -81,7 +81,7 @@ def main():
         ylabel="cents earned per gallon sold",
         title="Fuel profit doubled after 2020 and stayed there")
 
-    fig(4, "survival-by-owner",
+    fig(3, "survival-by-owner",
         "Share of stores first authorized 2008–2012 that were still authorized on "
         "31 December 2025.",
         figures.hbar_png,
@@ -91,51 +91,53 @@ def main():
         title="A chain store stays. A single-owner store usually does not.",
         subtitle="share of 2008-2012 stores still authorized in 2025")
 
-    md = f"""# Convenience stores thrived. Most of their owners did not.
+    md = f"""# Convenience stores thrived, but with an advantage no one else had
 
 *SNAP-authorized retailers, 2006–2025. EIA weekly gasoline prices. Retail fuel margins from Murphy USA
 and Casey's 10-K filings. {conv_total:,} convenience stores in the file.*
 
-**{fuel_pct:+}%** change in chains that sell fuel since
-{d['stock']['years'][0]}.
-**{ch['rate']}%** of their 2008–2012 stores are still authorized. For single-owner stores it is
-{so['rate']}%.
-**+{round(mu['pct'])}%** growth in Murphy USA's fuel margin per gallon after 2020.
+**{fuel_pct:+}%** change in chains that sell fuel since {d['stock']['years'][0]}. **{ch['rate']}%** of their 2008–2012 stores are still authorized. For single-owner stores it is {so['rate']}%. **+{round(mu['pct'])}%** growth in Murphy USA's fuel margin per gallon after 2020.
 
 ![Headline figures](images/00-key-figures.png)
 
 ---
 
-Yesterday ended on a puzzle. Dollar stores thrived because they are chains — every one of them.
-Convenience stores are the opposite: only one in five belongs to a chain, and there are more of them
-than any other kind of SNAP retailer. By the logic of the dollar store, they should have gone the way of
-the small grocer.
+*Anytime we refer to "growth" in this post, it is growth in SNAP-authorized stores, not growth in
+store counts. See the Limits section for more on this.*
 
-They did not. But the reason is not what the headline number suggests.
+Yesterday ended on a puzzle. Dollar stores thrived because they are chains. Convenience stores are
+the opposite: only about a third belong to a chain, and there are more of them than any other kind
+of SNAP retailer. If you read the last two days of analysis, you may have expected them to go the
+way of the small grocer.
 
-## Two very different things are called growth
+They did not. But the reason has less to do with ownership, and more to do with a unique advantage
+over other store formats.
 
-Split the category by who runs the store and the pieces move apart. Chains that sell fuel — Wawa,
-Sheetz, Casey's, QuikTrip and the like — went from {sc['chains that sell fuel']['y2006']:,} to
-{sc['chains that sell fuel']['y2025']:,}, a rise of **{pct('chains that sell fuel'):.0f}%**. Stores with
-a single owner went from {sc['single-owner stores']['y2006']:,} to
-{sc['single-owner stores']['y2025']:,}, a rise of **{pct('single-owner stores'):.0f}%**.
+## One store format masks different growth trends
 
-Both grew. One grew about four times faster.
+The convenience store format is enormous. There are {conv25:,} stores authorized to accept SNAP
+benefits today, far surpassing any other store format. That makes sense: it is not uncommon to see
+a gas station at every major intersection.
+
+But we cannot analyze the convenience store format as one thing, because within it live very
+different kinds of stores, and they grew at very different rates. There are chains that sell fuel —
+Wawa, Sheetz, Casey's, QuikTrip and the like — which surged **{pct('chains that sell fuel'):.0f}%**
+between 2006 and 2025. There are chains that are not built around fuel — 7-Eleven, above all —
+which grew {pct('other chains'):.0f}%. And there are single-owner stores, which make up most of the
+category and grew {pct('single-owner stores'):.0f}%.
+
+The chart below shows the growth of each, compared with the dollar store, indexed to 100 in 2006.
+Only one comes close to matching the dollar store: the chains that sell fuel.
 
 ![{figs["growth-by-owner"]['caption']}](images/{figs["growth-by-owner"]['file']})
 
-Chains went from {sh0['chains that sell fuel']}% of the category to {sh1['chains that sell fuel']}%.
+The fuel chains went from {sh0['chains that sell fuel']}% of the category to
+{sh1['chains that sell fuel']}%.
 
-Which chains? Mostly ones you would recognize. These are the ten largest that sell fuel, with how fast each grew in a typical year — a median, so one unusual year cannot flatter a chain.
+## The unique advantage
 
-![{figs["chain-growth"]['caption']}](images/{figs["chain-growth"]['file']})
-
-Not one of them shrank. **Circle K** and **Speedway** grew around 2% a year, which on a base of thousands of stores is a great many stores. The regional names grew faster: **Love's** above 7%, **QuikTrip** and **Sheetz** above 5%, **Wawa** close behind. Compound 5% for nineteen years and you finish with two and a half times what you started with.
-
-## Then the economics changed
-
-Something else happened to this format, and it has nothing to do with what is on the shelves. After
+There is something else you need to know about this format, and it has nothing to do with what is
+on the shelves. After
 2020, selling fuel became far more profitable.
 
 Two of these chains are public companies and report their fuel margin in cents per gallon.
@@ -150,10 +152,14 @@ overlap at all.
 A check, because a doubling is a big claim. Take what drivers pay at the pump and subtract the wholesale
 price at the New York Harbor trading hub. That gap widened by **{mac['delta_cpg']:.1f} cents** between
 2015–2019 and 2021–2025. Murphy's own margin grew {mu['delta_cpg']:.1f} cents. Those are nearly the same
-number, which tells you where the money went: taxes and shipping did not absorb it. **Almost all of it
-became store profit.**
+number, which tells you where the money most likely went: taxes and shipping did not absorb it. **It
+appears that almost all of it became store profit.**
 
-Why it happened is worth a moment. When COVID stopped people driving, fuel volume and store traffic fell together — Casey's reported same-store gallons down 8.1% and inside customer traffic down 8.7%. With fewer customers coming through, the fuel had to earn more from each one. Margins rose.
+Why it happened is worth a moment. Note that this is our hypothesis. But we have poked at it using
+the data, and it seems to hold. It also jibes with our lived experience, which should not be
+discounted.
+
+When COVID stopped people driving, fuel volume and store traffic fell together — Casey's reported same-store gallons down 8.1% and inside customer traffic down 8.7%. With fewer customers coming through, the fuel had to earn more from each one. Margins rose.
 
 What nobody expected is that they stayed there. Customers came back. Margins did not fall. Casey's now tells its investors it expects them to “remain elevated from historical levels for the foreseeable future”. Murphy is still selling about 5% fewer gallons per store than in 2019 — and earning twice as much on each one.
 
@@ -161,7 +167,7 @@ What nobody expected is that they stayed there. Customers came back. Margins did
 
 Everything so far has been about the chains. What about the much larger group of single-owner stores?
 
-On the surface they look fine. They added about {sc['single-owner stores']['y2025'] - sc['single-owner stores']['y2006']:,} storefronts over the same nineteen years, growth of {pct('single-owner stores'):.0f}%. Slower than the chains, but a category adding that many stores is not a category in trouble.
+On the surface they look fine. They added about {sc['single-owner stores']['y2025'] - sc['single-owner stores']['y2006']:,} authorizations over the same nineteen years, growth of {pct('single-owner stores'):.0f}%. Slower than the chains, but a category adding that many stores is not a category in trouble.
 
 The difference only shows up when you stop counting stores and start asking whether they are the *same* stores.
 
@@ -169,7 +175,7 @@ The difference only shows up when you stop counting stores and start asking whet
 
 Take every store authorized between 2008 and 2012 and ask how many are still authorized thirteen years
 later. For chains that sell fuel it is **{ch['rate']}%** — the same rate as dollar stores, which is the
-benchmark from two days ago. For single-owner stores it is **{so['rate']}%**.
+benchmark from yesterday. For single-owner stores it is **{so['rate']}%**.
 
 It would be easy to read that as a wave of closures. It is not, and the check matters. The Census Bureau
 counts business locations whether or not they take EBT. Between {cbp['base_year']} and
@@ -211,8 +217,6 @@ at all: a real difference, too small to change the picture.
 pumps at essentially all their US sites. The list is in the code. 7-Eleven is deliberately left out — it
 is the largest convenience brand here by a wide margin and is mixed on fuel, so including it would let
 one brand carry a claim about fuel economics.
-
-**The growth rate is a median, and the table shows no starting count.** Both are for the same reason: a chain that joined SNAP late looks tiny at the start even when it was not. Wawa had roughly 540 stores in 2006 and 51 SNAP authorizations, and it added 40% of nineteen years of growth in 2010 alone — the year it signed up, not a year it built. A median cannot be moved by one such year. Murphy USA is left out entirely: its stores date from the 1990s but only eight years of its record are large enough to measure, which is not the same measurement as Circle K's nineteen.
 
 **Margin is not profit.** Fuel margin is revenue minus the cost of the fuel. It does not subtract labor,
 rent, card fees or the pumps themselves.
