@@ -128,7 +128,7 @@ Series card for Day 2 — Dollar store domination. Key figure: up 307% since 200
 ### `images/day-3.png` — Day 3 card
 
 ```
-Series card for Day 3 — Convenience stores thrived, but with an advantage no one else had. Key figure: 14.2% of single-owner convenience stores lasted thirteen years, against 78.7% of the fuel-selling chains.
+Series card for Day 3 — Convenience stores thrived, but with an advantage few others had. Key figure: 14.2% of single-owner convenience stores lasted thirteen years, against 78.7% of the fuel-selling chains.
 ```
 
 ### `images/day-4.png` — Day 4 card

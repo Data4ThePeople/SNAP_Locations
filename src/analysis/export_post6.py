@@ -91,7 +91,7 @@ def main():
         title="A chain store stays. A single-owner store usually does not.",
         subtitle="share of 2008-2012 stores still authorized in 2025")
 
-    md = f"""# Convenience stores thrived, but with an advantage no one else had
+    md = f"""# Convenience stores thrived, but with an advantage few others had
 
 *SNAP-authorized retailers, 2006–2025. EIA weekly gasoline prices. Retail fuel margins from Murphy USA
 and Casey's 10-K filings. {conv_total:,} convenience stores in the file.*
@@ -110,8 +110,8 @@ the opposite: only about a third belong to a chain, and there are more of them t
 of SNAP retailer. If you read the last two days of analysis, you may have expected them to go the
 way of the small grocer.
 
-They did not. But the reason has less to do with ownership, and more to do with a unique advantage
-over other store formats.
+They did not. But the reason has less to do with ownership, and more to do with an advantage few
+other store formats had.
 
 ## One store format masks different growth trends
 
@@ -134,7 +134,7 @@ Only one comes close to matching the dollar store: the chains that sell fuel.
 The fuel chains went from {sh0['chains that sell fuel']}% of the category to
 {sh1['chains that sell fuel']}%.
 
-## The unique advantage
+## The fuel advantage
 
 There is something else you need to know about this format, and it has nothing to do with what is
 on the shelves. After
