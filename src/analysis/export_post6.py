@@ -155,15 +155,15 @@ price at the New York Harbor trading hub. That gap widened by **{mac['delta_cpg'
 number, which tells you where the money most likely went: taxes and shipping did not absorb it. **It
 appears that almost all of it became store profit.**
 
-Why it happened is worth a moment. Note that this is our hypothesis. But we have poked at it using
+Why it happened is worth pondering. Note that this is our hypothesis. But we have poked at it using
 the data, and it seems to hold. It also jibes with our lived experience, which should not be
 discounted.
 
 When COVID stopped people driving, fuel volume and store traffic fell together — Casey's reported same-store gallons down 8.1% and inside customer traffic down 8.7%. With fewer customers coming through, the fuel had to earn more from each one. Margins rose.
 
-What nobody expected is that they stayed there. Customers came back. Margins did not fall. Casey's now tells its investors it expects them to “remain elevated from historical levels for the foreseeable future”. Murphy is still selling about 5% fewer gallons per store than in 2019 — and earning twice as much on each one.
+What nobody expected is that fuel margins stayed there. Customers came back. Margins did not fall. Casey's now tells its investors it expects them to “remain elevated from historical levels for the foreseeable future”. Murphy is still selling about 5% fewer gallons per store than in 2019 — and earning twice as much on each one.
 
-## The format thrives. The owners turn over.
+## The format thrives, but is everyone realizing the benefit?
 
 Everything so far has been about the chains. What about the much larger group of single-owner stores?
 
@@ -179,32 +179,50 @@ benchmark from yesterday. For single-owner stores it is **{so['rate']}%**.
 
 It would be easy to read that as a wave of closures. It is not, and the check matters. The Census Bureau
 counts business locations whether or not they take EBT. Between {cbp['base_year']} and
-{cbp['last_year']} convenience establishments **rose {cbp['cbp_pct']:+.1f}%**, and the smallest ones —
-under five staff — rose {cbp['cbp_under5_pct']:+.1f}%.
+{cbp['last_year']} convenience establishments **rose {cbp['cbp_pct']:+.1f}%**. The under-ten-staff
+slice — the cut we used for grocers — slipped {abs(cbp['cbp_under10_pct']):.1f}%, while the very
+smallest stores, under five staff, **rose {cbp['cbp_under5_pct']:+.1f}%**.
 
-So the corner store is not disappearing. What is more likely happening is that the *specific business* in the building keeps changing. A store
+So the corner store is not disappearing. What is more likely happening is that the *specific business or owner* in the building keeps changing. A store
 is sold, renamed, re-registered, and a new record appears. The storefront stays. The owner turns over.
 
 **That is the difference between a chain and a single owner.** A chain compounds: whatever it built
-twenty years ago, it still has, and it adds to it. A single owner mostly hands the keys to the next
-person. Same storefront, same shelves, new name on the paperwork — and in this data, a new record
+twenty years ago, it largely still has, and it adds to it. A single-owner site is likely churning —
+handing the keys to the next person. Same storefront, same shelves, new name on the paperwork — and in this data, a new record
 starting from scratch.
 
 ## What it adds up to
 
-Drilling into this format does not give a new answer. It gives the same one, in sharper relief.
+Drilling into this format does not give a new answer. It reinforces the same takeaway.
 
-Small grocers lost because they were small and alone. Dollar stores won because they were small and part of a chain. Convenience stores split along exactly that line: the fuel-selling chains kept **{ch['rate']}%** of their stores over thirteen years, the single owners kept **{so['rate']}%**.
+Small grocers are disadvantaged because they are small and alone. Dollar stores are advantaged because they are small and part of a massive chain. Convenience stores split along exactly that line: the fuel-selling chains kept **{ch['rate']}%** of their stores over thirteen years, the single owners only kept **{so['rate']}%**.
 
-**A chain of small boxes wins both games at once.** Small enough to make money in a thin market where a supermarket cannot. Big enough to spread a fixed cost across thousands of locations. That was the dollar store's trick, and it works just as well with a fuel canopy over it.
+So think of that Wawa or Sheetz going up on the corner near you as something close to a dollar store with one extra advantage: a fuel margin that doubled after 2020 and never came back. Same small footprint, same chain economics, plus a second profit stream that got far more profitable.
 
-Which makes a Wawa or a Sheetz something close to a dollar store with one extra advantage: a fuel margin that doubled after 2020 and never came back. Same small footprint, same chain economics, plus a second profit stream that got far more profitable. If it feels like these have been appearing on every other corner in your town, the data agrees — though it can only show you the store count, not the reason a company chose your corner.
+For a household with an EBT card, the practical result is the same either way. In a small town, the
+gravitational pull of grocery economics is leaving them two options: a dollar store and a gas
+station. Both are now cheap to run, both can be profitable at smaller volume. **Unfortunately,
+neither was designed to sell the week of groceries assumed by the government's Thrifty Food Plan.**
 
-For a household with an EBT card, the practical result is the same either way. In a small town the
-realistic options are narrowing to two: a dollar store, or a gas station. Both are now cheap to run, both
-are profitable at a size no supermarket can match, and neither was designed to sell a week of groceries.
+But that is today. The million-dollar question is what happens to SNAP authorization for these fuel
+convenience stores when the new stocking rule takes effect in a few short months, raising the
+number of staple items required on the shelf from 36 to 84. We will explore this in depth in the
+closing post of this series, but for now we can see a few options — and they will not fall evenly.
+A single-owner station pays the cost alone; a chain writes one shelf plan for thousands of stores.
+So:
 
-**Tomorrow: every format on one scale. Two rules turn out to explain almost all of it — and one of them is why the dollar store and the gas station both won.**
+1. They can drop SNAP, further limiting food access for our nation's most vulnerable population.
+2. They can comply and eat the cost, sacrificing profits (not likely).
+3. Or they can comply and pass the cost on at the pump — where margins have already doubled once
+   this decade.
+
+Note that if we head down path 3 — which any profit-maximizing business would likely choose — they
+will be doing it in the middle of what is, in our view, a fuel crisis of a magnitude we have not
+seen since 1973.
+
+Another lesson in the law of unintended consequences.
+
+**Tomorrow: we turn our attention to the larger store formats.**
 
 ## Limits
 
