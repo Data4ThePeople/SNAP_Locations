@@ -22,7 +22,7 @@ Dollar store domination
 ## 2. Page subtitle
 
 ```
-SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Service authorization records. 37,361 dollar stores authorized at the end of 2025, against 63,497 grocery stores of every size.
+Small grocers couldn't make the small-box store work. Dollar store chains did — growing faster and lasting longer than any other format in SNAP. Whether that is a problem or a lifeline depends on where you live.
 ```
 
 ## 3. Hero image
@@ -54,10 +54,10 @@ Dollar Stores Cracked the Code Small Grocers Could Not
 
 ## 5. Meta description
 
-146 characters.
+149 characters.
 
 ```
-SNAP-authorized dollar stores grew 307% since 2006 and kept 78% of their stores for thirteen years. How the small-box chain beat the small grocer.
+Dollar stores grew into SNAP's most durable format while small grocers vanished. How the chains did it, and what it means for towns without a grocer.
 ```
 
 ## 6. Meta keywords
@@ -74,7 +74,7 @@ dollar stores, Dollar General, Dollar Tree, SNAP retailers, food access, food de
   "@type": "Article",
   "headline": "Dollar store domination",
   "alternativeHeadline": "Dollar stores cracked the code small grocers could not",
-  "description": "SNAP-authorized dollar stores grew 307% since 2006 and kept 78% of their stores for thirteen years. How the small-box chain beat the small grocer.",
+  "description": "Dollar stores grew into SNAP's most durable format while small grocers vanished. How the chains did it, and what it means for towns without a grocer.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
   "dateModified": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
@@ -139,7 +139,7 @@ Horizontal bar chart splitting the 3,552 ZIP codes that joined the dollar-store-
 ### `images/05-dollar-only-states.png` (1397×935) — the state walk
 
 ```
-Table walking each of the ten states that added the most dollar-store-only ZIP codes from its 2008 count to its 2024 count: ZIP codes that left the list (nearly always because a grocery became authorized), new dollar stores in ZIPs that never had an authorized grocery, and arrivals where a grocery left SNAP. Pennsylvania: 25, minus 6, plus 125 never-had, plus 106 where a grocery left SNAP, ending at 250. Illinois: 18, minus 3, plus 93, plus 121, ending at 229 — the only state where groceries leaving SNAP outnumber arrivals. Texas: 90, minus 46, plus 173, plus 80, ending at 297. Ohio: 48, minus 9, plus 117, plus 85, ending at 241. New York: 26, minus 5, plus 111, plus 66, ending at 198. Missouri: 12, minus 6, plus 88, plus 73, ending at 167. Indiana: 22, minus 4, plus 90, plus 67, ending at 175. Kentucky: 26, minus 7, plus 88, plus 63, ending at 170. Michigan: 16, minus 4, plus 82, plus 61, ending at 155. North Carolina: 28, minus 5, plus 90, plus 44, ending at 157. Title: How each state got from 2008 to 2024.
+Table walking the ten states that added the most dollar-store-only ZIP codes from 2008 to 2024. Each row shows the 2008 count, ZIP codes that left the list, new dollar stores where no grocery was ever authorized, arrivals where a grocery left SNAP, and the 2024 count. Pennsylvania leads, 25 to 250. Illinois, 18 to 229, is the only state where groceries leaving SNAP outnumber new-market arrivals. Texas rises 90 to 297, mostly arrivals. Title: How each state got from 2008 to 2024.
 ```
 
 ### `images/06-chain-census.png` (1087×488) — the chain census (in Limits)
