@@ -195,8 +195,9 @@ def cbp_year(year):
             header = [h.strip().strip('"') for h in next(text).split(",")]
             idx = {h: i for i, h in enumerate(header)}
             c_small = idx.get("n1_4", idx.get("n<5"))
+            c_59 = idx["n5_9"]
             c_naics, c_est = idx["naics"], idx["est"]
-            tot = small = 0
+            tot = small = mid = 0
             found = set()
             for line in text:
                 f = line.rstrip("\n").split(",")
@@ -209,9 +210,11 @@ def cbp_year(year):
                 try:
                     tot += int(f[c_est] or 0)
                     small += int(f[c_small] or 0)
+                    mid += int(f[c_59] or 0)
                 except ValueError:
                     continue
-    return {"establishments": tot, "under_5_emp": small, "naics": sorted(found)}
+    return {"establishments": tot, "under_5_emp": small,
+            "under_10_emp": small + mid, "naics": sorted(found)}
 
 
 def cbp():
@@ -407,6 +410,7 @@ def main():
               "base_year": b0, "last_year": b1,
               "cbp_pct": pct(c[b0]["establishments"], c[b1]["establishments"]),
               "cbp_under5_pct": pct(c[b0]["under_5_emp"], c[b1]["under_5_emp"]),
+              "cbp_under10_pct": pct(c[b0]["under_10_emp"], c[b1]["under_10_emp"]),
               "snap_pct": pct(snap_unb[b0], snap_unb[b1])}
         print(f"\n     {b0} to {b1}:  CBP establishments {cb['cbp_pct']:+.1f}%,"
               f"  under-5-employee {cb['cbp_under5_pct']:+.1f}%,"
