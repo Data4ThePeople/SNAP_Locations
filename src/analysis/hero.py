@@ -249,13 +249,21 @@ def main():
                "Small grocery")
 
     if want is None or 3 in want:
-        chain, nc = points(con, "p.format = 'Convenience Store' AND p.ownership = 'chain'", 2025)
-        indie, ni = points(con, "p.format = 'Convenience Store' AND p.ownership = 'independent'", 2025)
+        # Post 6's own brand-based split, so the hero keys the number the piece
+        # argues from: the fuel-forward chains against the rest of the category.
+        # The earlier ownership-based split put a "single owner" count on the
+        # hero that differed from the post's segment of the same name.
+        from analysis.post6_fuel import FUEL_FORWARD
+        ff = ",".join("'" + b.replace("'", "''") + "'" for b in FUEL_FORWARD)
+        fuel, nf = points(con, f"p.format = 'Convenience Store' AND p.brand IN ({ff})", 2025)
+        rest, nr = points(
+            con, "p.format = 'Convenience Store' AND (p.brand IS NULL "
+                 f"OR p.brand NOT IN ({ff}))", 2025)
         render(OUT / "day-3.png", 3,
-               [{"xy": indie, "color": MUTED, "size": 0.9, "alpha": 0.85,
-                 "label": f"single owner  {ni:,}"},
-                {"xy": chain, "color": HUE[3], "size": 0.9,
-                 "label": f"chain  {nc:,}"}],
+               [{"xy": rest, "color": MUTED, "size": 0.9, "alpha": 0.85,
+                 "label": f"all other convenience  {nr:,}"},
+                {"xy": fuel, "color": HUE[3], "size": 0.9,
+                 "label": f"chains that sell fuel  {nf:,}"}],
                "Convenience stores, 2025")
 
     if want is None or 4 in want:
