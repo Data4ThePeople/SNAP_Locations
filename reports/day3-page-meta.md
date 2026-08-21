@@ -15,13 +15,13 @@ numbers quoted in the alt text below.
 ## 1. Page title (H1)
 
 ```
-Convenience stores thrived, but with an advantage few others had
+Convenience stores and the advantage hiding in plain sight
 ```
 
 ## 2. Page subtitle
 
 ```
-The convenience store looks like the format that beat the odds — huge, growing, and mostly independent. Split it open and the winners are the fuel-selling chains, riding a pump margin that doubled after 2020 and never came back down.
+The convenience store looks like the format that beat the odds — more stores than any other in SNAP, still growing, and mostly independent. Split it open and the winners are the fuel-selling chains, riding a pump margin that doubled after 2020 and never came back down.
 ```
 
 ## 3. Hero image
@@ -34,26 +34,25 @@ The convenience store looks like the format that beat the odds — huge, growing
 **Hero alt text:**
 
 ```
-Dot map of the lower 48 states showing SNAP-authorized convenience stores in 2025, with national counts: 40,540 chain stores in orange over 51,003 single-owner stores in grey, dense along the coasts, Texas and the Southeast. Text on the map reads: The Stores That Stayed. Day 3. Convenience stores, 2025.
+Dot map of the lower 48 states showing SNAP-authorized convenience stores in 2025, with national counts: 21,370 stores belonging to chains that sell fuel in orange, over 95,685 other convenience stores in grey. Text on the map reads: The Stores That Stayed. Day 3. Convenience stores, 2025.
 ```
 
 Short version if the field is tight:
 
 ```
-Dot map of SNAP-authorized convenience stores in 2025: 40,540 chain stores in orange, 51,003 single-owner stores in grey.
+Dot map of SNAP-authorized convenience stores in 2025: fuel-selling chains, 21,370 in orange, against 95,685 others in grey.
 ```
 
-Note: the hero's chain/single-owner split is by inferred ownership and leaves
-~25,000 unclassifiable stores undrawn; the post's own segments (fuel chains,
-other chains, single-owner) are brand-based. The two counts are not meant to
-reconcile with the body text.
+Note: the hero uses the post's own brand-based split, so its 21,370 is the same
+fuel-chain count the body argues from, and 95,685 is the rest of the category
+(other chains plus single-owner stores).
 
 ## 4. Meta title
 
-60 characters — at the truncation edge but should hold.
+58 characters — will not truncate.
 
 ```
-Convenience Stores Thrived, With an Advantage Few Others Had
+Convenience Stores and the Advantage Hiding in Plain Sight
 ```
 
 ## 5. Meta description
@@ -76,7 +75,7 @@ convenience stores, gas stations, fuel margins, SNAP retailers, Wawa, Sheetz, Ca
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Convenience stores thrived, but with an advantage few others had",
+  "headline": "Convenience stores and the advantage hiding in plain sight",
   "description": "Fuel-selling convenience chains grew 258% and kept 78.7% of their stores, powered by fuel margins that doubled after 2020 and never came back down.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",

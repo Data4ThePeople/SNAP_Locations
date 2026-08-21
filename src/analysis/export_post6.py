@@ -91,7 +91,7 @@ def main():
         title="A chain store stays. A single-owner store usually does not.",
         subtitle="share of 2008-2012 stores still authorized in 2025")
 
-    md = f"""# Convenience stores thrived, but with an advantage few others had
+    md = f"""# Convenience stores and the advantage hiding in plain sight
 
 *SNAP-authorized retailers, 2006–2025. EIA weekly gasoline prices. Retail fuel margins from Murphy USA
 and Casey's 10-K filings. {conv_total:,} convenience stores in the file.*
@@ -163,7 +163,10 @@ When COVID stopped people driving, fuel volume and store traffic fell together �
 
 What nobody expected is that fuel margins stayed there. Customers came back. Margins did not fall. Casey's now tells its investors it expects them to “remain elevated from historical levels for the foreseeable future”. Murphy is still selling about 5% fewer gallons per store than in 2019 — and earning twice as much on each one.
 
-## The format thrives, but is everyone realizing the benefit?
+So, post-COVID fuel margins are the advantage we have been teasing throughout this post. File that
+knowledge away as we turn back to the topic at hand — SNAP authorizations.
+
+## The format thrives, but are all owners realizing the benefit?
 
 Everything so far has been about the chains. What about the much larger group of single-owner stores?
 
@@ -222,7 +225,7 @@ seen since 1973.
 
 Another lesson in the law of unintended consequences.
 
-**Tomorrow: we turn our attention to the larger store formats.**
+**Next week: we turn our attention to the larger store formats.**
 
 ## Limits
 
