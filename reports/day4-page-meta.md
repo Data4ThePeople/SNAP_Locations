@@ -136,7 +136,6 @@ Line chart of percent change in authorized stores from 2006 to 2025 across the n
   is live text and load-bearing — do not drop it in layout.
 - The labor-force paragraph references the earlier D4TP structural-decline
   piece; link it there if a link slot is available.
-- The Day 4 card in the launch email still carries the old ownership stat
-  ("78% of chain super stores…"); the analysis behind it moved out of this
-  post. Decide before the daily send whether to regenerate the card with a
-  geography stat.
+- The Day 4 card and email line now carry the geography stat ("+33% vs −5%",
+  metro against nonmetro super stores since 2006), regenerated from the same
+  rucc data this post uses. The Day 0 page-meta alt text matches.
