@@ -67,13 +67,14 @@ CHAPTERS = [
      "Dollar stores are only half the answer. The chains that sell fuel endure at "
      "the same rate, for a reason that shows up in company filings. Almost nobody "
      "else in the category does."),
-    (4, "post3", "Every format",
-     "Every store type on a single scale: which ones kept their SNAP "
-     "authorization, split by size and by whether a chain owned them.",
-     "The keystone. The first three chapters each followed one format and each "
-     "needed its own explanation. This one shows they were the same two rules all "
-     "along — and that the formats that won were not breaking the rule about size, "
-     "they were beating it with a rule about chains."),
+    (4, "post3", "Geography",
+     "Where the stores went, county by county: twenty years of growth split by "
+     "USDA's rural-urban continuum, and the 46 million Americans on the wrong "
+     "side of the divide.",
+     "The first three chapters followed formats. This one follows places, and "
+     "finds the same divergence drawn on the map: metro counties got more of "
+     "everything, and the dollar store is the only format that grows "
+     "everywhere."),
     (5, "post4", "Pharmacies",
      "The collapse of the chain pharmacy, which happened faster and more recently "
      "than any other change in the data.",
@@ -115,8 +116,11 @@ def main():
 
     p1_surv = {r["format"]: r for r in (g("post1", "survival", default=[]) or [])}
     p6_surv = {r["segment"]: r for r in (g("post6", "survival", default=[]) or [])}
-    p3_own = g("post3", "by_ownership", default={}) or {}
-    p3_sv = g("post3", "survival", default={}) or {}
+    # Day 4 was rebuilt around geography, so its card carries the
+    # metro/nonmetro split for super stores rather than the old ownership cut.
+    p3_ss = g("post3", "rucc", "formats", "Super Store", default={}) or {}
+    ss_metro = round(100 * (p3_ss["metro"]["2025"] / p3_ss["metro"]["2006"] - 1))
+    ss_nm = round(100 * (p3_ss["nonmetro"]["2025"] / p3_ss["nonmetro"]["2006"] - 1))
     p1_arc = g("post1", "arc", default={}) or {}
 
     # One headline number per chapter, pulled from that chapter's output.
@@ -140,13 +144,9 @@ def main():
                   "label": "of single-owner convenience stores lasted thirteen years, "
                            f"against {p6_surv['chains that sell fuel']['rate']}% of the "
                            "fuel-selling chains"},
-        # The chapter's point is that ownership beats size, so the card carries
-        # the ownership gap inside a SINGLE size band. Holding the format fixed
-        # is what makes the comparison mean anything.
-        "post3": {"value": f"{p3_own['Super Store']['chain']['rate']:.0f}% vs "
-                           f"{p3_own['Super Store']['independent']['rate']:.0f}%",
-                  "label": "of super stores kept their SNAP authorization — chain-owned "
-                           "against independent. The same size store, either way"},
+        "post3": {"value": f"+{ss_metro}% vs −{abs(ss_nm)}%",
+                  "label": "change in super stores since 2006 — metro counties against "
+                           "nonmetro. The big stores go where the people are"},
         "post4": {"value": f"{g('post4','chain','peak', default=0):,}",
                   "label": "peak SNAP-authorized chain pharmacies, now "
                            f"{g('post4','chain','latest', default=0):,}"},
@@ -186,9 +186,8 @@ def main():
                  "growth of any store format.",
         "post6": f"{p6_surv['single-owner stores']['rate']}% of single-owner stores lasted thirteen "
                  f"years. {p6_surv['chains that sell fuel']['rate']}% of the fuel-selling chains did.",
-        "post3": f"{p3_own['Super Store']['chain']['rate']:.0f}% of chain super stores kept their "
-                 f"SNAP authorization. {p3_own['Super Store']['independent']['rate']:.0f}% of "
-                 "independent ones did.",
+        "post3": f"Metro super stores grew {ss_metro}% since 2006. Nonmetro counties lost "
+                 f"theirs — down {abs(ss_nm)}%.",
         "post4": f"Chain pharmacies peaked at {g('post4','chain','peak', default=0):,} and stand "
                  f"at {g('post4','chain','latest', default=0):,}.",
         "post5": f"Chains went from {g('post5','ownership_mix','chain','share_2006'):.0f}% to "

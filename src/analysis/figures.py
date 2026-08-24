@@ -102,7 +102,7 @@ def _titles(fig, ax, title, subtitle, gutter_pt=0):
 
 
 def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=None,
-             label_ends=True, title="", subtitle=""):
+             label_ends=True, title="", subtitle="", y_zero=True):
     """`series` = [{name, values, slot}]. Direct end labels satisfy the relief
     rule for the lighter slots, which sit under 3:1 on a light ground.
 
@@ -149,12 +149,24 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
                     textcoords="offset points", xytext=(4, -11),
                     fontsize=7.5, family=MONO, color=INK_SOFT)
     ax.yaxis.set_major_formatter(FuncFormatter(_thousands))
-    ax.set_ylim(bottom=0)
+    if y_zero:
+        ax.set_ylim(bottom=0)
+    else:
+        # Series that go negative need the floor below the data, with a zero
+        # line so the sign flip reads at a glance.
+        lo = min(min(s["values"]) for s in series)
+        ax.set_ylim(bottom=lo * 1.12 if lo < 0 else lo * 0.94)
+        if lo < 0:
+            ax.axhline(0, color=INK_SOFT, lw=1, zorder=1)
     ax.set_xlim(min(years), max(years) + (max(years) - min(years)) * 0.30)
     # First and last always shown; regular ticks only where they will not
     # collide with them.
-    mids = [y for y in years if y % 4 == 0 and years[0] + 3 <= y <= years[-1] - 3]
-    ax.set_xticks([years[0]] + mids + [years[-1]])
+    if len(years) <= 12:
+        ax.set_xticks(list(years))
+    else:
+        mids = [y for y in years
+                if y % 4 == 0 and years[0] + 3 <= y <= years[-1] - 3]
+        ax.set_xticks([years[0]] + mids + [years[-1]])
     _titles(fig, ax, title, ylabel)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)

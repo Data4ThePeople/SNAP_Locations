@@ -1,4 +1,11 @@
-"""Assemble reports/post3/ — markdown text, PNG figures, and the HTML archive."""
+"""Assemble reports/post3/ — markdown text, PNG figures, and the HTML archive.
+
+Day 4 was rebuilt around geography: growth by USDA Rural-Urban Continuum Code.
+The metro/nonmetro divergence for the big formats, the million-plus metros'
+share of the growth, and the dollar store as the one format whose growth is
+indifferent to county size. The earlier size-ladder and ownership cut still
+lives in post3.json (ladder, survival, by_ownership) if it is ever wanted back.
+"""
 import json
 import shutil
 
@@ -9,6 +16,10 @@ SRC = ROOT / "reports" / "data" / "post3.json"
 DIR = ROOT / "reports" / "post3"
 IMG = DIR / "images"
 
+RUCC_LABEL = {1: "metro 1M+", 2: "metro 250k-1M", 3: "metro <250k",
+              4: "town 20k+, adj", 5: "town 20k+, remote", 6: "town 5-20k, adj",
+              7: "town 5-20k, remote", 8: "rural, adj", 9: "rural, remote"}
+
 
 def main():
     d = json.loads(SRC.read_text())
@@ -16,233 +27,204 @@ def main():
     figs = {}
 
     def fig(n, slug, caption, fn, *a, **kw):
-        # Keyed by slug, not list position — see the note in export_post4.
         p = IMG / f"{n:02d}-{slug}.png"
         fn(p, *a, **kw)
         figs[slug] = {"file": p.name, "caption": caption}
         print(f"  {p.name}")
 
-    L, B = d["ladder"], d["breakers"]
-    sv, ow, gr = d["survival"], d["by_ownership"], d["growth"]
-    go = d["growth_by_ownership"]
-    SHORT = {"Super Store": "Super store", "Supermarket": "Supermarket",
-             "Grocery (Large)": "Large grocery", "Grocery (Medium)": "Medium grocery",
-             "Grocery (Small)": "Small grocery", "Dollar Store": "Dollar store",
-             "Convenience Store": "Convenience store"}
+    ru = d["rucc"]
+    F = ru["formats"]
+    yrs = list(range(2006, 2026))
+    pop_nm_m = ru["pop_nonmetro"] / 1e6
+
+    def seg(fmt, which):        # yearly counts for metro / nonmetro
+        return [F[fmt][which][str(y)] for y in yrs]
+
+    def pchg(fmt, which):       # 2006 -> 2025 percent change for a segment
+        s = F[fmt][which]
+        return 100 * (s["2025"] / s["2006"] - 1)
+
+    def code_chg(fmt, k):       # 2006 -> 2025 percent change for one RUCC code
+        c = F[fmt]["by_code"][str(k)]
+        return 100 * (c["2025"] / c["2006"] - 1)
+
+    def share_1m(fmt):          # RUCC-1 share of the format's net change
+        net = {k: F[fmt]["by_code"][str(k)]["2025"] - F[fmt]["by_code"][str(k)]["2006"]
+               for k in range(1, 10)}
+        return 100 * net[1] / sum(net.values())
+
+    idx = lambda vals: [round(100 * v / vals[0], 1) for v in vals]
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{sv['Grocery (Small)']['rate']}%",
-          "label": f"of small groceries authorized in {d['cohort']} are still authorized, "
-                   f"against {sv['Super Store']['rate']:.0f}% of super stores"},
-         {"value": f"{ow['Super Store']['chain']['rate']:.0f}%",
-          "label": "survival for a chain store — about the same whether it is the "
-                   "largest format or the smallest"},
-         {"value": f"{gr['Super Store']['pct']:+}%",
-          "label": f"change in super store numbers since 2006, against the dollar "
-                   f"store's {gr['Dollar Store']['pct']:+}%"}])
+        [{"value": f"{pchg('Super Store', 'metro'):+.0f}%",
+          "label": "change in metro super stores since 2006. In nonmetro counties "
+                   f"they fell {abs(pchg('Super Store', 'nonmetro')):.0f}%"},
+         {"value": f"{pop_nm_m:.1f}M",
+          "label": "Americans live in the nonmetro counties the big formats are leaving"},
+         {"value": f"+{pchg('Dollar Store', 'nonmetro'):.0f}%",
+          "label": "nonmetro dollar store growth — the only format still growing "
+                   "on every rung of the rural-urban ladder"}])
 
-    # Rule one. Ladder order is the finding, so it is never re-sorted by value.
-    fig(1, "size-ladder",
-        "Share of stores authorized in 2008-2012 that were still authorized at the "
-        "end of 2025, by USDA store type, largest to smallest.",
+    fig(1, "metro-vs-nonmetro",
+        "Authorized super stores and supermarkets, indexed to 100 in 2006, in "
+        "metropolitan against non-metropolitan counties (USDA Rural-Urban Continuum "
+        "Codes; metro is codes 1-3).",
+        figures.line_png, yrs,
+        [{"name": "super stores — metro", "values": idx(seg("Super Store", "metro")), "slot": 1},
+         {"name": "supermarkets — metro", "values": idx(seg("Supermarket", "metro")), "slot": 3},
+         {"name": "supermarkets — nonmetro", "values": idx(seg("Supermarket", "nonmetro")), "slot": 5},
+         {"name": "super stores — nonmetro", "values": idx(seg("Super Store", "nonmetro")), "slot": 2}],
+        y_zero=False, ylabel="authorized stores, indexed to 2006 = 100",
+        title="Metro America gained big stores. Nonmetro America lost them.")
+
+    fig(2, "metro-1m-share",
+        "Share of each format's net change in authorized stores, 2006-2025, that "
+        "landed in counties belonging to metro areas of a million people or more.",
         figures.hbar_png,
-        [{"label": SHORT[f], "value": sv[f]["rate"], "slot": 1 if f == L[0] else 0}
-         for f in L], suffix="%",
-        title="The bigger the store, the likelier it kept its authorization",
-        subtitle=f"still authorized in 2025, of those authorized {d['cohort']}")
+        [{"label": "super stores", "value": share_1m("Super Store"), "slot": 1},
+         {"label": "supermarkets", "value": share_1m("Supermarket"), "slot": 3}],
+        suffix="%",
+        title="The million-person metros took almost all of the growth",
+        subtitle="share of net 2006-2025 change in metro-1M+ counties")
 
-    # Rule two: the same numbers, split by who owns the store.
-    def cell(f, o):
-        # A rate on ~110 stores is noise, and printing it does real damage here:
-        # the three thin chain-grocery cells read as 21.1 / 6.7 / 3.6 going down
-        # the column, which looks like the very size ladder this table exists to
-        # show does NOT apply to chains. Say "too few" instead of showing a
-        # number the reader will reasonably believe.
-        c = ow[f][o]
-        if c["n"] == 0:
-            return "none"
-        return "too few" if c["thin"] else f"{c['rate']}%"
+    fig(3, "rucc-gradient",
+        "Percent change in authorized stores, 2006 to 2025, by Rural-Urban Continuum "
+        "Code. Code 1 is counties in metro areas of a million or more; code 9 is "
+        "fully rural counties not adjacent to any metro area.",
+        figures.line_png, list(range(1, 10)),
+        [{"name": "dollar stores", "values": [round(code_chg("Dollar Store", k), 1) for k in range(1, 10)], "slot": 2},
+         {"name": "convenience", "values": [round(code_chg("Convenience Store", k), 1) for k in range(1, 10)], "slot": 4},
+         {"name": "super stores", "values": [round(code_chg("Super Store", k), 1) for k in range(1, 10)], "slot": 1},
+         {"name": "supermarkets", "values": [round(code_chg("Supermarket", k), 1) for k in range(1, 10)], "slot": 3},
+         {"name": "small grocery", "values": [round(code_chg("Grocery (Small)", k), 1) for k in range(1, 10)], "slot": 7}],
+        y_zero=False, ylabel="% change in authorized stores, 2006-2025",
+        title="Dollar stores grow everywhere. Everything else grows where people are.")
 
-    NOTE = ('"too few" = fewer than %d stores in that cell, so no rate is shown. '
-            '"none" = there are no stores of that kind: every dollar store is a chain.'
-            % d["min_n"])
-    fig(2, "ownership-split",
-        "The same survival rates split by ownership.",
-        figures.table_png,
-        ["Store type", "Independent", "Chain", "All"],
-        [[SHORT[f], cell(f, "independent"), cell(f, "chain"), f"{sv[f]['rate']}%"]
-         for f in L + B],
-        highlight_row=len(L) + 0,
-        title="Among independents size decides. Among chains it does not.",
-        subtitle="still authorized in 2025, by store type and ownership",
-        note=NOTE)
+    km = ru["kmart_2020"]
 
-    # Every (format, ownership) pair where both measures clear the sample floor.
-    # Ownership is in the LABEL, not only in the colour, so the point is
-    # identifiable in print and to a colourblind reader without a legend.
-    def pts():
-        out = []
-        for f in L + B:
-            for o in ("chain", "independent"):
-                g, s = go[f][o], ow[f][o]
-                if g["thin"] or s["thin"]:
-                    continue
-                out.append({"name": f"{SHORT[f]} ({o[:5] if o == 'chain' else 'indep'})",
-                            "x": g["pct"], "y": s["rate"],
-                            "slot": 1 if o == "chain" else 3})
-        return out
-    fig(3, "growth-vs-survival",
-        "Growth against survival, by store type and ownership. Only pairs with "
-        f"at least {d['min_n']} stores on both measures are plotted.",
-        figures.scatter_png, pts(),
-        xlabel="% growth in store numbers, 2006 to 2025", xsuffix="%",
-        ylabel="still authorized in 2025", ysuffix="%",
-        quadrant={"x": 0}, width=7.2, height=4.6,
-        title="Only one format did both",
-        note="Points left of the dashed line have fewer stores than in 2006.")
+    md = f"""# Super stores for some, dollar stores for the rest
 
-    ss, sg = sv["Super Store"], sv["Grocery (Small)"]
-    ssc, dol = ow["Super Store"]["chain"], sv["Dollar Store"]
-    ind = [ow[f]["independent"]["rate"] for f in L]
+*SNAP-authorized retailers, 2006–2025, joined to USDA's Rural-Urban Continuum Codes.
+{pop_nm_m:.1f} million Americans live in the non-metropolitan counties this piece is about.*
 
-    md = f"""# The bigger the store, the better it did — unless it belonged to a chain
-
-*SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Service authorization records.
-Survival is measured on the {d['cohort']} cohort: stores first authorized in those years, checked again
-at the end of 2025.*
-
-**{sg['rate']}%** of small groceries authorized in {d['cohort']} are still authorized, against {ss['rate']:.0f}% of super stores.
-**{ssc['rate']:.0f}%** survival for a chain store — about the same whether it is the largest format or the smallest.
-**{gr['Super Store']['pct']:+}%** change in super store numbers since 2006, against the dollar store's {gr['Dollar Store']['pct']:+}%.
+**{pchg('Super Store', 'metro'):+.0f}%** change in metro super stores since 2006; in nonmetro counties they fell {abs(pchg('Super Store', 'nonmetro')):.0f}%. **{pop_nm_m:.1f} million** Americans live in nonmetro counties. **+{pchg('Dollar Store', 'nonmetro'):.0f}%** nonmetro dollar store growth — the only format still growing on every rung of the rural-urban ladder.
 
 ![Headline figures](images/00-key-figures.png)
 
 ---
 
-The last three days each followed one small format. Small groceries went away. Dollar stores grew and
-stayed. Convenience stores grew while their owners turned over. Three stories, three explanations.
+*As in the earlier pieces: anytime we refer to "growth" in this post, it is growth in
+SNAP-authorized stores, not growth in store counts. See the Limits section for more on this.*
 
-Put every format on one scale and the three collapse into two rules.
+My analysis for today's post made me reflect on my own life. I'm specifically thinking about the
+plethora of grocery options I have just minutes from my house in suburban Dayton, Ohio. There are a
+Target, a Costco, and a Kroger down the street from me. Drive another few minutes and you'll pass a
+Walmart and an Aldi. Another five minutes and there's a Trader Joe's. My weekly grocery trips
+involve some ever-changing combination of visits to these stores to get the products my family
+likes at the best price. There weren't always this many options. But large-format grocers have flocked to the
+metropolitan area in which I live, providing an overabundance of fully stocked grocery stores for suburban Daytonians.
 
-## Rule one: size
+Most of you reading this can probably relate. But not everyone. If you are one of the
+**{pop_nm_m:.1f} million Americans** living in a non-metropolitan county, how you shop for
+groceries is likely very different — rather than having more options as time passes, you may have
+fewer.
 
-Take every store authorized between 2008 and 2012 and ask which ones are still authorized today. Sort
-the answer by how big the store is, using USDA's own size categories.
+## The two grocery Americas
 
-![{figs["size-ladder"]['caption']}](images/{figs["size-ladder"]['file']})
+How do we know that? The data, of course. The chart below shows the change in the two largest store
+formats — super stores and supermarkets — in metropolitan counties against non-metropolitan
+counties, indexed to 100 in 2006.
 
-The ladder is almost too neat: **{' , '.join(f"{sv[f]['rate']}%" for f in L)}**, straight down the size
-order with nothing out of place. A super store was **{ss['rate']/sg['rate']:.0f} times** likelier to keep
-its authorization than a small grocery.
+![{figs["metro-vs-nonmetro"]['caption']}](images/{figs["metro-vs-nonmetro"]['file']})
 
-That is a real finding, and on its own it is a bleak one. It says the thing that decided which stores
-survived was a thing no small grocer could change.
+In metro counties, super stores are up {pchg('Super Store', 'metro'):.0f}% and supermarkets
+{pchg('Supermarket', 'metro'):.0f}%. In nonmetro counties both lines point the other way: down
+{abs(pchg('Super Store', 'nonmetro')):.0f}% and {abs(pchg('Supermarket', 'nonmetro')):.0f}%. That
+sharp step down in 2020 is the Kmart liquidation — {km['kmart']} nonmetro Kmart supercenters left
+the program in a single year.
 
-## Rule two: rule one does not apply to chains
+Reality is even more skewed than that chart lets on. It turns out that nearly three-quarters of all
+net super store growth — and {share_1m('Supermarket'):.0f}% of net supermarket growth — happened in
+the million-plus metros alone.
 
-Except that size is not quite what is doing the work. Split each format by who owns it and rule one
-comes apart.
+![{figs["metro-1m-share"]['caption']}](images/{figs["metro-1m-share"]['file']})
 
-![{figs["ownership-split"]['caption']}](images/{figs["ownership-split"]['file']})
+The more we analyze and write, the more we see common threads emerging across this country. Today's
+finding is a complement to our deep dive into the structural decline of the labor force — an
+extensive piece that tracked the decline in the labor force (and therefore, the economic engine) of
+nonmetro counties and the simultaneous surge in the labor forces of large metro counties and their
+surrounding suburbs (Austin, Nashville, Salt Lake City). When a county is in structural decline, it
+makes sense that it would lose the larger-format grocery stores that need volume to make the
+economics work. Two findings from two completely different databases, connected by Ockham's razor.
 
-Among independent stores rule one holds exactly as stated: **{' , '.join(f"{r}%" for r in ind)}** down
-the size order. So size is real. It is not merely standing in for something else.
+## What grows where the big stores don't
 
-Now look down the chain column. A chain super store survives at **{ssc['rate']}%**. A dollar store — the
-smallest box in the whole table — survives at **{dol['rate']}%**. Those are the same number. For a chain,
-being large stopped mattering.
+And so, what store formats are growing in nonmetro counties? You guessed it: dollar stores and
+convenience stores.
 
-**Rule one does not apply to chains.** That is the whole of rule two, and it is what explains the last
-two days. Dollar stores are small, and every one of them is a chain. The convenience stores that endured
-were the fuel chains, at 78.7%; the single-owner ones managed 14.2%.
+The chart below needs one piece of setup. USDA's Rural-Urban Continuum Codes sort every county in
+America onto a nine-rung ladder: code 1 is a county in a metro area of a million people or more,
+codes 2 and 3 are smaller metros, and codes 4 through 9 step down through ever smaller and more
+remote nonmetro counties, ending at code 9 — fully rural counties not adjacent to any metro area.
+The chart runs that ladder left to right and shows each format's growth on every rung. The dollar
+store is the only format whose growth was indifferent to the size of the county — the smallest
+counties grew at nearly the same pace as the largest ones.
 
-Neither format was breaking rule one. Neither was subject to it.
+![{figs["rucc-gradient"]['caption']}](images/{figs["rucc-gradient"]['file']})
 
-## Staying power is not the same as growing
+Every other line slopes downhill as the counties get smaller. Convenience stores grew
+{code_chg('Convenience Store', 1):.0f}% in the biggest metros but only
+{code_chg('Convenience Store', 9):.0f}% in fully rural counties. The big formats flip negative the
+moment you leave metro America. Small grocery falls everywhere — steepest at the two extremes, the
+big-city bodega and the only-store-in-town. The dollar store's line barely slopes at all.
 
-Rule one said the super store was the safest place to be. That is true, and it is also the whole of
-what being large bought you. Super store numbers are up **{gr['Super Store']['pct']:+}%** since 2006.
-Dollar stores are up **{gr['Dollar Store']['pct']:+}%**. Supermarkets managed {gr['Supermarket']['pct']:+}%,
-and small groceries fell {abs(gr['Grocery (Small)']['pct'])}%.
+You are free to have your own views on these different store formats. But the data can help us
+remove our views from our own lived experience and try to form them from how others live. What if I
+lived in a small county, getting smaller by the day as its labor force shrank through aging, a
+declining birth rate, and out-migration to the larger metro areas for better work? Maybe I had one grocery store years ago.
+Maybe now it's gone. Maybe I can't get everything I would like to eat at a dollar store. But
+calories are better than no calories. And so, I am grateful. The alternative is a long drive,
+spending gas money I may not have — especially now, thanks to our self-inflicted fuel crisis.
 
-So there are two different things a format can be good at, and they come apart. Put them on the same
-chart — growth across the bottom, survival up the side — and split every format by ownership.
+## The questions this leaves
 
-![{figs["growth-vs-survival"]['caption']}](images/{figs["growth-vs-survival"]['file']})
+Where does this gravitational pull lead? Is it really a good strategy to let so much American land
+become uninhabitable over time as it loses its workers and the stores that rely on them to make
+their economics work? Should we really expect so many Americans to live off what they can buy at a
+dollar store? What right do any of us who don't have to live this way have to criticize the
+physical and mental health of those who do? And how can we ever expect the cost of health care to
+decline — Medicaid and all the rest — if we can't provide people with access to the healthy foods
+that USDA's economists blindly assume they can buy?
 
-Read it in three passes.
+Those are just a few of the questions on my mind after studying this data. Feel free to add yours.
 
-**Chains sit above and to the right of their own independents, every time.** Super stores:
-{go['Super Store']['chain']['pct']:+}% and {ow['Super Store']['chain']['rate']}% survival for the chains,
-against {go['Super Store']['independent']['pct']:+}% and
-{ow['Super Store']['independent']['rate']}% for the independents. Supermarkets:
-{go['Supermarket']['chain']['pct']:+}% and {ow['Supermarket']['chain']['rate']}% against
-{go['Supermarket']['independent']['pct']:+}% and {ow['Supermarket']['independent']['rate']}%.
-Convenience stores: {go['Convenience Store']['chain']['pct']:+}% and
-{ow['Convenience Store']['chain']['rate']}% against
-{go['Convenience Store']['independent']['pct']:+}% and
-{ow['Convenience Store']['independent']['rate']}%. In every format where both can be measured, the
-chains grew faster **and** lasted longer.
-
-**Fast growth does not buy staying power.** Convenience chains added
-{go['Convenience Store']['chain']['pct']:+}%, second only to dollar stores — and barely half of them,
-{ow['Convenience Store']['chain']['rate']}%, were still authorized thirteen years on. That is Day 3 in a
-single point: the format kept expanding while the businesses inside it turned over.
-
-**And one point sits on its own in the top right corner.** The dollar store has the fastest growth in the
-data and the highest survival in the data. Nothing else has both. The super store lasted nearly as well
-and hardly grew; the convenience chains grew nearly as fast and did not last.
-
-## What it adds up to
-
-Two rules, and they are worth stating plainly because between them they cover almost everything in this
-series so far.
-
-**Rule one: a bigger store was likelier to keep its SNAP authorization.** That held for every independent
-store in the data, right down the size order.
-
-**Rule two: rule one does not apply to chains.** A dollar store the size of a corner shop held its
-authorization as reliably as a super store.
-
-And on the second measure, growth, being a chain is the only thing that helped at all. Size did nothing
-for it: the largest format in the country added {gr['Super Store']['pct']}% in twenty years.
-
-Put it together and you can see the shape of the last two decades. The stores that went away were small
-and independent — they had neither advantage. The large format had size, and used it to stay put rather
-than to spread. What actually spread was the format that worked out how to be small and be a chain at
-the same time, and it is the only thing in the data that is winning on both counts at once.
-
-Tomorrow we look at a format that had both advantages and lost anyway. It is the fastest collapse in the
-whole dataset, and it happened in the last four years.
+**Tomorrow: the mirror image of the dollar store — the one format shrinking everywhere, even
+where the people are.**
 
 ## Limits
 
-**These are authorizations, not buildings.** A small grocery at {sg['rate']}% has overwhelmingly left the
-program; this source cannot tell you the storefront is empty. Day 1 worked through that gap in detail.
-The super store figure is the one place the two nearly coincide, because for the large chains the
-authorization list runs close to a store census.
+**Growth here means authorized stores.** For super stores, supermarkets and dollar stores the
+distinction is small — those chains' authorization counts track their reported store counts almost
+exactly (see Day 2). For convenience stores a rising count can also mean wider EBT take-up among
+stores that already existed, so read its gradient as the shape, not the level.
 
-**Ownership is inferred, not reported.** It comes from patterns in store names, and it is unknown for
-between {min(sv[f]['unknown_share'] for f in L+B):.0f}% and {max(sv[f]['unknown_share'] for f in L+B):.0f}%
-of each format's cohort. Rates are computed over the stores that could be classified, and the unclassified
-share is published in the data file beside every one of them.
+**Counties are classified by their current Rural-Urban Continuum Code** (the 2023 vintage;
+Connecticut keeps its 2013 county codes because the 2023 file switched to planning regions). A
+county keeps one code across the whole window, so within-county comparisons are consistent — but
+"metro" means metro as defined today. 99.7% of active stores matched a coded county; the remainder
+sit in territories and a few renamed county-equivalents. County populations are the 2020 census.
 
-**Being a chain is not sufficient, and this data cannot show why.** The chain small-grocery cell survives
-at {ow['Grocery (Small)']['chain']['rate']}%, no better than independents — but it holds only
-{ow['Grocery (Small)']['chain']['n']} stores, far too few to carry a claim, which is why nothing above is
-built on it. The likely reason is that "chain" here covers a three-store local operator and a national
-retailer with twenty thousand locations alike, and only the second kind has the scale that matters. This
-source cannot separate them.
-
-**The cohort is one window.** Stores first authorized in {d['cohort']}, followed to the end of 2025. A
-different window would give different levels; the ordering is what this piece rests on.
+**A county is a coarse lens.** A metro county contains poor neighborhoods far from any supermarket,
+and a rural county can have a town center with three grocers. The RUCC split measures the county's
+relationship to a metro area, not any single household's drive to a store.
 
 ---
 
-*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
-usable coordinates; a store counts as active in a year if an authorization covered 31 December. Code,
-pipeline and verification:
+*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. USDA ERS Rural-Urban Continuum
+Codes, 2023 (Connecticut: 2013), with 2020 census county populations. Analysis uses 656,868 stores
+with usable coordinates; a store counts as active in a year if an authorization covered 31 December.
+Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """
     (DIR / "post3.md").write_text(md)

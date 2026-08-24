@@ -195,6 +195,92 @@ def main():
            "growth": growth, "growth_by_ownership": growth_own,
            "thin_cells": [f"{f}/{o}" for f in ALL_FMT for o in ("chain", "independent")
                           if split[f][o]["thin"] and split[f][o]["n"] > 0]}
+    # ------------------------------------------------- geography: growth by RUCC
+    # Where each format's change landed, by USDA ERS Rural-Urban Continuum Code.
+    # The finding this section exists to make checkable: big-format growth is
+    # entirely a metro phenomenon, and the dollar store is the only format that
+    # grows at full speed on every rung of the rural-urban ladder.
+    from analysis import rucc as rucc_mod
+    print("\n7. Geography: stock by Rural-Urban Continuum Code")
+    lookup, rucc_pop = rucc_mod.load()
+    RUCC_FMT = ("Super Store", "Supermarket", "Dollar Store",
+                "Convenience Store", "Grocery (Small)")
+    rows = con.execute(f"""
+        SELECT y.yr, p.format, p.state, p.county, count(DISTINCT f.record_id) n
+        FROM generate_series(2006, 2025) y(yr)
+        JOIN fact_spell f ON f.auth_date <= make_date(y.yr,12,31)
+          AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+          AND NOT f.date_anomaly
+        JOIN panel p ON p.record_id = f.record_id
+        WHERE p.format IN {RUCC_FMT}
+        GROUP BY 1,2,3,4""").fetchall()
+    from collections import defaultdict
+    byrucc = {f: defaultdict(lambda: {str(y): 0 for y in (2006, 2012, 2025)})
+              for f in RUCC_FMT}
+    yearly = {f: {"metro": defaultdict(int), "nonmetro": defaultdict(int)}
+              for f in RUCC_FMT}
+    unmatched = defaultdict(int)
+    for yr, fmt, st, cty, n in rows:
+        code = lookup(st, cty)
+        if code is None:
+            if yr == 2025:
+                unmatched[fmt] += n
+            continue
+        yearly[fmt]["metro" if code <= 3 else "nonmetro"][yr] += n
+        if yr in (2006, 2012, 2025):
+            byrucc[fmt][code][str(yr)] += n
+    matched25 = sum(v[2025] for f in RUCC_FMT
+                    for v in (yearly[f]["metro"], yearly[f]["nonmetro"]))
+    un25 = sum(unmatched.values())
+    check("at least 99% of 2025-active stores carry a RUCC code",
+          un25 / (matched25 + un25) < 0.01,
+          f"{un25:,} unmatched of {matched25 + un25:,}")
+    out["rucc"] = {
+        "population_2020": rucc_pop,
+        "pop_metro": sum(v for k, v in rucc_pop.items() if k <= 3),
+        "pop_nonmetro": sum(v for k, v in rucc_pop.items() if k >= 4),
+        "unmatched_2025": int(un25),
+        "formats": {}}
+    for f in RUCC_FMT:
+        m = yearly[f]["metro"]; nm = yearly[f]["nonmetro"]
+        nm_peak = max(nm, key=nm.get)
+        out["rucc"]["formats"][f] = {
+            "by_code": {str(k): byrucc[f][k] for k in range(1, 10)},
+            "metro": {str(y): m[y] for y in range(2006, 2026)},
+            "nonmetro": {str(y): nm[y] for y in range(2006, 2026)},
+            "nonmetro_peak_year": int(nm_peak),
+            "nonmetro_peak": int(nm[nm_peak])}
+        print(f"     {f:20} metro {m[2006]:>7,} -> {m[2025]:>7,}   "
+              f"nonmetro {nm[2006]:>7,} -> {nm[2025]:>7,}  (peak {nm[nm_peak]:,} in {nm_peak})")
+    ru = out["rucc"]["formats"]
+    check("dollar stores are the only format whose nonmetro count peaks in 2025",
+          [f for f in RUCC_FMT if ru[f]["nonmetro_peak_year"] == 2025] == ["Dollar Store"],
+          str({f: ru[f]["nonmetro_peak_year"] for f in RUCC_FMT}))
+    check("big-format nonmetro counts fell while metro grew",
+          all(ru[f]["nonmetro"]["2025"] < ru[f]["nonmetro"]["2006"]
+              and ru[f]["metro"]["2025"] > ru[f]["metro"]["2006"]
+              for f in ("Super Store", "Supermarket")), "")
+    # The sharpest single-year nonmetro fall is 2020, and it is Kmart's
+    # liquidation: count the nonmetro super stores active in 2019, gone by
+    # end-2020, that carry the Kmart brand.
+    km = con.execute("""
+        WITH a AS (SELECT DISTINCT f.record_id FROM fact_spell f
+                   WHERE NOT f.date_anomaly AND f.auth_date <= DATE '2019-12-31'
+                     AND (f.end_date IS NULL OR f.end_date >= DATE '2019-12-31')),
+        b AS (SELECT DISTINCT f.record_id FROM fact_spell f
+              WHERE NOT f.date_anomaly AND f.auth_date <= DATE '2020-12-31'
+                AND (f.end_date IS NULL OR f.end_date >= DATE '2020-12-31'))
+        SELECT p.state, p.county, p.brand FROM a LEFT JOIN b USING(record_id)
+        JOIN panel p USING(record_id)
+        WHERE b.record_id IS NULL AND p.format='Super Store'""").fetchall()
+    gone_nm = sum(1 for st, cty, b in km if (lookup(st, cty) or 0) >= 4)
+    gone_km = sum(1 for st, cty, b in km
+                  if (lookup(st, cty) or 0) >= 4 and b == "Kmart")
+    out["rucc"]["kmart_2020"] = {"nonmetro_exits": gone_nm, "kmart": gone_km}
+    print(f"     2020 nonmetro super-store exits: {gone_nm} ({gone_km} Kmart)")
+    check("the 2020 nonmetro super-store drop is mostly Kmart",
+          gone_km > 0.7 * gone_nm, f"{gone_km}/{gone_nm}")
+
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "post3.json").write_text(json.dumps(out, indent=1))
     print(f"\nwrote {OUT / 'post3.json'}")

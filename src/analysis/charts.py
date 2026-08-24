@@ -55,7 +55,8 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
     w, h = width, height + head
     x0, x1 = PAD["l"], w - PAD["r"]
     y0, y1 = h - PAD["b"], PAD["t"] + head
-    lo = 0 if y_zero else min(min(s["values"]) for s in series) * 0.95
+    _m = min(min(s["values"]) for s in series)
+    lo = 0 if y_zero else (_m * 1.05 if _m < 0 else _m * 0.95)
     hi = max(max(s["values"]) for s in series) * 1.06
     sx = lambda i: x0 + (x1 - x0) * i / max(len(years) - 1, 1)
     sy = lambda v: y1 + (y0 - y1) * (1 - (v - lo) / (hi - lo))

@@ -267,22 +267,44 @@ def main():
                "Convenience stores, 2025")
 
     if want is None or 4 in want:
-        big, nb = points(con, "p.format IN ('Super Store','Supermarket')", 2025)
-        mid, nm = points(con, "p.format IN ('Grocery (Large)','Grocery (Medium)')", 2025)
-        sml, ns = points(con, "p.format = 'Grocery (Small)'", 2025)
+        # The Day 4 title in dots: outside the metros, dollar stores now
+        # outnumber the big grocery formats nearly two to one. Both keyed
+        # layers are nonmetro counties only (RUCC 4-9); the metro stores are
+        # sketched as a faint unkeyed backdrop so the cities read as context
+        # rather than as holes in the map.
+        from analysis import rucc as rucc_mod
+        lookup, _ = rucc_mod.load()
+
+        def geo_points(where, year, want_metro):
+            rows = con.execute(f"""
+                SELECT p.longitude, p.latitude, p.state, p.county,
+                       count(DISTINCT s.record_id)
+                FROM panel p JOIN fact_spell s USING(record_id)
+                WHERE {where} AND NOT s.date_anomaly AND {ACTIVE.format(y=year)}
+                GROUP BY 1, 2, 3, 4""").fetchall()
+            pts, n = [], 0
+            for lon, lat, st, cty, cnt in rows:
+                k = lookup(st, cty)
+                if k is None or (k <= 3) != want_metro:
+                    continue
+                n += cnt
+                if (usmap.LO48[0] <= lon <= usmap.LO48[2]
+                        and usmap.LO48[1] <= lat <= usmap.LO48[3]):
+                    pts.append((lon, lat))
+            return (usmap.albers([q[0] for q in pts], [q[1] for q in pts]), n)
+
+        BIG = "p.format IN ('Super Store','Supermarket')"
+        DOLLAR = "p.format = 'Dollar Store'"
+        backdrop, _n = geo_points(f"({BIG} OR {DOLLAR})", 2025, want_metro=True)
+        big_nm, n_big = geo_points(BIG, 2025, want_metro=False)
+        ds_nm, n_ds = geo_points(DOLLAR, 2025, want_metro=False)
         render(OUT / "day-4.png", 4,
-               # Largest first so the smallest end up on top. Drawn the other
-               # way the biggest dots, which are also the most numerous here,
-               # covered both smaller tiers and the ladder vanished.
-               # An ordered variable, so one hue stepped by alpha and size
-               # rather than three competing colours.
-               [{"xy": big, "color": HUE[4], "size": 2.4, "alpha": 0.35,
-                 "label": f"supermarket and up  {nb:,}"},
-                {"xy": mid, "color": HUE[4], "size": 1.2, "alpha": 0.65,
-                 "label": f"medium and large  {nm:,}"},
-                {"xy": sml, "color": HUE[4], "size": 0.9, "alpha": 1.0,
-                 "label": f"small grocery  {ns:,}"}],
-               "Grocery by store size")
+               [{"xy": backdrop, "color": MUTED, "size": 0.5, "alpha": 0.22},
+                {"xy": big_nm, "color": MUTED, "size": 1.7, "alpha": 0.95,
+                 "label": f"big grocery formats  {n_big:,}"},
+                {"xy": ds_nm, "color": HUE[4], "size": 1.7, "z": 3,
+                 "label": f"dollar stores  {n_ds:,}"}],
+               "Nonmetro America, 2025")
 
     if want is None or 5 in want:
         # Post 4's own brand list, so "still authorized" is the same 14,828 the

@@ -134,7 +134,7 @@ Series card for Day 3 — Convenience stores and the advantage hiding in plain s
 ### `images/day-4.png` — Day 4 card
 
 ```
-Series card for Day 4 — The bigger the store, the better it did, unless it belonged to a chain. Key figure: 78% of chain super stores kept their SNAP authorization; 46% of independent ones did.
+Series card for Day 4 — Super stores for some, dollar stores for the rest. Key figure: metro super stores grew 33% since 2006, while nonmetro counties lost theirs, down 5%.
 ```
 
 ### `images/day-5.png` — Day 5 card
