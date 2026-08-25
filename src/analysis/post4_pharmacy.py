@@ -218,6 +218,31 @@ def main():
         print(f"     {r['state']}  {r['then']:>5,} -> {r['now']:>5,}  {r['delta']:>+6,}"
               f"  {r['pct']:>+6.1f}%")
 
+    # ------------------------------------------------------------ 8. peer formats
+    # The comparison the piece turns on: over the same four years the two
+    # nearest food-retail alternatives kept growing. Same segment definitions
+    # as Day 2 (USDA Dollar Store) and Day 3 (the named fuel-forward operators),
+    # so the numbers agree with the posts they come from.
+    print("\n8. What the neighbouring formats did over the same four years")
+    from analysis.post6_fuel import FUEL_FORWARD
+    ff = ",".join("'" + b.replace("'", "''") + "'" for b in FUEL_FORWARD)
+    peers = {"dollar": "p.format = 'Dollar Store'",
+             "fuel_forward": f"p.format = 'Convenience Store' AND p.brand IN ({ff})"}
+    out["peers"] = {}
+    for k, where in peers.items():
+        a, b = (con.execute(f"""
+            SELECT count(DISTINCT p.record_id) FROM panel p
+            JOIN fact_spell f ON f.record_id = p.record_id AND NOT f.date_anomaly
+            WHERE {where} AND f.auth_date <= make_date({y},12,31)
+              AND (f.end_date IS NULL OR f.end_date >= make_date({y},12,31))
+        """).fetchone()[0] for y in (2021, 2025))
+        out["peers"][k] = {"y2021": a, "y2025": b, "pct": round(100 * (b / a - 1), 1)}
+        print(f"     {k:14} {a:>7,} -> {b:>7,}   {out['peers'][k]['pct']:+.1f}%")
+    # Load-bearing: the piece asks why the pharmacy collapsed while these grew.
+    for k in peers:
+        if out["peers"][k]["pct"] <= 0:
+            FAILURES.append(f"{k} did not grow 2021-2025")
+
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "post4.json").write_text(json.dumps(out, indent=1))
     print(f"\nwrote {OUT / 'post4.json'}")

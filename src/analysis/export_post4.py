@@ -26,6 +26,7 @@ def main():
         print(f"  {p.name}")
 
     ch, ind, z, st, br = d["chain"], d["independent"], d["zips"], d["states"], d["brands"]
+    pr = d["peers"]
     ends, yrs = d["endings"], d["chain"]["years"]
     end_years = sorted(ends.keys())
     wal = d["census"][0]
@@ -45,8 +46,7 @@ def main():
         figures.line_png, yrs,
         [{"name": "drug chains", "values": ch["stock"], "slot": 1}],
         ylabel="active SNAP authorizations",
-        annotate=[{"year": 2018, "text": "stocking rule"},
-                  {"year": 2021, "text": "collapse begins"}],
+        annotate=[{"year": 2021, "text": "collapse begins"}],
         title="Chain pharmacies held flat, then fell off a cliff",
         subtitle="stores authorized on 31 December")
 
@@ -96,35 +96,37 @@ Drug chains peaked at {ch['peak']:,} in {ch['peak_year']} and stand at {ch['late
 
 A drug store is not most people's idea of a grocery store. USDA files it as one anyway, in the same
 category as the dollar store: "Combination Grocery/Other," for shops that mainly sell general goods
-and also sell food. That filing is not a technicality. In a neighborhood with no supermarket, the
-pharmacy is often where a SNAP household buys food.
+and also sell food. That filing is not a technicality. Think of the last time you walked into a chain
+pharmacy: the food is not a shelf by the register, it is aisles of it — cereal, pasta, canned goods,
+snacks, a cooler of milk and frozen meals. The selection has far more in common with a dollar store
+than with a convenience store. So when a fully stocked grocery store is not available, or is simply
+too far away, the pharmacy offers our nation's most vulnerable people another place to buy food.
 
-It is also, in shape, the same store we looked at on Day 3 — the convenience store attached to a fuel
-pump. A small chain outlet with a second business running behind it, 78.7% of which were still
-authorized thirteen years on. A chain pharmacy is built to the same design: a small chain store, with
-a second business behind the counter. For a decade it behaved the same way too.
-
-Then it stopped.
+But a pharmacy is not a dollar store, and it is not a convenience store. Its economics are far
+different. Trust me — I spent a few years running more than twenty of them. And the main difference is
+what made this next chart break sharply down in the early part of this decade.
 
 ![{figs["drug-chain-arc"]['caption']}](images/{figs["drug-chain-arc"]['file']})
 
 Drug chains peaked at **{ch['peak']:,} in {ch['peak_year']}**. For the next five years almost nothing
 happened: down {abs(ch['peak_to_2021_pct'])}% by 2021. Then they lost
-**{abs(ch['2021_to_latest_pct'])}%** in four years.
+**{abs(ch['2021_to_latest_pct'])}%** in four years. Over those same four years the dollar store chains
+rose {pr['dollar']['pct']}%, and the fuel-forward convenience chains {pr['fuel_forward']['pct']}%.
 
-That timing rules out the explanation that fits the other small formats in this series. USDA's stocking
-rules changed in 2018, and pharmacies face the same inventory test as everyone else. They passed it
-easily. This decline starts three years later.
+What gives? Why did the pharmacy chain format collapse this decade, while its closest competitors in
+food retail carried on growing?
 
-## Why the combination stopped working
+## The business behind the counter
 
-The difference is what that second business was doing. For the gas station, after 2020, it got much
-better: Murphy USA's margin on a gallon of fuel rose 103%. The store rode it up.
+Think back to Day 3, and the convenience store attached to a fuel pump. It is a small chain store with
+a second business running behind it, and after 2020 that second business got much better: Murphy USA's
+margin on a gallon of fuel rose 103%. The store rode it up.
 
-The pharmacy's runs the other way, and it is squeezed at both ends at once. The shop at the front sells
-toothpaste and snacks. The business behind it fills prescriptions, and it sets neither of the two
-prices that decide what that work earns. What a prescription pays is set by the companies that manage
-drug benefits for insurers, the pharmacy benefit managers, and it has been going one way for years.
+A pharmacy is built to the same shape, and that is where the resemblance ends. Its second business
+fills prescriptions, and it is squeezed at both ends at once. The shop at the front sells toothpaste
+and snacks. The business behind it sets neither of the two prices that decide what that work earns.
+What a prescription pays is set by the companies that manage drug benefits for insurers, the pharmacy
+benefit managers, and it has been going one way for years.
 What the drugs cost to buy is set at the other end, by the three wholesalers that handle more than 90%
 of drug distribution in this country. Reimbursement on one side, cost of goods on the other, and
 almost no control over the gross margin in between.
@@ -135,14 +137,13 @@ recent years to create larger healthcare entities with greater bargaining power.
 report before bankruptcy said it more bluntly. To join the restricted networks that Medicare Part D
 plans run, "retail pharmacies generally are required to accept lower reimbursement rates."
 
-Any independent pharmacist reading this already knows how true that is, and can attest to it from
-lived experience — as could I, when I ran a chain of more than twenty independent pharmacies years
-ago. What this data adds is that the chains were not immune to the same dynamic.
+Any independent pharmacist reading this already knows how true that is; it is the daily arithmetic of
+the job. What this data adds is that the chains were not immune to the same dynamic.
 
 That is the whole difference. Being small and being part of a chain are advantages in what it costs to
-run a store. Neither one does anything about what the store sells. Two formats built to the same
-design, and the only thing separating them is the direction of the margin behind the counter — one
-expanding, one contracting. That was enough.
+run a store. Neither one does anything about the margin on what the store sells. Two formats built to
+the same shape, and the direction of the margin behind the counter is the only thing separating them —
+one expanding, one contracting. That was enough.
 
 ## Three companies did all of it
 
