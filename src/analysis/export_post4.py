@@ -173,11 +173,6 @@ roughly 900 stores between 2022 and 2024, and 221 more in 2025. Every one of the
 by the company as it happened, and the authorization records line up with them — which makes this the
 most checkable finding in the series.
 
-That matters beyond this chapter. Walgreens held {wal['authorized_2024']:,} SNAP authorizations at the
-end of 2024, against the {wal['reported']:,} US stores its own annual report counted four months
-earlier. For a chain like this one the authorization list is very close to a store census, so here,
-unlike anywhere else in the series, we can say a store closed and mean it.
-
 ## {z['lost']:,} ZIP codes lost their last chain pharmacy
 
 But the losses are not spread evenly. They track Rite Aid's footprint.
@@ -228,11 +223,16 @@ why. The squeeze is taken from the companies' own annual reports, quoted above, 
 of drug distribution among three wholesalers, and from the author's own years running independent
 pharmacies. That is testimony and industry structure, not measurement.
 
-These records count **SNAP authorizations**, not pharmacies. A drug store that stops accepting EBT but
-keeps trading looks the same here as one that closes. For Walgreens the two are nearly the same thing,
-which is what the census check above establishes; that logic carries to no one else, and CVS in
-particular is undercounted here, because its pharmacies inside Target stores sit under Target's own
-authorization.
+These records count **SNAP authorizations**, not pharmacies. A drug store that stops accepting EBT
+but keeps trading looks the same here as one that closes. For Walgreens the two are nearly the same
+thing — it held {wal['authorized_2024']:,} authorizations at the end of 2024 against the
+{wal['reported']:,} US stores its own annual report counted four months earlier — but that logic
+carries to no one else, and CVS in particular is undercounted here, because its pharmacies inside
+Target stores sit under Target's own authorization.
+
+**Duane Reade is counted with Walgreens, and Longs Drugs with CVS.** Walgreens bought Duane Reade in
+April 2010 and CVS bought Longs in October 2008, so for most of this window they are signage rather
+than competitors; listed separately, a store changing its sign would read as a store lost.
 
 Independent pharmacies are not in this story, and cannot be. A pharmacy appears here only if it is
 SNAP-authorized, which requires stocking staple foods, and most independents do not. Against the

@@ -15,6 +15,15 @@ from config import ROOT
 OUT = ROOT / "reports" / "data"
 DRUG_BRANDS = ["Walgreens", "CVS", "Rite Aid", "Duane Reade", "Kinney Drugs",
                "Discount Drug Mart", "Eckerd", "Longs Drugs", "Osco Drug", "Sav-On"]
+
+# Banners owned by another chain already in that list. Walgreens completed its
+# purchase of Duane Reade on 12 April 2010 and CVS closed on Longs Drug Stores
+# in late October 2008, so for most of this window they are signage, not
+# competitors. Reported separately, their conversion to the parent's brand
+# reads as a collapse — Longs shows -98% while CVS simply changed the signs.
+# Rolling them up also matches how WBA and CVS count their own store bases,
+# which is what the census check compares against.
+PARENT = {"Duane Reade": "Walgreens", "Longs Drugs": "CVS"}
 FAILURES = []
 
 
@@ -71,17 +80,22 @@ def main():
     # ------------------------------------------------------------ 2. by brand
     print("\n2. By brand")
     out["brands"] = {}
+    groups = {}
     for b in DRUG_BRANDS:
-        s = [int(con.execute("SELECT coalesce(sum(n),0) FROM stock WHERE yr=? AND brand=?",
-                             [y, b]).fetchone()[0]) for y in years]
+        groups.setdefault(PARENT.get(b, b), []).append(b)
+    for name, members in groups.items():
+        s = [sum(int(con.execute("SELECT coalesce(sum(n),0) FROM stock WHERE yr=? AND brand=?",
+                                 [y, b]).fetchone()[0]) for b in members) for y in years]
         if max(s) < 50:
             continue
         pk = max(s)
-        out["brands"][b] = {"years": years, "stock": s, "peak": pk,
-                            "peak_year": years[s.index(pk)], "latest": s[-1],
-                            "pct": round(100 * (s[-1] / pk - 1), 1)}
-        print(f"     {b:20} peak {pk:>6,} ({years[s.index(pk)]})  2025 {s[-1]:>6,}"
-              f"  {out['brands'][b]['pct']:>+7.1f}%")
+        out["brands"][name] = {"years": years, "stock": s, "peak": pk,
+                               "peak_year": years[s.index(pk)], "latest": s[-1],
+                               "pct": round(100 * (s[-1] / pk - 1), 1),
+                               "includes": members}
+        extra = f"  (+{', '.join(m for m in members if m != name)})" if len(members) > 1 else ""
+        print(f"     {name:20} peak {pk:>6,} ({years[s.index(pk)]})  2025 {s[-1]:>6,}"
+              f"  {out['brands'][name]['pct']:>+7.1f}%{extra}")
     check("Rite Aid all but gone by 2025", out["brands"]["Rite Aid"]["latest"], 2, tol=5)
 
     # ------------------------------------------------------------ 3. when they left
