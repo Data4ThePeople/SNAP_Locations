@@ -201,58 +201,50 @@ care provider — who was there to answer questions.
 
 ## What it adds up to
 
-The further we dig into this database, the more conviction we gain in the themes we keep highlighting.
-On the surface, the chain pharmacy trend looks bad. It is bad, and the reason why gets to the rotten
-core of our nation's problems with all of health care. But when we dig further, we once again see this
-tale of two Americas. Some call it the K-shape economy. I don't love that term, as it implies the two
-diagonals of the "K" are equal, when they are far from equal. Rather, what we are seeing is two
-Americas split geographically. We have learned that as time passes, people who live in rural areas
-have fewer places to buy food. The stores they do have carry a limited inventory — enough to make ends
-meet, not enough to meet their nutritional needs. Without proper nutrition, it follows that rural
-America could be more likely to get sick. And today we have learned that they are more likely to have
-lost the pharmacy they are more likely to need.
+Let's not mince words — the chain pharmacy trend is bad. But what is more interesting is the reason
+why it's so bad, as it gets to the rotten core of our nation's problems with all health care. And
+when we dig further, we once again see this tale of two Americas. We have learned that as time
+passes, people who live in rural areas have fewer places to buy food. The stores they do have carry
+a limited inventory — enough to make ends meet but not enough to meet their nutritional needs. Without
+proper nutrition, it follows that rural America could be more likely to get sick. And today we have
+learned that they are more likely to have lost the pharmacy they are more likely to need.
 
-This is the America we must help. Five chapters in, it's becoming quite obvious to me that no one who
-has any control is doing anything to improve the quality of life for this part of America. Rather, we
-sit idly on the other side of America, enjoying our plentiful supply of grocery stores and
-pharmacies.
+This is the conundrum facing America today. Five chapters in, it's becoming quite obvious to me that
+no one who has any control is doing anything to improve the quality of life for the "other side" of
+America. Rather, we sit idly on the comfortable side, enjoying our plentiful supply of grocery
+stores and pharmacies.
 
 The good news is that now you know. You can completely disagree with my logic, you can decide not to
-care about the other side of America you don't see each day, or you can choose to do what you can to
-fix this problem.
+care about the America you don't see each day, or you can choose to do what you can to fix this
+problem.
 
 **Tomorrow: the pattern behind all five chapters — and the explanation almost everyone reaches for,
 which the data says is wrong.**
 
 ## Limits
 
-**The margin explanation is not measured here.** These records show the collapse and its timing; they
-say nothing about why. The squeeze is taken from the companies' own annual reports, quoted above, from
-the fact that all three describe the same pressure, from the concentration of drug distribution among
-three wholesalers, and from the author's own years running independent pharmacies. That is testimony
-and industry structure, not a measurement. Nothing in this dataset can confirm or refute it.
+**The margin explanation is not measured here.** These records show the collapse and its timing, not
+why. The squeeze is taken from the companies' own annual reports, quoted above, from the concentration
+of drug distribution among three wholesalers, and from the author's own years running independent
+pharmacies. That is testimony and industry structure, not measurement.
 
 These records count **SNAP authorizations**, not pharmacies. A drug store that stops accepting EBT but
-keeps trading looks the same here as one that closes. For Walgreens the two are nearly the same thing —
-that is what the census check above establishes — but that logic does not carry to anyone else.
+keeps trading looks the same here as one that closes. For Walgreens the two are nearly the same thing,
+which is what the census check above establishes; that logic carries to no one else, and CVS in
+particular is undercounted here, because its pharmacies inside Target stores sit under Target's own
+authorization.
 
-Independent pharmacies are not in this story, and cannot be. A pharmacy shows up in these records only
-if it is SNAP-authorized, which means stocking staple foods, and most independents do not. The
-National Community Pharmacists Association counted {ind['national_estimate']:,} independent community
-pharmacies nationally in July 2025. This dataset holds **{ind['latest']}** stores whose names suggest a
-pharmacy, or {100*ind['coverage']:.1f}% — and not even all of those are independent: {ind['multi_store']}
-of them share a name with at least one other store, so they are small regional chains. Nearly half sit in New York,
-where the pharmacy that doubles as a corner grocery is a local retail form. Any national trend drawn
-from {ind['latest']} unusual stores would describe those stores, not the sector.
+Independent pharmacies are not in this story, and cannot be. A pharmacy appears here only if it is
+SNAP-authorized, which requires stocking staple foods, and most independents do not. Against the
+{ind['national_estimate']:,} independent community pharmacies the National Community Pharmacists
+Association counted in July 2025, this dataset holds **{ind['latest']}** stores whose names merely
+suggest a pharmacy — {100*ind['coverage']:.1f}%, of which {ind['multi_store']} share a name with
+another store and so are small chains, and nearly half sit in New York. Nothing about the sector can
+be drawn from them.
 
-CVS is left out of the store-count check on purpose. About 1,700 of its pharmacies sit inside Target
-stores, and Target's own authorization covers those, so CVS's count here is lower than its real
-footprint. Rite Aid is left out for the opposite reason: its store count moved so fast in 2024–25 that
-any single-date comparison is unstable.
-
-A SNAP authorization says nothing about whether a pharmacy fills prescriptions. Nothing here measures
-prescription counts or pharmacy access. The ZIP-code count above covers chain pharmacies only, for the
-coverage reason set out just above.
+Counties carry their **2023 Rural-Urban Continuum Code**, as in Day 4, and a ZIP code is assigned the
+modal county of the stores inside it. Nothing here measures prescriptions, pharmacy access, nutrition
+or health. Where this piece reasons from one of those to the next, it is reasoning, not measurement.
 
 ---
 
