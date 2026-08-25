@@ -220,6 +220,102 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
     return path
 
 
+def dotrows_png(path, row_labels, series, xsuffix="%", width=7.2, title="",
+                subtitle="", divider_after=None):
+    """Categorical dot rows: one row per label, one dot per series.
+
+    Built for the RUCC gradient after readers took the line version for a time
+    series — nine connected points on a numeric axis read as nine years. Worded
+    row labels cannot be read as years, and every x tick carries its unit, so
+    the values cannot be mistaken for counts. `divider_after` draws a dashed
+    rule under that many rows, for a categorical break like metro/nonmetro.
+    """
+    n = len(row_labels)
+    h = 0.36 * n + 0.9 + (0.42 if title else 0)
+    fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
+    _style(ax)
+    ax.spines["left"].set_visible(False)
+    ax.grid(axis="x", color=RULE, lw=1, zorder=0)
+    ax.set_axisbelow(True)
+    # A hairline along each row ties the dots back to their label; the dots'
+    # paper-coloured rims keep them legible where the line passes underneath.
+    for y in range(n):
+        ax.axhline(y, color=RULE, lw=0.8, zorder=0)
+
+    lo = min(min(s["values"]) for s in series)
+    hi = max(max(s["values"]) for s in series)
+    span = hi - lo
+    ax.set_xlim(lo - span * 0.05, hi + span * 0.05)
+    if lo < 0 < hi:
+        ax.axvline(0, color=INK_SOFT, lw=1, zorder=1)
+    if divider_after is not None:
+        ax.axhline(divider_after - 0.5, color=INK_SOFT, lw=1, ls=(0, (3, 3)),
+                   zorder=1)
+
+    # Dots that share a row and nearly share a value print on top of each other
+    # and the hidden one simply vanishes. Nudge such clusters apart vertically —
+    # the x position, which is the datum, stays exact.
+    off = [[0.0] * n for _ in series]
+    for i in range(n):
+        row = sorted((s["values"][i], j) for j, s in enumerate(series))
+        groups, g = [], [row[0]]
+        for v, j in row[1:]:
+            if v - g[-1][0] < span * 0.022:
+                g.append((v, j))
+            else:
+                groups.append(g)
+                g = [(v, j)]
+        groups.append(g)
+        for g in groups:
+            for k, (v, j) in enumerate(g):
+                off[j][i] = (k - (len(g) - 1) / 2) * 0.22
+    for j, s in enumerate(series):
+        ax.plot(s["values"], [i + off[j][i] for i in range(n)], "o",
+                color=S[s["slot"] - 1], ms=6.5, mec=PAPER, mew=1.2, zorder=3)
+
+    ax.set_ylim(n - 0.5, -0.6)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels(row_labels)
+    ax.tick_params(left=False)
+    for lb in ax.get_yticklabels():
+        lb.set_color(INK_MID)
+        lb.set_fontsize(8.5)
+    ax.xaxis.set_major_formatter(FuncFormatter(
+        lambda v, _: f"{'+' if v > 0 else ''}{v:g}{xsuffix}"))
+
+    # The dots carry identity in colour alone, so the legend lives inside the
+    # image. It stacks above the plot with the title block, all offset left by
+    # the row-label gutter so the whole heading shares one edge (see _titles).
+    gutter = max(len(str(l)) for l in row_labels) * 8.5 * MONO_ADVANCE + 9
+    fig.canvas.draw()
+    dy, x = 8, -gutter
+    for s in series:
+        ax.annotate("●", (0, 1), xycoords="axes fraction",
+                    textcoords="offset points", xytext=(x, dy), ha="left",
+                    va="bottom", fontsize=6.5, color=S[s["slot"] - 1],
+                    annotation_clip=False)
+        ax.annotate(s["name"], (0, 1), xycoords="axes fraction",
+                    textcoords="offset points", xytext=(x + 9, dy), ha="left",
+                    va="bottom", fontsize=8, family=MONO, color=INK_MID,
+                    annotation_clip=False)
+        x += 9 + _text_px(fig, s["name"], family=MONO, fontsize=8) * 72 / DPI + 13
+    dy += 16
+    if subtitle:
+        ax.annotate(subtitle, (0, 1), xycoords="axes fraction",
+                    textcoords="offset points", xytext=(-gutter, dy), ha="left",
+                    va="bottom", fontsize=8, family=MONO, color=INK_SOFT,
+                    annotation_clip=False)
+        dy += 15
+    if title:
+        ax.annotate(title, (0, 1), xycoords="axes fraction",
+                    textcoords="offset points", xytext=(-gutter, dy), ha="left",
+                    va="bottom", fontsize=10.5, family=MONO, color=INK,
+                    fontweight="bold", annotation_clip=False)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
 def scatter_png(path, points, xlabel="", ylabel="", width=6.6, height=4.2,
                 xsuffix="", ysuffix="", quadrant=None, title="", subtitle="",
                 note=""):

@@ -15,7 +15,7 @@ numbers quoted in the alt text below.
 ## 1. Page title (H1)
 
 ```
-Super stores for some, dollar stores for the rest
+Super stores for some, dollar and convenience stores for the rest
 ```
 
 ## 2. Page subtitle
@@ -34,29 +34,32 @@ Twenty years of SNAP data show grocery growth obeying a single variable: how clo
 **Hero alt text:**
 
 ```
-Dot map of the lower 48 states showing non-metropolitan America's food retail in 2025: 11,689 dollar stores in violet scattered across rural counties, against just 6,171 big grocery stores — super stores and supermarkets — in grey. Metro-county stores appear only as a faint backdrop. Text on the map reads: The Stores That Stayed. Day 4. Nonmetro America, 2025.
+Dot map of the lower 48 states showing non-metropolitan America's food retail in 2025: 33,521 dollar and convenience stores in violet blanketing rural counties, against just 6,171 big grocery stores — super stores and supermarkets — in grey. Metro-county stores appear only as a faint backdrop. Text on the map reads: The Stores That Stayed. Day 4. Nonmetro America, 2025.
 ```
 
 Short version if the field is tight:
 
 ```
-Dot map of nonmetro America in 2025: 11,689 dollar stores in violet against 6,171 big grocery stores in grey.
+Dot map of nonmetro America in 2025: 33,521 dollar and convenience stores in violet against 6,171 big grocery stores in grey.
 ```
 
 ## 4. Meta title
 
-49 characters — will not truncate.
+58 characters — will not truncate. The second "Stores" is dropped so the
+line stays under the ~60 characters search results display; spelling it
+out ("Dollar and Convenience Stores for the Rest") runs to 65 and cuts
+off mid-word.
 
 ```
-Super Stores for Some, Dollar Stores for the Rest
+Super Stores for Some, Dollar and Convenience for the Rest
 ```
 
 ## 5. Meta description
 
-155 characters.
+150 characters.
 
 ```
-Big-format grocery growth happened almost entirely in metro counties. Where 46 million nonmetro Americans live, the big stores left and dollar stores came.
+Big-format grocery growth stayed in metro counties. Where 46 million nonmetro Americans live, the big stores left; dollar and convenience stores came.
 ```
 
 ## 6. Meta keywords
@@ -71,8 +74,8 @@ rural food access, food deserts, rural-urban continuum codes, super stores, supe
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Super stores for some, dollar stores for the rest",
-  "description": "Big-format grocery growth happened almost entirely in metro counties. Where 46 million nonmetro Americans live, the big stores left and dollar stores came.",
+  "headline": "Super stores for some, dollar and convenience stores for the rest",
+  "description": "Big-format grocery growth stayed in metro counties. Where 46 million nonmetro Americans live, the big stores left; dollar and convenience stores came.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
   "dateModified": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
@@ -122,10 +125,10 @@ Line chart of authorized super stores and supermarkets, indexed to 100 in 2006, 
 Bar chart of the share of each format's net 2006–2025 change that landed in counties belonging to metro areas of a million people or more: 74% for super stores and 95% for supermarkets. Title: The million-person metros took almost all of the growth.
 ```
 
-### `images/03-rucc-gradient.png` (1347×688) — growth by rural-urban code
+### `images/03-rucc-gradient.png` (1603×941) — growth by rural-urban code
 
 ```
-Line chart of percent change in authorized stores from 2006 to 2025 across the nine Rural-Urban Continuum Codes, from code 1, metro areas of a million or more, to code 9, fully rural and remote. Dollar stores run nearly flat around +280 to +350% on every rung. Convenience stores slope from +105% down to +20%. Super stores and supermarkets start modestly positive and turn negative outside metro counties. Small grocery is negative everywhere, worst at the two extremes near −52%. Title: Dollar stores grow everywhere. Everything else grows where people are.
+Dot chart of percent change in authorized stores, 2006 to 2025: one row per Rural-Urban Continuum Code, from metros of a million or more down to remote rural counties, one colored dot per format. Dollar store dots form a straight column near +300% on every row. Convenience falls from +105% to +20% down the ladder. Super stores and supermarkets turn negative below the metro line; small grocery is negative everywhere. Title: Dollar stores grow everywhere. Everything else grows where people are.
 ```
 
 ## Notes

@@ -16,9 +16,13 @@ SRC = ROOT / "reports" / "data" / "post3.json"
 DIR = ROOT / "reports" / "post3"
 IMG = DIR / "images"
 
-RUCC_LABEL = {1: "metro 1M+", 2: "metro 250k-1M", 3: "metro <250k",
-              4: "town 20k+, adj", 5: "town 20k+, remote", 6: "town 5-20k, adj",
-              7: "town 5-20k, remote", 8: "rural, adj", 9: "rural, remote"}
+# One row per RUCC code, worded so the chart teaches the ladder itself. "Town"
+# stands in for ERS's "urban population of" and "near metro" for "adjacent to a
+# metro area"; the caption carries the official phrasing.
+RUCC_LABEL = {1: "1  metro of 1M+", 2: "2  metro 250k-1M", 3: "3  metro under 250k",
+              4: "4  town of 20k+, near metro", 5: "5  town of 20k+, remote",
+              6: "6  town of 5-20k, near metro", 7: "7  town of 5-20k, remote",
+              8: "8  rural, near metro", 9: "9  rural, remote"}
 
 
 def main():
@@ -89,21 +93,24 @@ def main():
         subtitle="share of net 2006-2025 change in metro-1M+ counties")
 
     fig(3, "rucc-gradient",
-        "Percent change in authorized stores, 2006 to 2025, by Rural-Urban Continuum "
-        "Code. Code 1 is counties in metro areas of a million or more; code 9 is "
-        "fully rural counties not adjacent to any metro area.",
-        figures.line_png, list(range(1, 10)),
+        "Percent change in authorized stores, 2006 to 2025, on each rung of the "
+        "Rural-Urban Continuum. Each row is one code, from counties in metro areas "
+        "of a million or more down to fully rural counties not adjacent to any "
+        "metro area; the dashed rule separates metro from nonmetro. \"Town\" is "
+        "ERS's \"urban population of\"; \"near metro\" is \"adjacent to a metro "
+        "area\".",
+        figures.dotrows_png, [RUCC_LABEL[k] for k in range(1, 10)],
         [{"name": "dollar stores", "values": [round(code_chg("Dollar Store", k), 1) for k in range(1, 10)], "slot": 2},
          {"name": "convenience", "values": [round(code_chg("Convenience Store", k), 1) for k in range(1, 10)], "slot": 4},
          {"name": "super stores", "values": [round(code_chg("Super Store", k), 1) for k in range(1, 10)], "slot": 1},
          {"name": "supermarkets", "values": [round(code_chg("Supermarket", k), 1) for k in range(1, 10)], "slot": 3},
          {"name": "small grocery", "values": [round(code_chg("Grocery (Small)", k), 1) for k in range(1, 10)], "slot": 7}],
-        y_zero=False, ylabel="% change in authorized stores, 2006-2025",
+        divider_after=3, subtitle="% change in authorized stores, 2006-2025",
         title="Dollar stores grow everywhere. Everything else grows where people are.")
 
     km = ru["kmart_2020"]
 
-    md = f"""# Super stores for some, dollar stores for the rest
+    md = f"""# Super stores for some, dollar and convenience stores for the rest
 
 *SNAP-authorized retailers, 2006–2025, joined to USDA's Rural-Urban Continuum Codes.
 {pop_nm_m:.1f} million Americans live in the non-metropolitan counties this piece is about.*
@@ -167,17 +174,18 @@ The chart below needs one piece of setup. USDA's Rural-Urban Continuum Codes sor
 America onto a nine-rung ladder: code 1 is a county in a metro area of a million people or more,
 codes 2 and 3 are smaller metros, and codes 4 through 9 step down through ever smaller and more
 remote nonmetro counties, ending at code 9 — fully rural counties not adjacent to any metro area.
-The chart runs that ladder left to right and shows each format's growth on every rung. The dollar
-store is the only format whose growth was indifferent to the size of the county — the smallest
-counties grew at nearly the same pace as the largest ones.
+The chart walks that ladder top to bottom, one row per rung, and marks each format's twenty-year
+growth on every one. The dollar store is the only format whose growth was indifferent to the size
+of the county — the smallest counties grew at nearly the same pace as the largest ones.
 
 ![{figs["rucc-gradient"]['caption']}](images/{figs["rucc-gradient"]['file']})
 
-Every other line slopes downhill as the counties get smaller. Convenience stores grew
+Every other format fades as you read down the ladder. Convenience stores grew
 {code_chg('Convenience Store', 1):.0f}% in the biggest metros but only
 {code_chg('Convenience Store', 9):.0f}% in fully rural counties. The big formats flip negative the
-moment you leave metro America. Small grocery falls everywhere — steepest at the two extremes, the
-big-city bodega and the only-store-in-town. The dollar store's line barely slopes at all.
+moment you cross the metro line. Small grocery falls everywhere — steepest at the two extremes, the
+big-city bodega and the only-store-in-town. Only the dollar store's dots hold their place on every
+rung, a straight column at around +300%.
 
 You are free to have your own views on these different store formats. But the data can help us
 remove our views from our own lived experience and try to form them from how others live. What if I

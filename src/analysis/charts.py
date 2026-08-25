@@ -154,6 +154,77 @@ def bar_chart(rows, width=720, row_h=30, slot=1, suffix="", note_key=None,
     return "\n".join(parts)
 
 
+def dot_chart(row_labels, series, width=720, row_h=32, x_suffix="%",
+              title="", subtitle="", divider_after=None):
+    """Categorical dot rows: one row per label, one dot per series.
+
+    Built for the RUCC gradient after readers took the line version for a time
+    series — nine connected points on a numeric axis read as nine years. Worded
+    row labels cannot be read as years, and every x tick carries its unit.
+    `divider_after` draws a dashed rule under that many rows, for a categorical
+    break like metro/nonmetro. Colour is the only identity channel, so pair
+    this with legend().
+    """
+    head = (TITLE_H if title else 0) + (SUB_H if subtitle else 0)
+    n = len(row_labels)
+    h = PAD["t"] + PAD["b"] + row_h * n + head
+    x0, x1 = 214, width - 30
+    y_top = PAD["t"] + head
+    y_bot = y_top + row_h * n
+    lo = min(min(s["values"]) for s in series)
+    hi = max(max(s["values"]) for s in series)
+    ticks, tlo, thi = _nice_ticks(lo, hi, target=5)
+    sx = lambda v: x0 + (x1 - x0) * (v - tlo) / (thi - tlo)
+    sy = lambda i: y_top + row_h * i + row_h / 2
+
+    parts = [f'<svg viewBox="0 0 {width} {h}" role="img" class="chart">']
+    for v in ticks:
+        parts.append(f'<line x1="{sx(v):.1f}" x2="{sx(v):.1f}" y1="{y_top}" '
+                     f'y2="{y_bot}" stroke="var(--grid)" stroke-width="1"/>')
+        parts.append(f'<text x="{sx(v):.1f}" y="{y_bot+20}" text-anchor="middle" '
+                     f'class="tick">{"+" if v > 0 else ""}{v:g}{escape(x_suffix)}</text>')
+    if tlo < 0 < thi:
+        parts.append(f'<line x1="{sx(0):.1f}" x2="{sx(0):.1f}" y1="{y_top}" '
+                     f'y2="{y_bot}" stroke="var(--ink-3)" stroke-width="1"/>')
+    # A hairline along each row ties the dots back to their label; the dots'
+    # surface-coloured rims keep them legible where the line passes underneath.
+    for i, lbl in enumerate(row_labels):
+        parts.append(f'<line x1="{x0}" x2="{x1}" y1="{sy(i):.1f}" y2="{sy(i):.1f}" '
+                     f'stroke="var(--grid)" stroke-width="1"/>')
+        parts.append(f'<text x="{x0-10}" y="{sy(i)+4:.1f}" text-anchor="end" '
+                     f'class="blabel">{escape(str(lbl))}</text>')
+    if divider_after is not None:
+        dy_ = y_top + row_h * divider_after
+        parts.append(f'<line x1="{x0}" x2="{x1}" y1="{dy_}" y2="{dy_}" '
+                     f'stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="3 3"/>')
+    # Dots that share a row and nearly share a value print on top of each other
+    # and the hidden one simply vanishes. Nudge such clusters apart vertically —
+    # the x position, which is the datum, stays exact.
+    span = (thi - tlo) or 1
+    off = [[0.0] * n for _ in series]
+    for i in range(n):
+        row = sorted((s["values"][i], j) for j, s in enumerate(series))
+        groups, g = [], [row[0]]
+        for v, j in row[1:]:
+            if v - g[-1][0] < span * 0.022:
+                g.append((v, j))
+            else:
+                groups.append(g)
+                g = [(v, j)]
+        groups.append(g)
+        for g in groups:
+            for k, (v, j) in enumerate(g):
+                off[j][i] = (k - (len(g) - 1) / 2) * row_h * 0.24
+    for j, s in enumerate(series):
+        for i, v in enumerate(s["values"]):
+            parts.append(f'<circle cx="{sx(v):.1f}" cy="{sy(i) + off[j][i]:.1f}" r="5" '
+                         f'fill="var(--s{s["slot"]})" stroke="var(--surface)" '
+                         f'stroke-width="2"/>')
+    parts.extend(_heading(title, subtitle, 0, PAD["t"] - 2 + (TITLE_H - 8 if title else 0)))
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
 def _nice_ticks(lo, hi, target=4):
     """Round tick values covering [lo, hi], and the range they imply.
 

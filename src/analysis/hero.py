@@ -267,11 +267,13 @@ def main():
                "Convenience stores, 2025")
 
     if want is None or 4 in want:
-        # The Day 4 title in dots: outside the metros, dollar stores now
-        # outnumber the big grocery formats nearly two to one. Both keyed
-        # layers are nonmetro counties only (RUCC 4-9); the metro stores are
-        # sketched as a faint unkeyed backdrop so the cities read as context
-        # rather than as holes in the map.
+        # The Day 4 title in dots: outside the metros, dollar and convenience
+        # stores now outnumber the big grocery formats more than five to one.
+        # Both keyed layers are nonmetro counties only (RUCC 4-9); the metro
+        # stores are sketched as a faint unkeyed backdrop so the cities read
+        # as context rather than as holes in the map. The grey big-format
+        # layer draws ABOVE the violet mass — it is the scarce layer, and
+        # under 33,000 violet dots it would simply disappear.
         from analysis import rucc as rucc_mod
         lookup, _ = rucc_mod.load()
 
@@ -294,16 +296,16 @@ def main():
             return (usmap.albers([q[0] for q in pts], [q[1] for q in pts]), n)
 
         BIG = "p.format IN ('Super Store','Supermarket')"
-        DOLLAR = "p.format = 'Dollar Store'"
-        backdrop, _n = geo_points(f"({BIG} OR {DOLLAR})", 2025, want_metro=True)
+        SMALLBOX = "p.format IN ('Dollar Store','Convenience Store')"
+        backdrop, _n = geo_points(f"({BIG} OR {SMALLBOX})", 2025, want_metro=True)
         big_nm, n_big = geo_points(BIG, 2025, want_metro=False)
-        ds_nm, n_ds = geo_points(DOLLAR, 2025, want_metro=False)
+        sb_nm, n_sb = geo_points(SMALLBOX, 2025, want_metro=False)
         render(OUT / "day-4.png", 4,
                [{"xy": backdrop, "color": MUTED, "size": 0.5, "alpha": 0.22},
-                {"xy": big_nm, "color": MUTED, "size": 1.7, "alpha": 0.95,
-                 "label": f"big grocery formats  {n_big:,}"},
-                {"xy": ds_nm, "color": HUE[4], "size": 1.7, "z": 3,
-                 "label": f"dollar stores  {n_ds:,}"}],
+                {"xy": sb_nm, "color": HUE[4], "size": 1.7,
+                 "label": f"dollar + convenience stores  {n_sb:,}"},
+                {"xy": big_nm, "color": MUTED, "size": 1.3, "alpha": 0.95, "z": 3,
+                 "label": f"big grocery formats  {n_big:,}"}],
                "Nonmetro America, 2025")
 
     if want is None or 5 in want:

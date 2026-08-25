@@ -134,7 +134,7 @@ Series card for Day 3 — Convenience stores and the advantage hiding in plain s
 ### `images/day-4.png` — Day 4 card
 
 ```
-Series card for Day 4 — Super stores for some, dollar stores for the rest. Key figure: metro super stores grew 33% since 2006, while nonmetro counties lost theirs, down 5%.
+Series card for Day 4 — Super stores for some, dollar and convenience stores for the rest. Key figure: metro super stores grew 33% since 2006, while nonmetro counties lost theirs, down 5%.
 ```
 
 ### `images/day-5.png` — Day 5 card
