@@ -21,6 +21,10 @@ data/raw/*.zip
 # Cached Census API pulls — re-fetch with the analysis scripts.
 data/raw/*.json
 
+# Cached Census cartographic boundary file — usmap.py re-fetches it from
+# census.gov if it is missing.
+data/raw/cb_2020_us_state_20m.shp
+
 # Build outputs. The standalone bundle is the exception: it is the artifact the
 # visualisation is embedded from, so it is tracked deliberately. Rebuild it with
 # `python src/build_standalone.py` and re-commit whenever web/ or the map data
