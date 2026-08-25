@@ -62,16 +62,7 @@ def main():
         title="Peak and current count, chain by chain",
         subtitle="SNAP-authorized stores")
 
-    fig(3, "endings-table",
-        "Drug chain authorizations ending each year, by company.",
-        figures.table_png, ["Year", "Total", "Rite Aid", "Walgreens", "CVS"],
-        [[y, f"{sum(ends[y].values()):,}", f"{ends[y].get('Rite Aid',0):,}",
-          f"{ends[y].get('Walgreens',0):,}", f"{ends[y].get('CVS',0):,}"] for y in end_years],
-        highlight_row=len(end_years) - 1,
-        title="Which company left, and when",
-        subtitle="authorizations ending each year, by company")
-
-    fig(4, "states",
+    fig(3, "states",
         "Largest percentage falls in authorized drug stores, 2021 to 2025, among states with "
         "at least 150 in 2021.",
         figures.hbar_png,
@@ -118,18 +109,36 @@ food retail carried on growing?
 
 ## The business behind the counter
 
-Think back to Day 3, and the convenience store attached to a fuel pump. It is a small chain store with
-a second business running behind it, and after 2020 that second business got much better: Murphy USA's
-margin on a gallon of fuel rose 103%. The store rode it up.
+The answer has to do with what was happening behind the pharmacy counter. A pharmacy dispenses
+prescriptions. But unlike a dollar store, which sets its own prices on its groceries and tchotchkes, a
+pharmacy does not set the price of its prescriptions. That is done, effectively, by the pharmacy
+benefit managers — the ginormous middlemen that adjudicate every pharmacy claim. When a pharmacy rings
+up your prescription, the PBM's price comes back and tells them how much they will be reimbursed for
+it. They have no control over this. They just take the price they get.
 
-A pharmacy is built to the same shape, and that is where the resemblance ends. Its second business
-fills prescriptions, and it is squeezed at both ends at once. The shop at the front sells toothpaste
-and snacks. The business behind it sets neither of the two prices that decide what that work earns.
-What a prescription pays is set by the companies that manage drug benefits for insurers, the pharmacy
-benefit managers, and it has been going one way for years.
-What the drugs cost to buy is set at the other end, by the three wholesalers that handle more than 90%
-of drug distribution in this country. Reimbursement on one side, cost of goods on the other, and
-almost no control over the gross margin in between.
+Years ago these prices weren't that bad, and pharmacies could make money at the prices they were
+assigned. But over time the PBMs squeezed and squeezed reimbursement, pressuring pharmacy profit. I
+spent years analyzing this at [46brooklyn Research](https://www.46brooklyn.com) and
+[3 Axis Advisors](https://www.3axisadvisors.com) — if you really want to head down a rabbit hole, head
+over there and read all about it. Small community pharmacies really started feeling the pain of
+reimbursement pressure in the 2016 to 2018 time frame. It apparently took a few more years for that
+pressure to make it to the much larger chains, and a few years after that for it to kill one off
+altogether.
+
+But if we only spoke of PBMs we would be underselling how terrible the pharmacy business really is. On
+the other side of the fence is the pharmacy's wholesaler, a trade dominated by three monstrous
+players. Go back to the dollar store and how it can set its prices. It also has control over its costs,
+because if one vendor has a crappy price on a product, it can just buy it elsewhere. The dollar store
+has some control over both sides of its gross margin equation. Now back to the pharmacy. The massive
+wholesalers lock pharmacies into purchasing agreements that prevent them from shopping for the best
+price on every drug. They can shop a bit — but only for a minority of their purchases. The majority
+is required to come from their primary wholesaler. Sounds anti-competitive, doesn't it? But that's
+U.S. health care. If you have size and a good team of lawyers, you can get away with just about
+anything.
+
+So pharmacy is really getting squeezed on both sides, by ginormous PBMs and massive wholesalers.
+Community pharmacy has known this for years — and sadly, we can't identify community pharmacy from
+this data source. But apparently chain pharmacies are now getting caught up in the carnage.
 
 The chains say so themselves. Walgreens' 2024 annual report describes "ongoing prescription
 reimbursement pressure," and names the cause: benefit managers and insurers "have consolidated over
@@ -137,17 +146,18 @@ recent years to create larger healthcare entities with greater bargaining power.
 report before bankruptcy said it more bluntly. To join the restricted networks that Medicare Part D
 plans run, "retail pharmacies generally are required to accept lower reimbursement rates."
 
-Any independent pharmacist reading this already knows how true that is; it is the daily arithmetic of
-the job. What this data adds is that the chains were not immune to the same dynamic.
+In short, pharmacies are the polar opposite of the fuel-forward convenience store chains — the Wawas,
+Casey's and Sheetzes of the world. In the early 2020s those gas stations benefited wildly from higher
+margins in their core business, selling fuel. Meanwhile, at that exact same time, the chain pharmacies
+got hit by lower margins in their core business, selling prescriptions. One thrived. The other is in
+demise.
 
-That is the whole difference. Being small and being part of a chain are advantages in what it costs to
-run a store. Neither one does anything about the margin on what the store sells. Two formats built to
-the same shape, and the direction of the margin behind the counter is the only thing separating them —
-one expanding, one contracting. That was enough.
+## The fall of the Big 3
 
-## Three companies did all of it
-
-The industry did not shrink. Three companies did.
+If we look at the chains, three dominate the rest by store count: Walgreens, CVS and Rite Aid. The
+table below shows the counts at which they peaked, the year they got there, and where they stood at
+the end of 2025. All three are down. One is now gone. And the one that has relatively outperformed —
+CVS — is the only one of the three that owns its own PBM. Likely not a coincidence.
 
 ![{figs["chain-table"]['caption']}](images/{figs["chain-table"]['file']})
 
@@ -163,11 +173,6 @@ earlier and not yet shut — and in August 2025 it was taken private by Sycamore
 {abs(br['CVS']['pct']):.0f}% from {br['CVS']['peak_year']} — a smaller share, but
 {br['CVS']['peak'] - br['CVS']['latest']:,} fewer stores, after roughly 900 closures between 2022 and
 2024 and a further 271 announced for 2025, of which 221 happened.
-
-Count the authorizations that ended each year and you can see who left when. The baseline is a couple
-of hundred a year. Then 2022 arrives.
-
-![{figs["endings-table"]['caption']}](images/{figs["endings-table"]['file']})
 
 This is the most checkable finding in the series. Every one of these moves was announced by the company
 and written up in the trade press, and the authorization records line up with them.
