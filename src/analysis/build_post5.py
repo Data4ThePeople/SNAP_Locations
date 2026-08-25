@@ -32,6 +32,7 @@ def main():
     dollar_pct = round(100 * (arc["dollar"][-1] / arc["dollar"][0] - 1))
     f_pct = round(100 * (f_sc["y2025"] / f_sc["y2006"] - 1))
     grp, pres, gr, seq = d["groups"], d["presence"], d["growth"], d["sequencing"]
+    ru = d["rural"]
     mix = d["ownership_mix"]
     den, tl = d["density"], d["total_loss"]
     pr = {p["label"]: p for p in pres}
@@ -92,9 +93,9 @@ records, with 2020 census population by ZCTA · the last chapter; an epilogue fo
 </div>
 
 <p>Five days got us here. Small grocers left in numbers and mostly stopped being replaced. Dollar
-stores almost never left. Convenience stores multiplied while their owners turned over. Put every format
-on one scale and two rules appeared: bigger stores kept their authorization, and a chain did not need to
-be big. Then the pharmacy chains, which had both advantages, collapsed anyway.</p>
+stores almost never left. Convenience stores multiplied while their owners turned over. The big
+grocery formats went where the people already were, and the dollar store went everywhere. Then the
+pharmacy chains collapsed, squeezed at both ends of a margin they did not set.</p>
 
 <p>Read on their own they are five unrelated retail stories. They are not unrelated in the places where
 they land.</p>
@@ -159,6 +160,11 @@ that have also lost every grocery store, the median is
 <p>A third of the pharmacy-loss ZIPs have fewer than ten thousand residents, against a tenth of the
 control. One in eight has fewer than five thousand.</p>
 
+<p>Put Day 4's lens on the same two groups and it says the same thing in different units.
+<strong>{ru['lost']['nonmetro_pct']}%</strong> of the ZIP codes that lost their pharmacy sit in
+nonmetro counties, against <strong>{ru['kept']['nonmetro_pct']}%</strong> of those that kept one. Thin
+markets, and disproportionately the ones furthest from a metro area.</p>
+
 <p>That is the thread. <strong>A supermarket needs volume. A chain pharmacy needs prescription volume. A dollar store needs neither.</strong> Its whole model is a small box, few staff, a narrow range, and no fresh food to spoil. That is exactly why it works in a town of six thousand where a grocery store cannot.</p>
 
 <p>And it is not the only format built that way. The gas station chapter found a second one, and it lasts just as well. <strong>{f_ff['rate']}% of convenience chains that sell fuel</strong> from the 2008–2012 group were still authorized in 2025. For dollar stores it was {f_do['rate']}%. That is a gap of well under one point. Those chains also added {f_pct:+}% over the twenty years. So naming only dollar stores would leave out half the answer.</p>
@@ -178,7 +184,7 @@ dollar stores did not: fuel margins roughly doubled and stayed there. Murphy USA
 <strong>from the thinnest markets first</strong>.</li>
 </ul>
 
-<p>No one pushed anyone out. Several separate pressures pushed the same way. The formats left standing were the ones with the lowest cost per location: the dollar store and the gas station. They arrived at the same place from opposite ends of retail. That is harder to fix than a rival would be. If one competitor were driving this, there would be a competitor to regulate.</p>
+<p>No one pushed anyone out. Several separate pressures pushed the same way. The formats left standing were the ones with the lowest cost per location: the dollar store and the gas station. They arrived at the same place from opposite ends of retail.</p>
 
 <h2>What is at stake</h2>
 
@@ -187,9 +193,11 @@ is a dollar store or a convenience store. In <strong>{tl['no_snap_retail_at_all'
 SNAP-authorized retailer of any kind. A household with an EBT card in those places is choosing among
 shelf-stable groceries, or driving.</p>
 
-<p>There is a second cost this data cannot measure, and it should not go unsaid. For many people a pharmacist is the easiest health professional to reach. They check a drug interaction, take a blood pressure, answer a question that would otherwise need an appointment. When the last pharmacy in a small town closes, that goes too. These records
-count SNAP authorizations; they say nothing about prescriptions or clinical advice, and the pharmacy
-desert literature is the place to look for that. But it is the same buildings and the same towns.</p>
+<p>That is the part of this that should be hard to sit with. Nothing here was done to these places. No
+one decided they should have less. Each closure was, on its own terms, a rational decision by someone
+reading their own numbers — and the sum of all of them is a town of six thousand with a dollar store
+and nothing else. A competitor can be regulated. A merger can be blocked. There is no equivalent move
+against arithmetic that stops working below a certain population.</p>
 
 <p>That is where the measurement ends. It leaves a question about policy that this data cannot settle
 on its own, and a rule that changes the answer in a few months. Both are taken up in the epilogue that
@@ -197,10 +205,14 @@ follows this piece.</p>
 
 <div class="caveat">
 <h3>Limits</h3>
-<p>Every figure here counts <strong>SNAP authorizations</strong>, not storefronts. For the pharmacy chains those are nearly the same thing. Walgreens' authorizations run at 0.97 of its own reported store count. For independents they are not the same, and this series does not treat them as such.</p>
+<p>Every figure here counts <strong>SNAP authorizations</strong>, not storefronts. For the pharmacy chains those are nearly the same thing: Walgreens held 7,800 authorizations at the end of 2024 against the 8,454 US stores its own annual report counted four months earlier. For independents they are not the same, and this series does not treat them as such.</p>
 <p>The control group is ZIP codes that had a chain pharmacy in 2021 and kept one. It is not a matched
 sample: the two groups differ in population, which is the finding rather than a nuisance. Read the
 comparison as descriptive, not causal.</p>
+<p>Counties are classified by their <strong>2023 Rural-Urban Continuum Code</strong>, as in Day 4. A
+ZIP code does not nest inside a county, so each is assigned the modal county of the stores recorded in
+it; one straddling the metro line goes to whichever side holds more of them.</p>
+
 <p>Population is 2020 census by ZCTA, which approximates but does not exactly equal a ZIP code.
 {den['lost']['zips_matched']:,} of the {grp['lost']:,} pharmacy-loss ZIPs matched a ZCTA.</p>
 <p>Nothing here measures sales, floor space, assortment or prices. A dollar store and a supermarket

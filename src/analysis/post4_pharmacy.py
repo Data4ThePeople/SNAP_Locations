@@ -155,20 +155,65 @@ def main():
     # ------------------------------------------------------------ 5. pharmacy deserts
     print("\n5. ZIP codes that lost their last SNAP-authorized chain drug store")
     def zips(y):
-        return {r[0] for r in con.execute(f"""
-            SELECT DISTINCT p.zip_code FROM panel p JOIN seg g USING(record_id)
+        """zip -> the (state, county) pairs its chain pharmacies sat in that year."""
+        d = {}
+        for z, st, ct in con.execute(f"""
+            SELECT DISTINCT p.zip_code, p.state, p.county FROM panel p JOIN seg g USING(record_id)
             JOIN fact_spell f ON f.record_id = p.record_id AND NOT f.date_anomaly
             WHERE g.seg = 'chain' AND p.zip_code IS NOT NULL
               AND length(p.zip_code) = 5
               AND f.auth_date <= make_date({y},12,31)
               AND (f.end_date IS NULL OR f.end_date >= make_date({y},12,31))
-        """).fetchall()}
+        """).fetchall():
+            d.setdefault(z, []).append((st, ct))
+        return d
     z21, z25 = zips(2021), zips(2025)
-    lost = z21 - z25
+    lost = set(z21) - set(z25)
     out["zips"] = {"y2021": len(z21), "y2025": len(z25), "lost": len(lost),
-                   "gained": len(z25 - z21)}
+                   "gained": len(set(z25) - set(z21))}
     print(f"     ZIPs with a drug store: {len(z21):,} (2021) -> {len(z25):,} (2025)")
-    print(f"     went to zero: {len(lost):,}   newly gained one: {len(z25-z21):,}")
+    print(f"     went to zero: {len(lost):,}   newly gained one: {out['zips']['gained']:,}")
+
+    # Metro/nonmetro split of those losses, on Day 4's RUCC lens. A ZIP does not
+    # nest inside a county, so each is classified by the modal county of the
+    # pharmacies that were in it; one straddling the metro line goes to whichever
+    # side held more of its stores.
+    #
+    # Report the RATE, not the count. Nonmetro ZIPs are a sixth of the base, so
+    # they are a minority of the losses (217 of 976) while being the likelier to
+    # lose — quoting the count alone invites the opposite reading.
+    from collections import Counter
+
+    from analysis import rucc as rucc_mod
+    lookup, _ = rucc_mod.load()
+
+    def metro_split(zip_ids, src):
+        m = nm = 0
+        for z in zip_ids:
+            codes = [c for c in (lookup(st, ct) for st, ct in src.get(z, [])) if c]
+            if not codes:
+                continue
+            if Counter(codes).most_common(1)[0][0] <= 3:
+                m += 1
+            else:
+                nm += 1
+        return m, nm
+
+    base_m, base_nm = metro_split(set(z21), z21)
+    lost_m, lost_nm = metro_split(lost, z21)
+    out["zips"].update({
+        "base_metro": base_m, "base_nonmetro": base_nm,
+        "lost_metro": lost_m, "lost_nonmetro": lost_nm,
+        "rate_metro": round(100 * lost_m / base_m, 1),
+        "rate_nonmetro": round(100 * lost_nm / base_nm, 1)})
+    zz = out["zips"]
+    print(f"     metro:    {lost_m:>4,} of {base_m:>5,} ZIPs went to zero  ({zz['rate_metro']}%)")
+    print(f"     nonmetro: {lost_nm:>4,} of {base_nm:>5,} ZIPs went to zero  ({zz['rate_nonmetro']}%)")
+    check("metro ZIP loss rate %", zz["rate_metro"], 10.8, tol=0.3)
+    check("nonmetro ZIP loss rate %", zz["rate_nonmetro"], 16.7, tol=0.3)
+    # The claim the piece makes from this is the ordering, not the levels.
+    if zz["rate_nonmetro"] <= zz["rate_metro"]:
+        FAILURES.append("nonmetro ZIP loss rate no longer exceeds metro")
 
     # ------------------------------------------------------------ 6. is authorization a census?
     print("\n6. Is authorization a store census for these chains?")

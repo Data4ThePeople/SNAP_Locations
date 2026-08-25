@@ -217,6 +217,40 @@ def main():
         print(f"     of the pharmacy-loss ZIPs with no grocery at all (n={r[1]}),"
               f" median population is {int(r[0] or 0):,}")
 
+    # ------------------------------------------------------- rural-urban split
+    # The same lens Day 4 used, applied to these two groups. Population says
+    # these are thin markets; RUCC says where the thin markets are. A ZIP does
+    # not nest inside a county, so each is classified by the modal county of the
+    # stores recorded in it.
+    print("\n7b. Where the thin markets are: metro vs nonmetro")
+    from collections import Counter
+
+    from analysis import rucc as rucc_mod
+    lookup, _ = rucc_mod.load()
+    zc = {}
+    for z, st, ct, n in con.execute("""
+        SELECT zip_code, state, county, count(*) FROM panel
+        WHERE zip_code IS NOT NULL AND length(zip_code) = 5 GROUP BY 1, 2, 3""").fetchall():
+        k = lookup(st, ct)
+        if k:
+            zc.setdefault(z, Counter())[k] += n
+    zrucc = {z: c.most_common(1)[0][0] for z, c in zc.items()}
+    ru = {}
+    for grp, in con.execute("SELECT DISTINCT grp FROM grp").fetchall():
+        zips = [r[0] for r in con.execute("SELECT zip FROM grp WHERE grp = ?", [grp]).fetchall()]
+        codes = [zrucc[z] for z in zips if z in zrucc]
+        nm = sum(1 for k in codes if k > 3)
+        ru[grp] = {"matched": len(codes), "metro": len(codes) - nm, "nonmetro": nm,
+                   "nonmetro_pct": round(100 * nm / len(codes), 1)}
+        print(f"     {grp:5} metro {ru[grp]['metro']:>5,}  nonmetro {nm:>5,}"
+              f"   nonmetro share {ru[grp]['nonmetro_pct']}%")
+    out["rural"] = ru
+    check("nonmetro share, pharmacy-loss ZIPs", ru["lost"]["nonmetro_pct"], 22.1, tol=0.5)
+    check("nonmetro share, control ZIPs", ru["kept"]["nonmetro_pct"], 14.7, tol=0.5)
+    # The claim is the ordering; the levels are context.
+    if ru["lost"]["nonmetro_pct"] <= ru["kept"]["nonmetro_pct"]:
+        FAILURES.append("pharmacy-loss ZIPs no longer more rural than control")
+
     # The one-number summary of the whole run: how far the mix shifted toward
     # chains. Reported over ALL stores including the unclassified ones, which
     # makes it conservative — some unknowns are certainly chains, so the real

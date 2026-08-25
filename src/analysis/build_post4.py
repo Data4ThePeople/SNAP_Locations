@@ -37,7 +37,7 @@ def main():
           "slot": 2 if r["state"] == "PA" else 0} for r in st[:8]], suffix="%",
         direction="left",
         title="Where the pharmacies were",
-        subtitle="largest falls in authorized drug stores, 2021 to 2025")
+        subtitle="largest falls in authorized chain drug stores, 2021 to 2025")
 
     brand_tbl = "".join(
         f"<tr><td>{b}</td><td>{v['peak']:,}</td><td>{v['peak_year']}</td>"
@@ -147,53 +147,65 @@ at its {br['Rite Aid']['peak_year']} peak, {br['Rite Aid']['stock'][yrs.index(20
 Chapter 11 in two years on 5 May 2025 and closed its last 89 stores on 3 October, ending a run that
 began with a single discount store in Scranton, Pennsylvania in 1962.</p>
 
-<p>Walgreens is down {abs(br['Walgreens']['pct']):.0f}% from its {br['Walgreens']['peak_year']} peak.
-It approved another 900 to 1,000 closures in October 2024 — 1,200 to 1,300 counting stores approved
-earlier and not yet shut — and in August 2025 it was taken private by Sycamore Partners. CVS is down
-{abs(br['CVS']['pct']):.0f}% from {br['CVS']['peak_year']} — a smaller share, but
-{br['CVS']['peak'] - br['CVS']['latest']:,} fewer stores, after roughly 900 closures between 2022 and
-2024 and a further 271 announced for 2025, of which 221 happened.</p>
+<p>Walgreens and CVS are the slower version of the same story. Walgreens approved another 900 to
+1,000 closures in October 2024, then was taken private by Sycamore Partners in August 2025. CVS closed
+roughly 900 stores between 2022 and 2024, and 221 more in 2025. Every one of these moves was announced
+by the company as it happened, and the authorization records line up with them — which makes this the
+most checkable finding in the series.</p>
 
-<p>This is the most checkable finding in the series. Every one of these moves was announced by the
-company and written up in the trade press, and the authorization records line up with them.</p>
+<p>That matters beyond this chapter. Walgreens held {wal['authorized_2024']:,} SNAP authorizations at
+the end of 2024, against the {wal['reported']:,} US stores its own annual report counted four months
+earlier. For a chain like this one the authorization list is very close to a store census, so here,
+unlike anywhere else in the series, we can say a store closed and mean it.</p>
 
-<p>That matters beyond this chapter. In 2024 Walgreens held {wal['authorized_2024']:,} SNAP
-authorizations against the {wal['reported']:,} US stores its own annual report counts — a ratio of
-{wal['ratio']}. The two dates are four months apart and Walgreens was closing stores between them, so
-the real figure is a little higher than that.
-For a chain like this one, the authorization list is very close to a store census. So here, unlike
-anywhere else in the series, we can say a store closed and mean it.</p>
+<h2>{z['lost']:,} ZIP codes lost their last chain pharmacy</h2>
 
-<h2>{z['lost']:,} ZIP codes lost their last one</h2>
-
-<p>The losses are not spread evenly. They track Rite Aid's footprint.</p>
+<p>But the losses are not spread evenly. They track Rite Aid's footprint.</p>
 
 <figure>{c_st}
-<figcaption>Largest percentage falls in authorized drug stores, 2021 to 2025, among states with at
+<figcaption>Largest percentage falls in authorized chain drug stores, 2021 to 2025, among states with at
 least 150 in 2021. Labels show the count then and now.</figcaption></figure>
 
-<p>Pennsylvania — Rite Aid's home state — lost {abs(st[0]['delta']):,} of {st[0]['then']:,}, or
-{abs(st[0]['pct']):.0f}%. Michigan lost {abs(st[1]['delta']):,}. California lost the most stores of any
-state.</p>
+<p>Pennsylvania — Rite Aid's home state — lost {abs(st[0]['delta']):,} of {st[0]['then']:,} chain
+pharmacies, or {abs(st[0]['pct']):.0f}%. Michigan lost {abs(st[1]['delta']):,}. California lost the
+most stores of any state.</p>
 
 <p>Nationally, <strong>{z['lost']:,} ZIP codes</strong> that had at least one SNAP-authorized chain
-pharmacy in 2021 had none by 2025. Only {z['gained']} gained one.</p>
+pharmacy in 2021 had none by 2025. Only {z['gained']} went the other way, from none to at least
+one.</p>
 
-<p>That is the part that matters for people. In these places the pharmacy was the food store, and it
-was also where prescriptions got filled. Both left on the same day.</p>
+<p>Among nonmetro ZIP codes, {z['rate_nonmetro']}% lost their last chain pharmacy. Among metro ZIP
+codes, {z['rate_metro']}% did. Yet again, nonmetro areas get the short end of the stick, driving
+American geographic inequality ever higher.</p>
+
+<p>That is the part that matters for people. In many communities, losing a pharmacy isn't just
+losing another food store option; it's also losing access to prescriptions, and to the pharmacist — a
+health care provider — who was there to answer questions.</p>
 
 <h2>What it adds up to</h2>
 
-<p>The other losses in this series were slow, and hard to pin on anyone. This one is neither. It took
-four years, three companies did it, and each of them announced it as it happened.</p>
+<p>The further we dig into this database, the more conviction we gain in the themes we keep
+highlighting. On the surface, the chain pharmacy trend looks bad. It is bad, and the reason why gets
+to the rotten core of our nation's problems with all of health care. But when we dig further, we once
+again see this tale of two Americas. Some call it the K-shape economy. I don't love that term, as it
+implies the two diagonals of the "K" are equal, when they are far from equal. Rather, what we are
+seeing is two Americas split geographically. We have learned that as time passes, people who live in
+rural areas have fewer places to buy food. The stores they do have carry a limited inventory — enough
+to make ends meet, not enough to meet their nutritional needs. Without proper nutrition, it follows
+that rural America could be more likely to get sick. And today we have learned that they are more
+likely to have lost the pharmacy they are more likely to need.</p>
 
-<p>It also hands us something the earlier chapters could not: a list of places. {z['lost']:,} ZIP codes
-lost their last chain pharmacy in four years. Set that beside what came before — the small grocers that
-went, the dollar stores and gas stations that stayed — and a question forms.</p>
+<p>This is the America we must help. Five chapters in, it's becoming quite obvious to me that no one
+who has any control is doing anything to improve the quality of life for this part of America. Rather,
+we sit idly on the other side of America, enjoying our plentiful supply of grocery stores and
+pharmacies.</p>
 
-<p>What happens in the neighborhoods where all of it lands at once? Do the formats that survive move in
-when the others leave? Or do some places simply end up with less of everything? That is tomorrow, and
-it is the last chapter.</p>
+<p>The good news is that now you know. You can completely disagree with my logic, you can decide not
+to care about the other side of America you don't see each day, or you can choose to do what you can
+to fix this problem.</p>
+
+<p><strong>Tomorrow: the pattern behind all five chapters — and the explanation almost everyone
+reaches for, which the data says is wrong.</strong></p>
 
 <div class="caveat">
 <h3>Limits</h3>
