@@ -207,8 +207,8 @@ that USDA's economists blindly assume they can buy?
 
 Those are just a few of the questions on my mind after studying this data. Feel free to add yours.
 
-**Tomorrow: the mirror image of the dollar store — the one format shrinking everywhere, even
-where the people are.**
+**Tomorrow: the mirror image of the fuel-forward chain convenience store — the one chain format
+in structural decline, and the reason why.**
 
 ## Limits
 

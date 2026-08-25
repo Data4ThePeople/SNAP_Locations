@@ -75,8 +75,9 @@ def main():
         "Largest percentage falls in authorized drug stores, 2021 to 2025, among states with "
         "at least 150 in 2021.",
         figures.hbar_png,
-        [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": abs(r["pct"]),
+        [{"label": f"{r['state']}  {r['then']:,}→{r['now']:,}", "value": r["pct"],
           "slot": 2 if r["state"] == "PA" else 0} for r in st[:8]], suffix="%",
+        direction="left",
         title="Where the pharmacies were",
         subtitle="largest falls in authorized drug stores, 2021 to 2025")
 
@@ -98,9 +99,10 @@ category as the dollar store: "Combination Grocery/Other," for shops that mainly
 and also sell food. That filing is not a technicality. In a neighborhood with no supermarket, the
 pharmacy is often where a SNAP household buys food.
 
-It is also, by yesterday's two rules, a format that should have been safe. A chain pharmacy is a small
-store, and it belongs to a chain — the same combination that made the dollar store the most durable
-format in the data. For a decade it behaved that way.
+It is also, in shape, the same store we looked at on Day 3 — the convenience store attached to a fuel
+pump. A small chain outlet with a second business running behind it, 78.7% of which were still
+authorized thirteen years on. A chain pharmacy is built to the same design: a small chain store, with
+a second business behind the counter. For a decade it behaved the same way too.
 
 Then it stopped.
 
@@ -116,30 +118,31 @@ easily. This decline starts three years later.
 
 ## Why the combination stopped working
 
-Think back to the gas station. A convenience store attached to a fuel pump is a small chain store with a
-second business behind it, and after 2020 that second business got much better: Murphy USA's margin on a
-gallon of fuel rose 103%. The store rode it up.
+The difference is what that second business was doing. For the gas station, after 2020, it got much
+better: Murphy USA's margin on a gallon of fuel rose 103%. The store rode it up.
 
-A pharmacy is the same shape and the opposite story. The shop at the front sells toothpaste and snacks.
-The business behind it fills prescriptions — and that business does not set its own prices. What a
-prescription pays is set by the companies that manage drug benefits for insurers, the pharmacy benefit
-managers, and it has been going one way for years.
+The pharmacy's runs the other way, and it is squeezed at both ends at once. The shop at the front sells
+toothpaste and snacks. The business behind it fills prescriptions, and it sets neither of the two
+prices that decide what that work earns. What a prescription pays is set by the companies that manage
+drug benefits for insurers, the pharmacy benefit managers, and it has been going one way for years.
+What the drugs cost to buy is set at the other end, by the three wholesalers that handle more than 90%
+of drug distribution in this country. Reimbursement on one side, cost of goods on the other, and
+almost no control over the gross margin in between.
 
 The chains say so themselves. Walgreens' 2024 annual report describes "ongoing prescription
 reimbursement pressure," and names the cause: benefit managers and insurers "have consolidated over
 recent years to create larger healthcare entities with greater bargaining power." Rite Aid's last annual
-report before bankruptcy said it more bluntly. To stay in a payer's network, "retail pharmacies
-generally are required to accept lower reimbursement rates."
+report before bankruptcy said it more bluntly. To join the restricted networks that Medicare Part D
+plans run, "retail pharmacies generally are required to accept lower reimbursement rates."
+
+Any independent pharmacist reading this already knows how true that is, and can attest to it from
+lived experience — as could I, when I ran a chain of more than twenty independent pharmacies years
+ago. What this data adds is that the chains were not immune to the same dynamic.
 
 That is the whole difference. Being small and being part of a chain are advantages in what it costs to
-run a store. Neither one does anything about what the store sells. The gas station's core business
-improved and pulled the format up with it. The pharmacy's core business was being squeezed, and the
-combination that protected the dollar store could not outrun it.
-
-One detail fits that story, though three companies is not a sample and this data cannot test it: the
-chain that held up best is the one that owns a benefit manager itself. CVS bought Caremark in 2007 and
-still owns it, and is down {abs(br['CVS']['pct']):.0f}%. Walgreens sold its own in 2011, and is down
-{abs(br['Walgreens']['pct']):.0f}%. Rite Aid sold its during bankruptcy, and is gone.
+run a store. Neither one does anything about what the store sells. Two formats built to the same
+design, and the only thing separating them is the direction of the margin behind the counter — one
+expanding, one contracting. That was enough.
 
 ## Three companies did all of it
 
@@ -150,13 +153,15 @@ The industry did not shrink. Three companies did.
 Rite Aid is not a decline. It is a disappearance: **{br['Rite Aid']['peak']:,}** stores at its
 {br['Rite Aid']['peak_year']} peak, {br['Rite Aid']['stock'][yrs.index(2024)]:,} as recently as 2024,
 and **{br['Rite Aid']['latest']}** at the end of 2025. The company filed its second Chapter 11 in two
-years on 5 May 2025 and closed its last 89 stores on 3 October, ending 63 years in business.
+years on 5 May 2025 and closed its last 89 stores on 3 October, ending a run that began with a
+single discount store in Scranton, Pennsylvania in 1962.
 
 Walgreens is down {abs(br['Walgreens']['pct']):.0f}% from its {br['Walgreens']['peak_year']} peak. It
-announced 1,200 closures in October 2024, then was taken private by Sycamore Partners. CVS is down
+approved another 900 to 1,000 closures in October 2024 — 1,200 to 1,300 counting stores approved
+earlier and not yet shut — and in August 2025 it was taken private by Sycamore Partners. CVS is down
 {abs(br['CVS']['pct']):.0f}% from {br['CVS']['peak_year']} — a smaller share, but
 {br['CVS']['peak'] - br['CVS']['latest']:,} fewer stores, after roughly 900 closures between 2022 and
-2024 and 271 more announced for 2025.
+2024 and a further 271 announced for 2025, of which 221 happened.
 
 Count the authorizations that ended each year and you can see who left when. The baseline is a couple
 of hundred a year. Then 2022 arrives.
@@ -166,9 +171,11 @@ of hundred a year. Then 2022 arrives.
 This is the most checkable finding in the series. Every one of these moves was announced by the company
 and written up in the trade press, and the authorization records line up with them.
 
-That matters beyond this chapter. In 2024 Walgreens held {wal['authorized_2024']:,} SNAP authorizations
-and reported operating about {wal['reported']:,} US stores — a ratio of {wal['ratio']}. For a chain like
-this one, the authorization list is very close to a store census. So here, unlike anywhere else in the
+That matters beyond this chapter. In 2024 Walgreens held {wal['authorized_2024']:,} SNAP
+authorizations against the {wal['reported']:,} US stores its own annual report counts — a ratio of
+{wal['ratio']}. The two dates are four months apart and Walgreens was closing stores between them, so
+the real figure is a little higher than that. For a chain like this one, the authorization list is
+very close to a store census. So here, unlike anywhere else in the
 series, we can say a store closed and mean it.
 
 ## {z['lost']:,} ZIP codes lost their last one
@@ -202,21 +209,24 @@ it is the last chapter.
 
 ## Limits
 
-**The reimbursement explanation is not measured here.** These records show the collapse and its timing;
-they say nothing about why. The squeeze on prescription margins is taken from the companies' own annual
-reports, quoted above, and from the fact that all three describe the same pressure. That is testimony
-from interested parties, not a measurement. Nothing in this dataset can confirm or refute it.
+**The margin explanation is not measured here.** These records show the collapse and its timing; they
+say nothing about why. The squeeze is taken from the companies' own annual reports, quoted above, from
+the fact that all three describe the same pressure, from the concentration of drug distribution among
+three wholesalers, and from the author's own years running independent pharmacies. That is testimony
+and industry structure, not a measurement. Nothing in this dataset can confirm or refute it.
 
 These records count **SNAP authorizations**, not pharmacies. A drug store that stops accepting EBT but
 keeps trading looks the same here as one that closes. For Walgreens the two are nearly the same thing —
 that is what the census check above establishes — but that logic does not carry to anyone else.
 
 Independent pharmacies are not in this story, and cannot be. A pharmacy shows up in these records only
-if it is SNAP-authorized, which means stocking staple foods, and most independents do not. Trade sources
-count about {ind['national_estimate']:,} independent community pharmacies nationally. This dataset holds
-**{ind['latest']}** of them, or {100*ind['coverage']:.1f}%. Nearly half sit in New York, where the
-pharmacy that doubles as a corner grocery is a local retail form. Any national trend drawn from
-{ind['latest']} unusual stores would describe those stores, not the sector.
+if it is SNAP-authorized, which means stocking staple foods, and most independents do not. The
+National Community Pharmacists Association counted {ind['national_estimate']:,} independent community
+pharmacies nationally in July 2025. This dataset holds **{ind['latest']}** stores whose names suggest a
+pharmacy, or {100*ind['coverage']:.1f}% — and not even all of those are independent: {ind['multi_store']}
+of them share a name with at least one other store, so they are small regional chains. Nearly half sit in New York,
+where the pharmacy that doubles as a corner grocery is a local retail form. Any national trend drawn
+from {ind['latest']} unusual stores would describe those stores, not the sector.
 
 CVS is left out of the store-count check on purpose. About 1,700 of its pharmacies sit inside Target
 stores, and Target's own authorization covers those, so CVS's count here is lower than its real

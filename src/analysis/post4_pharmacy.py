@@ -113,7 +113,22 @@ def main():
           AND f.auth_date <= make_date({y},12,31)
           AND (f.end_date IS NULL OR f.end_date >= make_date({y},12,31))
     """).fetchone()[0] for y in years]
-    NATIONAL_INDEP = 19_500   # trade estimate of US independent community pharmacies
+    # NCPA 2025 Digest (released Oct 2025), counting July 2025. An earlier
+    # Digest vintage put this at 19,500; the count has been drifting down.
+    NATIONAL_INDEP = 18_960
+    # How many of the name-matched "independents" are not independent: stores
+    # sharing a name with at least one other are small regional chains (Fruth,
+    # Lewis Drug, Hartig), which is why this set is reported as a coverage
+    # limit and never as a sector trend.
+    shared = con.execute(f"""
+        SELECT coalesce(sum(n), 0), count(*) FROM (
+          SELECT count(DISTINCT p.record_id) n FROM panel p JOIN seg g USING(record_id)
+          JOIN fact_spell f ON f.record_id=p.record_id AND NOT f.date_anomaly
+          WHERE g.seg='independent'
+            AND f.auth_date <= make_date({years[-1]},12,31)
+            AND (f.end_date IS NULL OR f.end_date >= make_date({years[-1]},12,31))
+          GROUP BY p.name_norm HAVING count(DISTINCT p.record_id) > 1)
+    """).fetchone()
     out["independent"] = {
         "years": years, "stock": indep, "ny": ny,
         "latest": indep[-1], "latest_ny": ny[-1],
@@ -122,11 +137,14 @@ def main():
         "national_estimate": NATIONAL_INDEP,
         "coverage": round(indep[-1] / NATIONAL_INDEP, 4),
         "ex_ny_first": indep[0] - ny[0], "ex_ny_latest": indep[-1] - ny[-1],
+        "multi_store": int(shared[0]), "multi_names": int(shared[1]),
         "usable": False,
     }
     o = out["independent"]
     print(f"     visible in SNAP records: {o['latest']:,} of ~{NATIONAL_INDEP:,} nationally"
           f" ({100*o['coverage']:.1f}%)")
+    print(f"     sharing a name with another store (i.e. small chains): "
+          f"{o['multi_store']:,} across {o['multi_names']} names")
     print(f"     New York share: {100*o['ny_share_first']:.0f}% (2006) -> "
           f"{100*o['ny_share_latest']:.0f}% (2025)")
     print(f"     New York: {ny[0]:,} -> {ny[-1]:,}   everywhere else: "
@@ -158,7 +176,11 @@ def main():
     # 2024 authorizations (1,523) exceed the ~1,240 reported at its May 2025
     # filing — a date mismatch, not more stores than exist. CVS is excluded
     # because ~1,700 of its pharmacies sit inside Target stores.
-    reported = {"Walgreens": (8_000, "company, Oct 2024, 'over 8,000' US stores")}
+    # From the 10-K itself, not the earnings-call round number: Item 2
+    # Properties gives 8,454 US locations at 31 August 2024 (8,560 with Puerto
+    # Rico and the USVI). The company line that week was "over 8,000", and
+    # using 8,000 as the denominator flattered the ratio to 0.97.
+    reported = {"Walgreens": (8_454, "WBA FY2024 10-K Item 2, US locations at 8/31/2024")}
     out["census"] = []
     for b, (rep, src) in reported.items():
         n = out["brands"][b]["stock"][years.index(2024)]
