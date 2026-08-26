@@ -105,6 +105,7 @@ figcaption {
    as a heading; the units line under it stays soft and recessive. */
 .chart-title { font: 700 13px var(--mono); fill: var(--ink); }
 .dlabel, .bvalue { font: 400 11.5px var(--mono); fill: var(--ink-mid); }
+hr { border: 0; border-top: 1px solid var(--grid); margin: 2.4rem 0; }
 .blabel { font: 400 11.5px var(--mono); fill: var(--ink-mid); }
 .bvalue { font-variant-numeric: tabular-nums; }
 

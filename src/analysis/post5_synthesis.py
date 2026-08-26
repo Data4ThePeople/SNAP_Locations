@@ -217,6 +217,193 @@ def main():
         print(f"     of the pharmacy-loss ZIPs with no grocery at all (n={r[1]}),"
               f" median population is {int(r[0] or 0):,}")
 
+    # ----------------------------------------------- did dollar stores do it?
+    # The substitution question, asked about GROCERS rather than pharmacies.
+    # The earlier sequencing test used the pharmacy as its clock, which answers
+    # a question nobody was asking: what a reader wants to know is whether the
+    # dollar store took the grocery store. Universe is every ZIP that had a
+    # grocery store in 2006.
+    print("\n7e. Did dollar stores take the grocers?")
+    con.execute(f"""
+        CREATE OR REPLACE TEMP TABLE zg AS
+        SELECT y.yr, p.zip_code AS zip,
+          count(DISTINCT CASE WHEN p.format = 'Dollar Store' THEN p.record_id END) AS dollar,
+          count(DISTINCT CASE WHEN p.format IN {GROC} THEN p.record_id END) AS groc
+        FROM generate_series(2006, 2025) AS y(yr)
+        JOIN fact_spell f ON NOT f.date_anomaly
+                         AND f.auth_date <= make_date(y.yr,12,31)
+                         AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+        JOIN panel p ON p.record_id = f.record_id
+        WHERE p.zip_code IS NOT NULL AND length(p.zip_code) = 5
+        GROUP BY 1, 2""")
+    g = {}
+    for grp, z, g06, g25 in con.execute("""
+        WITH a AS (SELECT zip, dollar, groc FROM zg WHERE yr = 2006),
+             b AS (SELECT zip, dollar, groc FROM zg WHERE yr = 2025)
+        SELECT CASE WHEN coalesce(b.dollar,0) > a.dollar THEN 'gained' ELSE 'none' END,
+               count(*), sum(a.groc), sum(coalesce(b.groc,0))
+        FROM a LEFT JOIN b USING(zip) WHERE a.groc > 0 GROUP BY 1""").fetchall():
+        g[grp] = {"zips": int(z), "groc_2006": int(g06), "groc_2025": int(g25),
+                  "pct": round(100 * (g25 / g06 - 1), 1)}
+        print(f"     ZIPs that {grp:6} a dollar store: {z:>6,}   grocery {g06:>7,} -> {g25:>7,}"
+              f"  {g[grp]['pct']:+.1f}%")
+    r = con.execute("""
+        WITH a AS (SELECT zip, dollar, groc FROM zg WHERE yr = 2006),
+             b AS (SELECT zip, dollar, groc FROM zg WHERE yr = 2025)
+        SELECT count(*) FILTER (WHERE a.dollar > 0),
+               count(*) FILTER (WHERE a.dollar = 0 AND coalesce(b.dollar,0) > 0),
+               count(*) FILTER (WHERE a.dollar = 0 AND coalesce(b.dollar,0) = 0),
+               count(*)
+        FROM a LEFT JOIN b USING(zip)
+        WHERE a.groc > 0 AND coalesce(b.groc,0) = 0""").fetchone()
+    out["grocer_test"] = {
+        "with_dollar": g["gained"], "without_dollar": g["none"],
+        "lost_last_grocery": {"total": int(r[3]), "had_dollar_2006": int(r[0]),
+                              "dollar_after": int(r[1]), "never_dollar": int(r[2]),
+                              "never_pct": round(100 * r[2] / r[3], 1)}}
+    lg = out["grocer_test"]["lost_last_grocery"]
+    print(f"     {lg['total']:,} ZIPs had a grocery store in 2006 and have none now;"
+          f" {lg['never_dollar']:,} ({lg['never_pct']}%) never had a dollar store")
+    # Median population of the grocery groups, for the size chart. This pair is
+    # far wider than the pharmacy pair: a grocery store needs more people under
+    # it than a pharmacy does.
+    if pop:
+        # Loop variable is gg, not g: g already holds the dollar-store split
+        # above and the guard below still needs it.
+        for gg, n, med in con.execute("""
+            WITH a AS (SELECT zip, groc FROM zg WHERE yr = 2006),
+                 b AS (SELECT zip, groc FROM zg WHERE yr = 2025)
+            SELECT CASE WHEN coalesce(b.groc,0) = 0 THEN 'lost' ELSE 'kept' END,
+                   count(*), median(p.pop)
+            FROM a LEFT JOIN b USING(zip) JOIN zpop p ON p.zip = a.zip
+            WHERE a.groc > 0 GROUP BY 1""").fetchall():
+            out["grocer_test"][f"{gg}_median_pop"] = int(med)
+            out["grocer_test"][f"{gg}_matched"] = int(n)
+            print(f"     {gg} grocer: {n:>6,} ZIPs, median population {int(med):,}")
+        # How many of the grocery-loss ZIPs were ever big enough for a chain
+        # pharmacy. This is the answer to the obvious objection: the grocery
+        # median looks impossibly low next to the pharmacy rows because the
+        # pharmacy rows start from a higher bar.
+        n_rx, = con.execute("""
+            WITH a AS (SELECT zip, groc FROM zg WHERE yr = 2006),
+                 b AS (SELECT zip, groc FROM zg WHERE yr = 2025)
+            SELECT count(*) FROM a LEFT JOIN b USING(zip)
+            JOIN grp g ON g.zip = a.zip
+            WHERE a.groc > 0 AND coalesce(b.groc,0) = 0""").fetchone()
+        out["grocer_test"]["lost_grocery_ever_had_rx"] = int(n_rx)
+        out["grocer_test"]["lost_grocery_ever_had_rx_pct"] = round(
+            100 * n_rx / out["grocer_test"]["lost_last_grocery"]["total"], 1)
+        print(f"     of those, {n_rx:,} "
+              f"({out['grocer_test']['lost_grocery_ever_had_rx_pct']}%) ever had a chain pharmacy")
+
+        check("median population, lost last grocery",
+              out["grocer_test"]["lost_median_pop"], 1955, tol=40)
+        check("median population, kept grocery",
+              out["grocer_test"]["kept_median_pop"], 15716, tol=200)
+
+    check("ZIPs that lost their last grocery", lg["total"], 2267, tol=25)
+    check("share of those that never had a dollar store", lg["never_pct"], 40.5, tol=1.0)
+    # The load-bearing claim: grocery did not fare worse where dollar stores came.
+    if g["gained"]["pct"] < g["none"]["pct"]:
+        FAILURES.append("grocery now falls faster where dollar stores arrived")
+
+    # ------------------------------------------------------ population spread
+    # Quantiles, not just the median: a single number invites the reader to ask
+    # whether it is typical, and for the grocery groups the spread is the point.
+    # Whiskers are p10/p90 rather than min/max — a handful of huge urban ZIPs
+    # would otherwise stretch the axis and hide the comparison.
+    print("\n7f. Population spread by group")
+    if pop:
+        out["spread"] = {}
+        for lab, where in (
+            ("lost_pharmacy", "g.grp = 'lost'"), ("kept_pharmacy", "g.grp = 'kept'")):
+            r = con.execute(f"""
+                SELECT count(*), quantile_cont(p.pop,0.10), quantile_cont(p.pop,0.25),
+                       median(p.pop), quantile_cont(p.pop,0.75), quantile_cont(p.pop,0.90)
+                FROM grp g JOIN zpop p ON p.zip = g.zip WHERE {where}""").fetchone()
+            out["spread"][lab] = dict(zip(
+                ("n", "p10", "p25", "median", "p75", "p90"),
+                [int(r[0])] + [int(v) for v in r[1:]]))
+        for lab, where in (
+            ("lost_grocer", "a.groc > 0 AND coalesce(b.groc,0) = 0"),
+            ("kept_grocer", "a.groc > 0 AND coalesce(b.groc,0) > 0")):
+            r = con.execute(f"""
+                WITH a AS (SELECT zip, groc FROM zg WHERE yr = 2006),
+                     b AS (SELECT zip, groc FROM zg WHERE yr = 2025)
+                SELECT count(*), quantile_cont(p.pop,0.10), quantile_cont(p.pop,0.25),
+                       median(p.pop), quantile_cont(p.pop,0.75), quantile_cont(p.pop,0.90)
+                FROM a LEFT JOIN b USING(zip) JOIN zpop p ON p.zip = a.zip
+                WHERE {where}""").fetchone()
+            out["spread"][lab] = dict(zip(
+                ("n", "p10", "p25", "median", "p75", "p90"),
+                [int(r[0])] + [int(v) for v in r[1:]]))
+        for lab, s in out["spread"].items():
+            print(f"     {lab:15} n={s['n']:>6,}  p10 {s['p10']:>6,}  p25 {s['p25']:>6,}  "
+                  f"median {s['median']:>6,}  p75 {s['p75']:>6,}  p90 {s['p90']:>6,}")
+        sp = out["spread"]
+        check("median, lost grocer", sp["lost_grocer"]["median"], 1955, tol=40)
+        check("p75, lost grocer", sp["lost_grocer"]["p75"], 3740, tol=80)
+        # The claim each chart makes: the losing group sits lower throughout.
+        for a_, b_ in (("lost_pharmacy", "kept_pharmacy"), ("lost_grocer", "kept_grocer")):
+            if sp[a_]["median"] >= sp[b_]["median"] or sp[a_]["p75"] >= sp[b_]["p75"]:
+                FAILURES.append(f"{a_} no longer smaller than {b_}")
+
+    # ------------------------------------------------------------- format mix
+    # The same four formats as the arc chart, as shares of the total rather than
+    # counts. The counts alone understate the change, because the total grew:
+    # grocery and pharmacy together were more than half of this retail and are
+    # now under a third.
+    print("\n7c. Format mix in these ZIP codes, 2006 against 2025")
+    out["mix"] = {}
+    for y in (2006, 2025):
+        r = con.execute(f"""
+            SELECT sum(conv), sum(groc), sum(dollar), sum(drug)
+            FROM zf JOIN grp g USING(zip)
+            WHERE yr = {y} AND g.grp = 'lost'""").fetchone()
+        conv, groc, dollar, drug = (int(v or 0) for v in r)
+        tot = conv + groc + dollar + drug
+        out["mix"][str(y)] = {
+            "convenience": conv, "grocery": groc, "dollar": dollar, "pharmacy": drug,
+            "total": tot,
+            "pct": {k: round(100 * v / tot, 1) for k, v in
+                    (("convenience", conv), ("grocery", groc),
+                     ("dollar", dollar), ("pharmacy", drug))},
+            "groc_drug_pct": round(100 * (groc + drug) / tot, 1)}
+        m = out["mix"][str(y)]
+        print(f"     {y}  {tot:>7,} stores   conv {m['pct']['convenience']:>4.1f}%  "
+              f"groc {m['pct']['grocery']:>4.1f}%  dollar {m['pct']['dollar']:>4.1f}%  "
+              f"pharmacy {m['pct']['pharmacy']:>4.1f}%   groc+pharmacy {m['groc_drug_pct']}%")
+    check("grocery+pharmacy share, 2006", out["mix"]["2006"]["groc_drug_pct"], 51.0, tol=0.5)
+    check("grocery+pharmacy share, 2025", out["mix"]["2025"]["groc_drug_pct"], 29.7, tol=0.5)
+
+    # ---------------------------------------------------------------- the towns
+    # ZIP codes that had all four formats in 2006 and now have neither a grocery
+    # store nor a pharmacy. Named places, so the reader can picture one.
+    print("\n7d. Had all four formats in 2006; no grocery and no pharmacy now")
+    towns = con.execute(f"""
+        WITH a AS (SELECT * FROM zf WHERE yr = 2006),
+             b AS (SELECT * FROM zf WHERE yr = 2025)
+        SELECT g.zip, a.conv, a.groc, a.dollar, a.drug,
+               coalesce(b.conv,0) AS now_conv, coalesce(b.dollar,0) AS now_dollar
+        FROM grp g JOIN a ON a.zip = g.zip LEFT JOIN b ON b.zip = g.zip
+        WHERE g.grp = 'lost'
+          AND a.conv > 0 AND a.groc > 0 AND a.dollar > 0 AND a.drug > 0
+          AND coalesce(b.groc, 0) = 0
+        ORDER BY a.conv + a.groc + a.dollar + a.drug DESC""").fetchall()
+    out["towns"] = []
+    for z, c0, g0, d0, p0, c1, d1 in towns:
+        city, st = con.execute("""
+            SELECT city, state FROM panel WHERE zip_code = ?
+            GROUP BY 1, 2 ORDER BY count(*) DESC LIMIT 1""", [z]).fetchone()
+        rec = {"zip": z, "city": (city or "").title(), "state": st,
+               "pop": pop.get(z) if pop else None,
+               "then": {"conv": c0, "groc": g0, "dollar": d0, "pharmacy": p0},
+               "now": {"conv": c1, "dollar": d1}}
+        out["towns"].append(rec)
+        print(f"     {z} {rec['city']:<16}{st}  pop {rec['pop'] or 0:>7,}   "
+              f"2006: {c0}c {g0}g {d0}d {p0}p  ->  2025: {c1}c {d1}d")
+    check("towns that lost both grocery and pharmacy", len(out["towns"]), 8, tol=2)
+
     # ------------------------------------------------------- rural-urban split
     # The same lens Day 4 used, applied to these two groups. Population says
     # these are thin markets; RUCC says where the thin markets are. A ZIP does
@@ -244,6 +431,35 @@ def main():
                    "nonmetro_pct": round(100 * nm / len(codes), 1)}
         print(f"     {grp:5} metro {ru[grp]['metro']:>5,}  nonmetro {nm:>5,}"
               f"   nonmetro share {ru[grp]['nonmetro_pct']}%")
+    # What is actually left, split the same way. The share of remaining food
+    # retail that is a dollar store is more than twice as high in the nonmetro
+    # loss ZIPs. Note the counterpoint, deliberately not used as a finding: the
+    # share with no grocery at all is HIGHER in metro (8.1% vs 5.1%), because a
+    # small dense urban ZIP can hold none. Rural is worse on the mix, not on
+    # outright absence.
+    left = {}
+    for lab, keys in (("metro", [z for z in zrucc if zrucc[z] <= 3]),
+                      ("nonmetro", [z for z in zrucc if zrucc[z] > 3])):
+        ks = set(keys)
+        rows = con.execute("""
+            SELECT g.zip, b.conv, b.groc, b.dollar FROM grp g
+            JOIN zf b ON b.zip = g.zip AND b.yr = 2025 WHERE g.grp = 'lost'""").fetchall()
+        c = sum(r[1] for r in rows if r[0] in ks)
+        gc = sum(r[2] for r in rows if r[0] in ks)
+        dl = sum(r[3] for r in rows if r[0] in ks)
+        tot = c + gc + dl
+        left[lab] = {"convenience": c, "grocery": gc, "dollar": dl, "total": tot,
+                     "dollar_pct": round(100 * dl / tot, 1),
+                     "grocery_pct": round(100 * gc / tot, 1),
+                     "convenience_pct": round(100 * c / tot, 1)}
+        print(f"     {lab:9} what is left: conv {left[lab]['convenience_pct']}%  "
+              f"grocery {left[lab]['grocery_pct']}%  dollar {left[lab]['dollar_pct']}%")
+    ru["left"] = left
+    check("dollar share of what is left, nonmetro", left["nonmetro"]["dollar_pct"], 26.8, tol=0.5)
+    check("dollar share of what is left, metro", left["metro"]["dollar_pct"], 11.7, tol=0.5)
+    if left["nonmetro"]["dollar_pct"] <= left["metro"]["dollar_pct"]:
+        FAILURES.append("dollar share no longer higher in nonmetro loss ZIPs")
+
     out["rural"] = ru
     check("nonmetro share, pharmacy-loss ZIPs", ru["lost"]["nonmetro_pct"], 22.1, tol=0.5)
     check("nonmetro share, control ZIPs", ru["kept"]["nonmetro_pct"], 14.7, tol=0.5)

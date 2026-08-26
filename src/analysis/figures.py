@@ -344,6 +344,132 @@ def dotrows_png(path, row_labels, series, xsuffix="%", width=7.2, title="",
     return path
 
 
+def pies_png(path, panels, width=7.0, title="", subtitle="", note=""):
+    """Part-to-whole panels side by side, for a mix compared at two dates.
+
+    `panels` = [{"title": str, "slices": [{"label", "value", "slot"}]}]. Every
+    panel takes its slice order and colours from the first, so a format sits in
+    the same place and the same hue in both and the eye compares like with like.
+
+    Drawn as donuts rather than discs: the hole carries the panel's date, which
+    means neither pie needs a caption underneath, and a ring is easier to read
+    for the small slices than a wedge tapering to a point.
+    """
+    import math
+    n = len(panels)
+    fig, axes = plt.subplots(1, n, figsize=(width, width / n * 0.80 + 0.62),
+                             dpi=DPI, facecolor=PAPER)
+    if n == 1:
+        axes = [axes]
+    order = [s["label"] for s in panels[0]["slices"]]
+    colour = {s["label"]: S[s["slot"] - 1] for s in panels[0]["slices"]}
+
+    for ax, panel in zip(axes, panels):
+        ax.set_facecolor(PAPER)
+        by = {s["label"]: s["value"] for s in panel["slices"]}
+        vals = [by.get(k, 0) for k in order]
+        tot = sum(vals) or 1
+        # A zero slice would still get a label at the ring, stacked on its
+        # neighbour. Drop it from the wedges and say so in the panel instead.
+        keep = [(k, v) for k, v in zip(order, vals) if v > 0]
+        wedges, _ = ax.pie(
+            [v for _, v in keep], startangle=90, counterclock=False,
+            colors=[colour[k] for k, _ in keep],
+            wedgeprops=dict(width=0.42, edgecolor=PAPER, linewidth=1.6))
+        # Every label sits outside the ring on a leader. Inside the band they
+        # collided two ways: narrow slices printed on top of each other, and a
+        # wide slice centred near the horizontal ran into the year in the hole.
+        placed = []
+        for (k, v), w in zip(keep, wedges):
+            ang = math.radians((w.theta1 + w.theta2) / 2)
+            cx, cy = math.cos(ang), math.sin(ang)
+            x, y = 1.34 * cx, 1.20 * cy
+            right = cx >= 0
+            # Push apart labels that would stack on the same side.
+            for py, pright in placed:
+                if pright == right and abs(y - py) < 0.30:
+                    y = py - 0.30 if y <= py else py + 0.30
+            placed.append((y, right))
+            ax.plot([1.02 * cx, 1.20 * cx], [1.02 * cy, 1.10 * cy],
+                    color=RULE, lw=1, zorder=1, clip_on=False)
+            ax.annotate(f"{k}\n{100 * v / tot:.0f}%", (x, y),
+                        ha="left" if right else "right", va="center",
+                        fontsize=8, family=MONO, color=INK_MID,
+                        linespacing=1.35, annotation_clip=False)
+        ax.text(0, 0.13, panel["title"], ha="center", va="center",
+                fontsize=13, family=MONO, color=INK, fontweight="bold")
+        # Two lines: "12,118 stores" on one line is wider than the hole.
+        ax.text(0, -0.17, f"{tot:,}\nstores", ha="center", va="center",
+                fontsize=7.5, family=MONO, color=INK_SOFT, linespacing=1.3)
+        ax.set(aspect="equal")
+
+    if title:
+        fig.text(0.012, 0.995, title, ha="left", va="top", fontsize=10.5,
+                 family=MONO, color=INK, fontweight="bold")
+    if subtitle:
+        fig.text(0.012, 0.945, subtitle, ha="left", va="top", fontsize=8,
+                 family=MONO, color=INK_SOFT)
+    if note:
+        fig.text(0.02, 0.02, note, ha="left", va="bottom", fontsize=7,
+                 family=MONO, color=INK_SOFT)
+    fig.subplots_adjust(top=0.86, bottom=0.06, left=0.13, right=0.87, wspace=0.72)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
+def box_png(path, rows, width=6.6, title="", subtitle="", note="", xsuffix=""):
+    """Horizontal box plots from precomputed quantiles.
+
+    `rows` = [{label, p10, p25, median, p75, p90, slot}] — the pipeline already
+    has the quantiles, so nothing recomputes them here and the drawn figure
+    cannot disagree with the checked numbers.
+
+    Whiskers are the 10th and 90th percentiles, not min and max. A handful of
+    very large ZIP codes would otherwise set the axis and squash the comparison
+    the chart exists to make; the note says so inside the image, because these
+    files get pasted somewhere the caption does not follow.
+    """
+    n = len(rows)
+    h = 0.62 * n + 1.05 + (0.42 if title else 0)
+    fig, ax = plt.subplots(figsize=(width, h), dpi=DPI, facecolor=PAPER)
+    _style(ax)
+    ax.grid(axis="x", color=RULE, lw=1, zorder=0)
+    ax.set_axisbelow(True)
+    for i, r in enumerate(rows):
+        y = n - 1 - i
+        c = MUTED if r.get("slot", 1) == 0 else S[r["slot"] - 1]
+        # Whisker, then the interquartile box over it, then the median rule.
+        ax.plot([r["p10"], r["p90"]], [y, y], color=c, lw=1.2, zorder=2)
+        for w in (r["p10"], r["p90"]):
+            ax.plot([w, w], [y - 0.11, y + 0.11], color=c, lw=1.2, zorder=2)
+        ax.add_patch(plt.Rectangle((r["p25"], y - 0.23), r["p75"] - r["p25"], 0.46,
+                                   facecolor=c, edgecolor="none", zorder=3))
+        ax.plot([r["median"], r["median"]], [y - 0.23, y + 0.23],
+                color=PAPER, lw=2.2, zorder=4)
+        ax.annotate(f"{r['median']:,}{xsuffix}", (r["median"], y + 0.30),
+                    ha="center", va="bottom", fontsize=8, family=MONO, color=INK)
+    ax.set_ylim(-0.7, n - 0.25)
+    ax.set_yticks(range(n))
+    ax.set_yticklabels([r["label"] for r in reversed(rows)])
+    ax.tick_params(left=False)
+    for lb in ax.get_yticklabels():
+        lb.set_color(INK_MID)
+        lb.set_fontsize(8.5)
+    ax.set_xlim(0, max(r["p90"] for r in rows) * 1.06)
+    ax.xaxis.set_major_locator(MaxNLocator(nbins=5, steps=[1, 2, 5, 10]))
+    ax.xaxis.set_major_formatter(FuncFormatter(_thousands))
+    gutter = max(len(str(r["label"])) for r in rows) * 8.5 * MONO_ADVANCE + 9
+    _titles(fig, ax, title, subtitle, gutter_pt=gutter)
+    ax.annotate(note or "box = middle half of ZIP codes · line = median · whiskers = 10th to 90th "
+                        "percentile", (0, 0), xycoords="axes fraction",
+                textcoords="offset points", xytext=(-gutter, -30), ha="left", va="top",
+                fontsize=7, family=MONO, color=INK_SOFT, annotation_clip=False)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
 def scatter_png(path, points, xlabel="", ylabel="", width=6.6, height=4.2,
                 xsuffix="", ysuffix="", quadrant=None, title="", subtitle="",
                 note=""):
