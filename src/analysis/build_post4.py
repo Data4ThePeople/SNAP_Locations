@@ -22,6 +22,7 @@ def main():
 
     c_chain = charts.line_chart(
         yrs, [{"name": "drug chains", "values": ch["stock"], "slot": 1}],
+        label_ends=False,          # one series; the title already names it
         y_label="active SNAP authorizations",
         annotate=[{"year": 2021, "text": "collapse begins"}],
         title="Chain pharmacies held flat, then fell off a cliff",
@@ -162,16 +163,15 @@ most checkable finding in the series.</p>
 least 150 in 2021. Labels show the count then and now.</figcaption></figure>
 
 <p>Pennsylvania — Rite Aid's home state — lost {abs(st[0]['delta']):,} of {st[0]['then']:,} chain
-pharmacies, or {abs(st[0]['pct']):.0f}%. Michigan lost {abs(st[1]['delta']):,}. California lost the
-most stores of any state.</p>
+pharmacies, or {abs(st[0]['pct']):.0f}%; Michigan lost {abs(st[1]['delta']):,}; California lost more
+stores than any other state. Nationally, <strong>{z['lost']:,} ZIP codes</strong> that had at least
+one SNAP-authorized chain pharmacy in 2021 had none by 2025, and only {z['gained']} went the other
+way.</p>
 
-<p>Nationally, <strong>{z['lost']:,} ZIP codes</strong> that had at least one SNAP-authorized chain
-pharmacy in 2021 had none by 2025. Only {z['gained']} went the other way, from none to at least
-one.</p>
-
-<p>Among nonmetro ZIP codes, {z['rate_nonmetro']}% lost their last chain pharmacy. Among metro ZIP
-codes, {z['rate_metro']}% did. Yet again, nonmetro areas get the short end of the stick, driving
-American geographic inequality ever higher.</p>
+<p>The sharpest divide is in where those losses landed. <strong>One in six nonmetro ZIP codes lost its
+last chain pharmacy</strong> — {z['rate_nonmetro']}%, against {z['rate_metro']}% of metro ones. Yet
+again, nonmetro areas get the short end of the stick, driving American geographic inequality ever
+higher.</p>
 
 <p>That is the part that matters for people. In many communities, losing a pharmacy isn't just
 losing another food store option; it's also losing access to prescriptions, and to the pharmacist — a
@@ -196,8 +196,8 @@ stores and pharmacies.</p>
 care about the America you don't see each day, or you can choose to do what you can to fix this
 problem.</p>
 
-<p><strong>Tomorrow: the pattern behind all five chapters — and the explanation almost everyone
-reaches for, which the data says is wrong.</strong></p>
+<p><strong>Tomorrow: the pattern behind all five chapters — and the explanation most of us would
+reach for, which the data says is wrong.</strong></p>
 
 <div class="caveat">
 <h3>Limits</h3>

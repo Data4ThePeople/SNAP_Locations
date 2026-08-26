@@ -43,7 +43,8 @@ def _fmt(v):
 
 
 def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
-              value_labels=True, annotate=None, title="", subtitle=""):
+              value_labels=True, annotate=None, title="", subtitle="",
+              label_ends=True):
     """`series` is a list of {name, values, slot} — slot is the 1-based palette index.
 
     `subtitle` is an alias for `y_label`, so every chart here takes the same
@@ -72,9 +73,14 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
                      f'stroke="var(--grid)" stroke-width="1"/>')
         parts.append(f'<text x="{x0-8}" y="{y+4:.1f}" text-anchor="end" '
                      f'class="tick">{_fmt(v)}</text>')
-    # x axis: first, last and every fourth year, to avoid a crowded axis.
-    keep = {years[0], years[-1]} | {y for y in years
-                                    if y % 4 == 0 and years[0] + 3 <= y <= years[-1] - 3}
+    # Evenly spaced ticks anchored at the first year, last always shown. Mirrors
+    # figures.line_png; see the note there on why "every fourth year" was wrong.
+    _step = max(1, round((len(years) - 1) / 4))
+    keep = set(range(years[0], years[-1], _step))
+    if keep and years[-1] - max(keep) < _step * 0.6:
+        keep.discard(max(keep))
+    keep.add(years[0])
+    keep.add(years[-1])
     for i, yr in enumerate(years):
         if yr in keep:
             parts.append(f'<text x="{sx(i):.1f}" y="{y0+20}" text-anchor="middle" '
@@ -88,9 +94,15 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
                      f'fill="var(--s{s["slot"]})" stroke="var(--surface)" stroke-width="2"/>')
 
     # Direct labels at the line ends, nudged apart where series finish close
-    # together so two labels never print on top of each other.
+    # together so two labels never print on top of each other. A single-series
+    # chart is named by its own title, so the label is switched off there — the
+    # lone swatch floating past the end of the line reads as a stray data point.
     placed = []
-    for val, s in sorted(((s["values"][-1], s) for s in series), key=lambda t: -t[0]):
+    if not label_ends:
+        series_labelled = []
+    else:
+        series_labelled = series
+    for val, s in sorted(((s["values"][-1], s) for s in series_labelled), key=lambda t: -t[0]):
         ly = sy(val)
         if placed and ly - placed[-1] < 14:
             ly = placed[-1] + 14

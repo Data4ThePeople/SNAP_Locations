@@ -45,6 +45,7 @@ def main():
         "Drug chain stores with an active SNAP authorization on 31 December of each year.",
         figures.line_png, yrs,
         [{"name": "drug chains", "values": ch["stock"], "slot": 1}],
+        label_ends=False,          # one series; the title already names it
         ylabel="active SNAP authorizations",
         annotate=[{"year": 2021, "text": "collapse begins"}],
         title="Chain pharmacies held flat, then fell off a cliff",
@@ -180,15 +181,13 @@ But the losses are not spread evenly. They track Rite Aid's footprint.
 ![{figs["states"]['caption']}](images/{figs["states"]['file']})
 
 Pennsylvania — Rite Aid's home state — lost {abs(st[0]['delta']):,} of {st[0]['then']:,} chain
-pharmacies, or {abs(st[0]['pct']):.0f}%. Michigan lost {abs(st[1]['delta']):,}. California lost the
-most stores of any state.
+pharmacies, or {abs(st[0]['pct']):.0f}%; Michigan lost {abs(st[1]['delta']):,}; California lost more
+stores than any other state. Nationally, **{z['lost']:,} ZIP codes** that had at least one
+SNAP-authorized chain pharmacy in 2021 had none by 2025, and only {z['gained']} went the other way.
 
-Nationally, **{z['lost']:,} ZIP codes** that had at least one SNAP-authorized chain pharmacy in 2021 had
-none by 2025. Only {z['gained']} went the other way, from none to at least one.
-
-Among nonmetro ZIP codes, {z['rate_nonmetro']}% lost their last chain pharmacy. Among metro ZIP
-codes, {z['rate_metro']}% did. Yet again, nonmetro areas get the short end of the stick, driving
-American geographic inequality ever higher.
+The sharpest divide is in where those losses landed. **One in six nonmetro ZIP codes lost its last
+chain pharmacy** — {z['rate_nonmetro']}%, against {z['rate_metro']}% of metro ones. Yet again,
+nonmetro areas get the short end of the stick, driving American geographic inequality ever higher.
 
 That is the part that matters for people. In many communities, losing a pharmacy isn't just losing
 another food store option; it's also losing access to prescriptions, and to the pharmacist — a health
@@ -213,7 +212,7 @@ The good news is that now you know. You can completely disagree with my logic, y
 care about the America you don't see each day, or you can choose to do what you can to fix this
 problem.
 
-**Tomorrow: the pattern behind all five chapters — and the explanation almost everyone reaches for,
+**Tomorrow: the pattern behind all five chapters — and the explanation most of us would reach for,
 which the data says is wrong.**
 
 ## Limits

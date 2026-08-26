@@ -14,11 +14,13 @@ adjacent-pair CVD separation is validated in palette.validate(n, "dark").
 Everything is drawn in monospace, matching the report's treatment of figures as
 record-keeping rather than display type.
 """
+import math
+
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
+from matplotlib.ticker import FuncFormatter, MaxNLocator
 
 from analysis import palette
 
@@ -54,7 +56,9 @@ def _thousands(v, _=None):
     # Below 10k a whole-thousand label repeats itself: 1,500 and 2,400 both
     # render as "2k" and the axis reads as though it has duplicate gridlines.
     if v >= 1_000:
-        return f"{v/1000:.1f}k"
+        # Keep the tenth where it carries information (1.5k), drop it where it
+        # does not, so an axis of round steps does not read "5.0k" then "10k".
+        return f"{v/1000:.1f}k".replace(".0k", "k")
     return f"{v:,.0f}"
 
 
@@ -145,12 +149,30 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
                         family=MONO, color=INK_MID, zorder=5, annotation_clip=False)
     for a in (annotate or []):
         ax.axvline(a["year"], color=INK_SOFT, lw=1, ls=(0, (3, 3)), zorder=1)
-        ax.annotate(a["text"], (a["year"], ax.get_ylim()[1]),
+        # Pinned to the top of the axes, not to a data value: the y limit is
+        # rounded up after this runs, and a data-anchored label was left
+        # stranded in the middle of the plot.
+        ax.annotate(a["text"], (a["year"], 1.0),
+                    xycoords=("data", "axes fraction"),
                     textcoords="offset points", xytext=(4, -11),
                     fontsize=7.5, family=MONO, color=INK_SOFT)
+    # Tick at round numbers only. The default locator chose 2,500 steps, and
+    # _thousands then rendered 12,500 as "12k" and 17,500 as "18k" — labels that
+    # did not match the gridlines they sat on. Restricting the step to 1/2/5 x a
+    # power of ten means the formatter never has to round.
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=5, steps=[1, 2, 5, 10]))
     ax.yaxis.set_major_formatter(FuncFormatter(_thousands))
     if y_zero:
         ax.set_ylim(bottom=0)
+        # Round the top up to the next whole tick. Left to autoscale, a peak of
+        # 20,341 sits just above the 20k gridline and the line reads as though
+        # it escapes the axis.
+        fig.canvas.draw()
+        ticks = [v for v in ax.get_yticks() if v >= 0]
+        if len(ticks) > 1:
+            step = ticks[1] - ticks[0]
+            hi_v = max(max(s["values"]) for s in series)
+            ax.set_ylim(top=(math.ceil(hi_v / step) * step) if hi_v % step else hi_v + step)
     else:
         # Series that go negative need the floor below the data, with a zero
         # line so the sign flip reads at a glance.
@@ -158,15 +180,23 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
         ax.set_ylim(bottom=lo * 1.12 if lo < 0 else lo * 0.94)
         if lo < 0:
             ax.axhline(0, color=INK_SOFT, lw=1, zorder=1)
-    ax.set_xlim(min(years), max(years) + (max(years) - min(years)) * 0.30)
-    # First and last always shown; regular ticks only where they will not
-    # collide with them.
+    # The right margin exists to hold the end labels; without them it is dead
+    # space and the line is squeezed into two-thirds of the frame.
+    pad = 0.30 if label_ends else 0.015
+    ax.set_xlim(min(years), max(years) + (max(years) - min(years)) * pad)
+    # Evenly spaced ticks anchored at the first year, with the last always shown.
+    # The old rule — first, last, and every year divisible by four — put 2006,
+    # 2012, 2016, 2020, 2025 on a 2006-2025 axis: gaps of 6, 4, 4, 5, which
+    # reads as a mis-drawn axis rather than a chosen one.
     if len(years) <= 12:
         ax.set_xticks(list(years))
     else:
-        mids = [y for y in years
-                if y % 4 == 0 and years[0] + 3 <= y <= years[-1] - 3]
-        ax.set_xticks([years[0]] + mids + [years[-1]])
+        step = max(1, round((len(years) - 1) / 4))
+        ticks = list(range(years[0], years[-1], step))
+        # Drop the last regular tick if the final year would crowd it.
+        if years[-1] - ticks[-1] < step * 0.6:
+            ticks.pop()
+        ax.set_xticks(ticks + [years[-1]])
     _titles(fig, ax, title, ylabel)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)
