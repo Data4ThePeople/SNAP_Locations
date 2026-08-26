@@ -137,16 +137,14 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
             y = val if not placed else max(val, placed[-1] + gap)
             placed.append(y)
             c = S[s["slot"] - 1]
-            # A swatch beside the label carries identity. Label text stays in ink
-            # per convention, so without this a nudged label cannot be matched to
-            # its line — which is exactly what happened where two series both
-            # finished near zero.
-            ax.annotate("\u25cf", (years[-1], y), textcoords="offset points",
-                        xytext=(9, 0), va="center", ha="left", fontsize=5.5,
-                        color=c, zorder=5, annotation_clip=False)
-            ax.annotate(f"  {s['name']}", (years[-1], y), textcoords="offset points",
-                        xytext=(14, 0), va="center", ha="left", fontsize=8,
-                        family=MONO, color=INK_MID, zorder=5, annotation_clip=False)
+            # The label is set in its own series colour rather than in ink beside
+            # a swatch. The swatch version put two dots in the right margin — the
+            # line's own end marker and then the swatch — which read as stray
+            # data points. Every slot these charts use clears 4.4:1 on this
+            # ground, so the coloured text stays legible.
+            ax.annotate(s["name"], (years[-1], y), textcoords="offset points",
+                        xytext=(10, 0), va="center", ha="left", fontsize=8,
+                        family=MONO, color=c, zorder=5, annotation_clip=False)
     for a in (annotate or []):
         ax.axvline(a["year"], color=INK_SOFT, lw=1, ls=(0, (3, 3)), zorder=1)
         # Pinned to the top of the axes, not to a data value: the y limit is

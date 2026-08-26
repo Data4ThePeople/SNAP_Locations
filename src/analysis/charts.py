@@ -107,11 +107,10 @@ def line_chart(years, series, width=720, height=330, y_zero=True, y_label="",
         if placed and ly - placed[-1] < 14:
             ly = placed[-1] + 14
         placed.append(ly)
-        # Swatch beside the label: the text is an ink token, so the mark is what
-        # ties a nudged label back to its line.
-        parts.append(f'<circle cx="{x1+12:.1f}" cy="{ly:.1f}" r="3" '
-                     f'fill="var(--s{s["slot"]})"/>')
-        parts.append(f'<text x="{x1+20}" y="{ly+4:.1f}" class="dlabel">'
+        # The label carries its own series colour instead of sitting in ink next
+        # to a swatch; see the note in figures.line_png on why the swatch went.
+        parts.append(f'<text x="{x1+10}" y="{ly+4:.1f}" class="dlabel" '
+                     f'fill="var(--s{s["slot"]})">'
                      f'{escape(s["name"])}{" " + _fmt(val) if value_labels else ""}</text>')
 
     for a in (annotate or []):
