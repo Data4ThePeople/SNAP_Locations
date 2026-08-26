@@ -101,7 +101,7 @@ def main():
         figures.box_png,
         [_box("lost_pharmacy", "lost pharmacy", 2), _box("kept_pharmacy", "kept pharmacy", 0)],
         title="Smaller places lost their chain pharmacy",
-        subtitle="ZIP code population, 2020 census")
+        subtitle="ZIP code population (2020 census), by whether the ZIP still has one in 2025")
 
     fig(4, "grocery-size",
         "ZIP code population (2020 census) for the ZIP codes that lost their last grocery store of "
@@ -109,7 +109,7 @@ def main():
         figures.box_png,
         [_box("lost_grocer", "lost grocer", 2), _box("kept_grocer", "kept grocer", 0)],
         title="And far smaller places lost their grocery store",
-        subtitle="ZIP code population, 2020 census")
+        subtitle="ZIP code population (2020 census), by whether the ZIP still has one in 2025")
 
     md = f"""# Twenty years, one pattern
 
@@ -227,28 +227,25 @@ what is standing now that it has gone.
 So if the dollar store did not do it, what did? The distinguishing feature of these places is not
 what arrived. It is how small they are.
 
-Start with the pharmacies. The ZIP codes that lost their last chain pharmacy have a median population
-of **{sp['lost_pharmacy']['median']:,}**. The ones that kept theirs, **{sp['kept_pharmacy']['median']:,}**.
-The two overlap — plenty of large ZIP codes lost a pharmacy — but the whole distribution sits lower.
+To gauge that relationship we zoomed back to 2006, the earliest date we have, and asked the same
+question of both formats: of the ZIP codes that had one then, which still have one now? That is a
+wider window than the pharmacy collapse we covered yesterday, so the counts here are not the 976.
+
+Start with the pharmacies. Of the ZIP codes that had a chain pharmacy in 2006, the ones that have
+none today have a median population of **{sp['lost_pharmacy']['median']:,}**. The ones that still have
+one, **{sp['kept_pharmacy']['median']:,}**. The two overlap — plenty of large ZIP codes lost a
+pharmacy — but the whole distribution sits lower.
 
 ![{figs["pharmacy-size"]['caption']}](images/{figs["pharmacy-size"]['file']})
 
-Now the grocery stores, where it is not a shift but a chasm. The ZIP codes that lost their last
-grocery store of any size have a median population of **{sp['lost_grocer']['median']:,}**. Half of
+Now the grocery stores, asked the same way, where it is not a shift but a chasm. Of the ZIP codes
+that had a grocery store of any size in 2006, the ones that have none today have a median population
+of **{sp['lost_grocer']['median']:,}**. Half of
 them fall between {sp['lost_grocer']['p25']:,} and {sp['lost_grocer']['p75']:,} people. Half of the
 ones that kept a grocery store fall between {sp['kept_grocer']['p25']:,} and
-{sp['kept_grocer']['p75']:,}. A grocery store needs more people under it than a pharmacy does, and it
-goes first when they are not there.
+{sp['kept_grocer']['p75']:,}.
 
 ![{figs["grocery-size"]['caption']}](images/{figs["grocery-size"]['file']})
-
-The two charts are not drawn from the same pool, which is worth saying plainly. The pharmacy one
-starts from ZIP codes that had a chain pharmacy in 2021 — a bar that already requires a certain number
-of people. The grocery one starts from any ZIP code that had a grocery store in 2006, and only
-{gt['lost_grocery_ever_had_rx_pct']:.0f}% of the ones that lost theirs ever had a chain pharmacy at
-all. A place can be far too small for a Walgreens and still have had a grocery store.
-
-[[CLOSING PARAGRAPH FOR THIS SECTION — Eric]]
 
 ## What is at stake
 

@@ -315,12 +315,20 @@ def main():
     print("\n7f. Population spread by group")
     if pop:
         out["spread"] = {}
+        # Both charts start from 2006, so they ask the same question of each
+        # format: of the ZIP codes that had one then, which still have one now?
+        # An earlier cut used the 2021 pharmacy cohort and the two charts were
+        # not comparable, which needed a paragraph to explain away.
         for lab, where in (
-            ("lost_pharmacy", "g.grp = 'lost'"), ("kept_pharmacy", "g.grp = 'kept'")):
+            ("lost_pharmacy", "a.drug > 0 AND coalesce(b.drug,0) = 0"),
+            ("kept_pharmacy", "a.drug > 0 AND coalesce(b.drug,0) > 0")):
             r = con.execute(f"""
+                WITH a AS (SELECT zip, drug FROM zf WHERE yr = 2006),
+                     b AS (SELECT zip, drug FROM zf WHERE yr = 2025)
                 SELECT count(*), quantile_cont(p.pop,0.10), quantile_cont(p.pop,0.25),
                        median(p.pop), quantile_cont(p.pop,0.75), quantile_cont(p.pop,0.90)
-                FROM grp g JOIN zpop p ON p.zip = g.zip WHERE {where}""").fetchone()
+                FROM a LEFT JOIN b USING(zip) JOIN zpop p ON p.zip = a.zip
+                WHERE {where}""").fetchone()
             out["spread"][lab] = dict(zip(
                 ("n", "p10", "p25", "median", "p75", "p90"),
                 [int(r[0])] + [int(v) for v in r[1:]]))
@@ -341,6 +349,7 @@ def main():
             print(f"     {lab:15} n={s['n']:>6,}  p10 {s['p10']:>6,}  p25 {s['p25']:>6,}  "
                   f"median {s['median']:>6,}  p75 {s['p75']:>6,}  p90 {s['p90']:>6,}")
         sp = out["spread"]
+        check("median, lost pharmacy (2006 base)", sp["lost_pharmacy"]["median"], 16082, tol=200)
         check("median, lost grocer", sp["lost_grocer"]["median"], 1955, tol=40)
         check("p75, lost grocer", sp["lost_grocer"]["p75"], 3740, tol=80)
         # The claim each chart makes: the losing group sits lower throughout.
