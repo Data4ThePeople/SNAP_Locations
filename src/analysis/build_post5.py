@@ -151,7 +151,7 @@ convenience store and a single dollar store. {twn[2]['city']}, {twn[2]['state']}
 chain pharmacy today. They are not exotic places. They are in Ohio, Pennsylvania, West Virginia, Michigan and
 Arkansas.</p>
 
-<h2>The dollar stores did not do this</h2>
+<h2>Don't blame the dollar stores</h2>
 
 <p>Before we move on, we wanted to check one thing. Did the surge in dollar stores and convenience
 stores push the grocers out? Or did these formats come to the rescue, filling a void that was already
@@ -210,18 +210,22 @@ any size against those that kept one.</figcaption></figure>
 over the past two decades. Over seven days it has morphed into something larger — a study of the
 widening chasm between two Americas.</p>
 
-<p>It's obvious why this matters for the "have-nots." Just put yourself in the shoes of someone who
-lives in a town with no pharmacy and no grocery store, and then think about how meaningless something
-like yesterday evening's Nvidia earnings release must seem.</p>
+<p>It's obvious why this matters for the "have-nots." Put yourself in the shoes of someone living in
+a town with no pharmacy and no grocery store — and thus no way to buy <a href="https://www.data4thepeople.com/p/accountability-is-patriotism">the tilapia
+the Thrifty Food Plan lists as a staple for families on SNAP</a> — on 130% of the federal poverty level,
+$42,900 a year for a family of four. Then think about how meaningless something like yesterday evening's Nvidia
+earnings release, an event that monopolized the attention of so many of the "haves," must seem.</p>
 
-<p>But if you are lucky enough to be one of the "haves," this matters for you too. We don't all have
-equal bank accounts, but we all have equal votes. And votes determine the future of this country. You
-may not agree with how others vote. But have you tried to understand them? Have you tried to imagine
-the life they have had to live?</p>
+<p>But if you are lucky enough to be one of the "haves," the struggle of the "have-nots" matters for
+you too. We don't all have equal bank accounts, but we all have equal votes. And votes determine the
+future of this country. You may not agree with how others vote. But have you tried to understand
+them? Have you tried to imagine the life they have had to live? If you don't understand other people's
+lived experience, and how different it may be from your own, how can we criticize how they choose to
+vote?</p>
 
 <p>This is the problem, in my view. We have largely stopped trying to understand people, and jump to
 judging them instead. Data can help us understand, but only if we bring a beginner's mind to the
-analysis. And truly understanding others is the first step to stitching it back together.</p>
+analysis. And truly understanding others is the first step to stitching this country back together.</p>
 
 <p>So let's use this data to understand — at least how people feed themselves. Maybe try grocery shopping one week at a dollar store only. Maybe set your family's grocery budget at $229 for a week, and see how
 that feels when you get to Thursday. Data can only help us identify our shortsightedness. It is experiences like these that have the potential to solidify our learning and our empathy.</p>
