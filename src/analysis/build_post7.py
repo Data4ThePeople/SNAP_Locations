@@ -147,9 +147,9 @@ share.</p>
 
 <h2>Two problems with that forecast</h2>
 
-<p><strong>The first is the cost.</strong> USDA put compliance at about
-<strong>${im['cost_year_one_small']} in the first year</strong> and ${im['cost_five_years_small']} over five years
-for a store that needs to add varieties. That figure is what let the agency conclude the rule has
+<p><strong>The first is the cost.</strong> USDA put compliance for a store that needs to add
+varieties at about <strong>${im['cost_year_one_small']} in the first year</strong>, rising to
+${im['cost_five_years_small']} over five years. That figure is what let the agency conclude the rule has
 "{im['rfa_finding']}".</p>
 
 <p>But the requirement that actually bites is not the seven varieties. A small store can stock seven

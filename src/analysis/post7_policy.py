@@ -38,6 +38,7 @@ asks for stock, so the honest prediction is about stock.
 """
 import json
 
+from analysis.post4_pharmacy import DRUG_BRANDS
 from config import ROOT
 
 OUT = ROOT / "reports" / "data"
@@ -55,29 +56,135 @@ POLICY = {
         "seafood_weekly_cost": 12.80,
         "seafood_note": "most expensive category; the plan assumes low-cost choices "
                         "and names tilapia or canned tuna as examples",
+        "url": "https://www.fna.usda.gov/cnpp/thrifty-food-plan-2021",
         "source": "Thrifty Food Plan, 2021 (USDA FNS-916, August 2021)",
     },
     "old_standard": {
         "varieties_per_category": 3,
         "categories": 4,
         "units_per_variety": 3,
+        "total_varieties": 12,
         "total_items": 36,
         "perishable_items": 6,
         "perishable_categories": 2,
-        "source": "7 CFR 278.1 and the SNAP stocking standards rule effective "
-                  "January 2018",
+        # NOT a rule USDA wrote. This is the pre-2014-Farm-Bill standard that
+        # section 765 ordered FNS to keep applying until it widened the
+        # definition of "variety" — the codified CFR text said seven varieties
+        # throughout, and the 36 units are the appropriations fallback that was
+        # actually enforced.
+        "url": "https://www.govinfo.gov/app/details/PLAW-115publ31",
+        "source": "the pre-2014 standard, applied under section 765 of the "
+                  "Consolidated Appropriations Act, 2017 (P.L. 115-31) and the "
+                  "same provision in every later agriculture appropriations act",
+    },
+    # The chain from statute to enforcement, each link checked against the
+    # Statutes at Large and the Federal Register. Three things here are easy to
+    # get wrong and were: the rider blocked "variety" and BREADTH of stock but
+    # never depth; there was no 2017 or 2018 replacement rule, only the 2016
+    # rule's implementation deadline; and the rider never lapsed — it is in the
+    # FY2026 act, and USDA satisfied its condition instead.
+    # Set this to the day the post goes out. "N days out" is computed from it,
+    # so the figure is reproducible instead of changing on every rebuild.
+    "post_date": "2026-08-29",
+    # The variety question, as it actually stands. Written after a fact-check
+    # overturned the first draft of this section: the rule DOES define variety,
+    # in detail, and it resolves the obvious cases (different cuts of meat are
+    # one variety; cream and milk are two). No evidence was found that draft
+    # guidance exists or keeps changing — the docket has had no activity since
+    # the rule published. The real, documented problem is that the promised
+    # guidance never came and USDA's own retailer pages still teach the old
+    # standard.
+    "variety": {
+        "citation": "7 CFR 278.1(b)(1)(ii)(C)-(E)",
+        "url": "https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-C/part-278/section-278.1",
+        # The two pages a retailer or inspector actually opens for the standard
+        # itself. Both still carried the pre-rule numbers and USDA's own
+        # not-up-to-date banner when checked on 27 August 2026.
+        "stale_pages": ["https://www.fna.usda.gov/snap/retailer/eligible",
+                        "https://www.fna.usda.gov/snap/retailer/staple-foods"],
+        "cuts_of_meat": "different cuts of meat",
+        "cream": "Cream is a separate main ingredient from milk",
+        "whole_grain": "may contain any amount of whole grain",
+        "usda_protein_example": "chicken breast, ground beef, frozen salmon filets, "
+                                "canned tuna, eggs, peanut butter, and lentils",
+        "usda_grain_example": "sourdough bread, corn tortillas, whole grain spaghetti, "
+                              "quick-cook oats, brown rice, pearled barley, and white flour",
+        "guidance_promised": "We will update our website with guidance for retailers soon.",
+        "guidance_promised_date": "8 May 2026",
+        "stale_banner": "Attention: Some content on this page is not up to date.",
+        "stale_pages_say": "a minimum of 36 staple food items, three varieties per "
+                           "category, and that chocolate milk and regular milk count "
+                           "as one variety",
+        "docket_quiet_since": "8 May 2026",
+        "source": "91 FR 25082 regulatory text; fns.usda.gov/snap/retailer/eligible and "
+                  "/staple-foods, both still carrying the pre-rule standard and a "
+                  "not-up-to-date banner as of 27 August 2026",
+    },
+    "industry": {
+        "nacs_day_one": "raises more questions than it answers",
+        "nacs_august": "USDA has not published detailed guidance to help retailers "
+                       "understand how products will be categorized and enforced",
+        "nacs_disputes": "could create confusion for both retailers and inspectors, "
+                         "increasing the likelihood of disputes during compliance reviews",
+        "nacs_ask": "delay enforcement until six months after formal guidance is released",
+        "nacs_day_one_url": "https://www.convenience.org/stay-current/news/2026/"
+                            "may/8/usda-releases-complex-overhaul-of-snap-stocking-requirements",
+        "nacs_august_url": "https://www.convenience.org/stay-current/news/2026/"
+                           "august/10/what-convenience-retailers-need-to-know-about-snap",
+        "senate_sponsor": "Sen. Jim Justice (R-WV)",
+        "senate_vote": "10-11",
+        "senate_vote_date": "6 August 2026",
+        "cstores_snap": 118000,
+        "cstore_sqft": 3600,
+        "source": "NACS, 8 May and 10 August 2026; Senate Agriculture Committee markup, "
+                  "6 August 2026",
+    },
+    "history": {
+        "directive_act": "Agricultural Act of 2014",
+        "directive_cite": "Pub. L. 113-79, section 4002(a)",
+        "directive_date": "7 February 2014",
+        "directive_codified": "7 U.S.C. 2012(o)(1)(A)",
+        "rule_2016_cite": "81 FR 90675",
+        "rule_2016_published": "15 December 2016",
+        "rule_2016_effective": "17 January 2017",
+        "rule_2016_existing_stores": "17 January 2018",
+        "rider_cite": "section 765 of the Consolidated Appropriations Act, 2017 "
+                      "(P.L. 115-31)",
+        "rider_date": "5 May 2017",
+        "rider_blocked": "variety and breadth of stock",
+        "rider_latest": "section 726 of Division B of P.L. 119-37",
+        "rider_latest_date": "12 November 2025",
+        "proposed_2025_cite": "90 FR 46081",
+        "proposed_2025_date": "25 September 2025",
+        # Every URL below was resolved and read, not inferred from a citation
+        # pattern. The two Federal Register documents came from the FR API by
+        # docket, and the three public laws from govinfo by PLAW id.
+        "directive_url": "https://www.govinfo.gov/app/details/PLAW-113publ79",
+        "rule_2016_url": "https://www.federalregister.gov/documents/2016/12/15/2016-29837/enhancing-retailer-standards-in-the-supplemental-nutrition-assistance-program-snap",
+        "rider_url": "https://www.govinfo.gov/app/details/PLAW-115publ31",
+        "rider_latest_url": "https://www.govinfo.gov/app/details/PLAW-119publ37",
+        "proposed_2025_url": "https://www.federalregister.gov/documents/2025/09/25/2025-18624/updated-staple-food-stocking-standards-for-retailers-in-the-supplemental-nutrition-assistance",
+        "source": "Statutes at Large and the Federal Register, verified against "
+                  "govinfo",
     },
     "new_standard": {
         "varieties_per_category": 7,
         "categories": 4,
         "perishable_categories": 3,
+        "total_varieties": 28,
+        "units_per_variety": 3,
+        "total_items": 84,
+        "perishable_items": 9,
         "category_names": "dairy, fruits or vegetables, grains, and protein",
+        "published": "8 May 2026",
         "effective": "7 July 2026",
         "compliance": "4 November 2026",
         "docket": "FNS-2025-0018",
         "directive": "Agricultural Act of 2014",
         "blocked": "the same seven-variety expansion was blocked by Congress in 2017",
         "citation": "91 FR 25082",
+        "url": "https://www.federalregister.gov/documents/2026/05/08/2026-09137/updated-staple-food-stocking-standards-for-retailers-in-the-supplemental-nutrition-assistance",
+        "usda_page": "https://www.fna.usda.gov/snap/retailer/stocking-standards-rule",
         "source": "Updated Staple Food Stocking Standards for Retailers in the "
                   "Supplemental Nutrition Assistance Program, final rule, "
                   "91 FR 25082 (8 May 2026)",
@@ -120,6 +227,8 @@ POLICY = {
         "large_share_of_retailers_pct": 15,
         "rfa_finding": "no significant economic impact on a substantial number of "
                        "small entities",
+        "url": "https://www.regulations.gov/document/FNS-2025-0018-0236",
+        "docket_url": "https://www.regulations.gov/docket/FNS-2025-0018",
         "source": "USDA regulatory impact analysis for the final rule, docket "
                   "FNS-2025-0018 document 0236 (19 March 2026)",
     },
@@ -131,6 +240,7 @@ POLICY = {
         "catchall": "any other factors which the FNS officer in charge considers "
                     "pertinent",
         "methodology_published": False,
+        "url": "https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-C/part-278/section-278.1",
         "source": "SNAP retailer eligibility regulations; FRAC analysis",
     },
     "positions": [
@@ -155,6 +265,27 @@ POLICY = {
                 "produce in fewer than one in three of its own stores, and slowing "
                 "that rollout",
         "source": "company disclosures and trade press",
+    },
+    # The closing cites congressional stock trading. Two separate sources doing
+    # two different jobs: ProPublica documents the conduct and is free to read,
+    # which matters for a piece that asks to be shared; the count of members
+    # belongs to the Times, and is attributed to the Times in the text rather
+    # than folded into the ProPublica link.
+    "trading": {
+        "propublica_url": "https://www.propublica.org/article/"
+                          "us-officials-stock-sales-trump-tariffs",
+        "propublica_source": "Robert Faturechi, Pratheek Rebala and Brandon Roberts, "
+                             "\"More Than a Dozen U.S. Officials Sold Stocks Before "
+                             "Trump's Tariffs Sent the Market Plunging,\" ProPublica, "
+                             "22 May 2025",
+        "nyt_url": "https://www.nytimes.com/interactive/2022/09/13/us/politics/"
+                   "congress-members-stock-trading-list.html",
+        "nyt_members": 97,
+        "nyt_trades": 3700,
+        "nyt_years": "2019-2021",
+        "nyt_source": "\"These 97 Members of Congress Reported Trades in Companies "
+                      "Influenced by Their Committees,\" The New York Times, "
+                      "13 September 2022",
     },
     "precedent_2019": {
         "opposing_comments": 9000,
@@ -242,6 +373,15 @@ def main():
     check("the dollar chains are recorded as silent",
           any(p["stance"] == "no public comment" for p in POLICY["positions"]))
 
+    # The closing calls 97 members "nearly a fifth of Congress". Congress is 535
+    # voting members, so that phrase is only true in a band — pin it, so an edit
+    # to either the number or the wording has to face the other.
+    _share = 100 * POLICY["trading"]["nyt_members"] / 535
+    print(f"\n   congressional trading: {POLICY['trading']['nyt_members']} members "
+          f"= {_share:.1f}% of 535 — 'nearly a fifth'")
+    check("97 members is fairly described as nearly a fifth of Congress",
+          16.0 <= _share <= 20.0, f"{_share:.1f}%")
+
     out = {
         "policy": POLICY,
         "precedent": {"years": fl["years"], "new": fl["new"], "departed": fl["departed"],
@@ -252,6 +392,135 @@ def main():
                          "total_loss": d5["total_loss"],
                          "presence": d5["presence"]},
     }
+    # ------------------------------------------------------------ worst case
+    # What the map looks like if the three formats most exposed to the stocking
+    # standard gave up their authorizations. This is NOT a forecast — USDA's own
+    # projection is a net loss of about 500 stores. It is the ceiling: the most
+    # that could be lost if the variety definition lands as strictly as it can.
+    # Staged, because the stages are the argument: convenience is the format
+    # experts think is genuinely at risk, and the dollar store is the tail.
+    from analysis import panel as _panel, rucc as _rucc
+    from analysis.post5_synthesis import zcta_population as _zpop
+    from collections import Counter as _C
+    con = _panel.build()
+    _pop = _zpop()
+    _lookup, _ = _rucc.load()
+    _DRUG = ",".join(f"'{b}'" for b in DRUG_BRANDS)
+    con.execute(f"""
+        CREATE OR REPLACE TEMP TABLE cur AS
+        SELECT DISTINCT p.record_id, p.zip_code AS zip, p.state, p.county,
+               CASE WHEN p.format = 'Convenience Store' THEN 'conv'
+                    WHEN p.format = 'Dollar Store' THEN 'dollar'
+                    WHEN p.brand IN ({_DRUG}) THEN 'rx' ELSE 'other' END AS grp
+        FROM panel p JOIN fact_spell f ON f.record_id = p.record_id AND NOT f.date_anomaly
+        WHERE f.auth_date <= DATE '2025-12-31'
+          AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
+          AND p.zip_code IS NOT NULL AND length(p.zip_code) = 5""")
+    con.execute("CREATE OR REPLACE TEMP TABLE zpop (zip VARCHAR, pop BIGINT)")
+    con.executemany("INSERT INTO zpop VALUES (?, ?)", list(_pop.items()))
+    stores = {g: int(n) for g, n in
+              con.execute("SELECT grp, count(*) FROM cur GROUP BY 1").fetchall()}
+    base_zips, = con.execute("SELECT count(DISTINCT zip) FROM cur").fetchone()
+    stages = {}
+    for key, keep in (("conv", "grp <> 'conv'"),
+                      ("conv_rx", "grp NOT IN ('conv','rx')"),
+                      ("all", "grp = 'other'")):
+        zz = [r[0] for r in con.execute(
+            f"""SELECT DISTINCT zip FROM cur
+                WHERE zip NOT IN (SELECT zip FROM cur WHERE {keep})""").fetchall()]
+        stages[key] = {"zips_to_zero": len(zz),
+                       "population": sum(_pop[z] for z in zz if z in _pop)}
+    zeroed = {r[0] for r in con.execute(
+        """SELECT DISTINCT zip FROM cur
+           WHERE zip NOT IN (SELECT zip FROM cur WHERE grp = 'other')""").fetchall()}
+    zc = {}
+    for z, st, ct, n in con.execute(
+            "SELECT zip, state, county, count(*) FROM cur GROUP BY 1,2,3").fetchall():
+        k = _lookup(st, ct)
+        if k:
+            zc.setdefault(z, _C())[k] += n
+    metro = sum(1 for z in zeroed if z in zc and zc[z].most_common(1)[0][0] <= 3)
+    nonmetro = sum(1 for z in zeroed if z in zc and zc[z].most_common(1)[0][0] > 3)
+    states = [{"state": s, "lost": int(l), "total": int(tt),
+               "pct": round(100 * l / tt, 1)}
+              for s, l, tt in con.execute("""
+        WITH z AS (SELECT DISTINCT zip, state FROM cur),
+             k AS (SELECT DISTINCT zip FROM cur WHERE grp = 'other')
+        SELECT z.state, count(*) FILTER (WHERE k.zip IS NULL), count(*)
+        FROM z LEFT JOIN k USING(zip) GROUP BY 1
+        HAVING count(*) >= 100 ORDER BY 2 DESC""").fetchall()]
+    # By ZIP population, which is the thread the whole series pulls on. The
+    # state ranking is still computed above but is not charted: it mostly
+    # measures how rural a state is, and says it less clearly than this does.
+    bands = [{"band": b, "zips": int(tt), "zeroed": int(z), "population": int(pp or 0),
+              "pct": round(100 * z / tt, 1)}
+             for b, tt, z, pp in con.execute("""
+        WITH z AS (SELECT DISTINCT zip FROM cur),
+             k AS (SELECT DISTINCT zip FROM cur WHERE grp = 'other'),
+             b AS (SELECT z.zip, p.pop, k.zip IS NULL AS zeroed,
+                          CASE WHEN p.pop < 1000 THEN 'under 1,000'
+                               WHEN p.pop < 2500 THEN '1,000 to 2,500'
+                               WHEN p.pop < 5000 THEN '2,500 to 5,000'
+                               WHEN p.pop < 10000 THEN '5,000 to 10,000'
+                               WHEN p.pop < 25000 THEN '10,000 to 25,000'
+                               ELSE '25,000 and up' END AS band,
+                          CASE WHEN p.pop < 1000 THEN 1 WHEN p.pop < 2500 THEN 2
+                               WHEN p.pop < 5000 THEN 3 WHEN p.pop < 10000 THEN 4
+                               WHEN p.pop < 25000 THEN 5 ELSE 6 END AS ord
+                   FROM z LEFT JOIN k USING(zip) JOIN zpop p ON p.zip = z.zip)
+        SELECT band, count(*), count(*) FILTER (WHERE zeroed),
+               sum(pop) FILTER (WHERE zeroed)
+        FROM b GROUP BY band, ord ORDER BY ord""").fetchall()]
+    med = {}
+    for lab, w in (("zeroed", "k.zip IS NULL"), ("kept", "k.zip IS NOT NULL")):
+        r = con.execute(f"""
+            WITH z AS (SELECT DISTINCT zip FROM cur),
+                 k AS (SELECT DISTINCT zip FROM cur WHERE grp = 'other')
+            SELECT count(*), median(p.pop) FROM z LEFT JOIN k USING(zip)
+            JOIN zpop p ON p.zip = z.zip WHERE {w}""").fetchone()
+        med[lab] = {"n": int(r[0]), "median_pop": int(r[1])}
+    print("\n   by ZIP population:")
+    for b in bands:
+        print(f"     {b['band']:18} {b['zeroed']:>5,} of {b['zips']:>6,}  ({b['pct']:5.1f}%)")
+    print(f"     median population — left with nothing {med['zeroed']['median_pop']:,}, "
+          f"keeps a retailer {med['kept']['median_pop']:,}")
+    check("the smallest ZIP codes are hit far hardest",
+          bands[0]["pct"] > 10 * bands[-1]["pct"])
+
+    out["worst_case"] = {
+        "bands": bands, "median": med,
+        "stores_total": sum(stores.values()), "stores_by_group": stores,
+        "stores_at_risk": sum(v for k, v in stores.items() if k != "other"),
+        "stores_remaining": stores.get("other", 0),
+        "base_zips": int(base_zips), "stages": stages,
+        "zeroed_metro": metro, "zeroed_nonmetro": nonmetro,
+        "zeroed_nonmetro_pct": round(100 * nonmetro / (metro + nonmetro), 1),
+        "states": states,
+    }
+    import datetime as _dt
+    _pd = _dt.date.fromisoformat(POLICY["post_date"])
+    _imp = _dt.date(2026, 11, 4)
+    out["policy"]["days_to_implementation"] = (_imp - _pd).days
+    out["policy"]["days_since_rule"] = (_pd - _dt.date(2026, 5, 8)).days
+    print(f"\n   {out['policy']['days_to_implementation']} days from "
+          f"{POLICY['post_date']} to the 4 November implementation date")
+
+    w = out["worst_case"]
+    print("\nWorst case: the three exposed formats give up authorization")
+    print(f"   {w['stores_at_risk']:,} of {w['stores_total']:,} stores "
+          f"({100*w['stores_at_risk']/w['stores_total']:.1f}%) would go")
+    for k, lab in (("conv", "convenience only"), ("conv_rx", "+ chain pharmacies"),
+                   ("all", "+ dollar stores")):
+        s = stages[k]
+        print(f"   {lab:20} {s['zips_to_zero']:>6,} ZIPs to zero, "
+              f"{s['population']:>12,} people")
+    print(f"   of the {len(zeroed):,} zeroed ZIPs, {w['zeroed_nonmetro_pct']}% are nonmetro")
+    check("worst case removes more than half of all authorized stores",
+          w["stores_at_risk"] > w["stores_total"] / 2)
+    # The staging is the argument: the dollar store is what makes it a disaster.
+    check("dollar stores more than double the ZIPs left with nothing",
+          stages["all"]["zips_to_zero"] > 2 * stages["conv_rx"]["zips_to_zero"])
+
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "post7.json").write_text(json.dumps(out, indent=1))
     print(f"\nwrote {OUT / 'post7.json'}")

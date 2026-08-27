@@ -2,7 +2,7 @@
 import json
 import shutil
 
-from analysis import figures
+from analysis import figures, panel
 from config import ROOT
 
 LADDER = ["Small Grocery Store", "Convenience Store", "Combination Grocery/Other",
@@ -30,7 +30,11 @@ def main():
 
     P = d["policy"]
     tfp, o, n, im = P["tfp"], P["old_standard"], P["new_standard"], P["impact"]
+    h = P["history"]
+    wc = d["worst_case"]
+    v, i = P["variety"], P["industry"]
     nfa, dg = P["need_for_access"], P["dollar_general"]
+    trading = P["trading"]
     pre, tm = d["precedent"], d["thin_markets"]
     surv = {r["segment"]: r for r in d["survival"]}
     eu = {r["store_type"]: r for r in d["entry_change_usda"]}
@@ -38,61 +42,99 @@ def main():
 
     print("figures:")
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        # Two different denominators — share of STORES against share of DOLLARS —
-        # so each number carries its own noun rather than being joined by "vs".
-        [{"value": f"{im['small_share_of_retailers_pct']}% of stores, "
-                   f"{im['small_share_of_redemptions_pct']}% of spending",
-          "label": "the small stores this rule hits hardest are most of the SNAP "
-                   "retailers in the country and almost none of the SNAP money"},
+        # The lead card is the piece's own finding rather than USDA's share of
+        # retailers: people, not percentages. The conditional does the work of
+        # keeping a ceiling from reading as a forecast, so it stays in the label.
+        [{"value": f"{wc['stages']['conv']['population']/1e6:.1f} million",
+          "label": "people whose ZIP code would have no SNAP retailer at all "
+                   "if convenience stores drop out"},
          {"value": f"${im['cost_year_one_small']}",
           "label": "what USDA estimates it costs a small store to comply in the "
                    "first year"},
          {"value": n["compliance"].replace(" 2026", ""),
           "label": "the 2026 date by which every SNAP retailer has to meet it"}])
 
-    fig(1, "standard-change",
-        "What the stocking standard requires, before and after November 2026.",
-        figures.table_png, ["Requirement", "Until now", "From November"],
-        [["Varieties in each of four categories",
-          str(o["varieties_per_category"]), str(n["varieties_per_category"])],
-         ["Categories needing a perishable food",
-          str(o["perishable_categories"]), str(n["perishable_categories"])]],
-        title="The bar more than doubles in November",
-        subtitle="what a SNAP store must stock")
+    # ---- worst-case figures -------------------------------------------------
+    from analysis import usmap
+    from analysis.post4_pharmacy import DRUG_BRANDS
+    _con = panel.build()
+    _D = ",".join(f"'{b}'" for b in DRUG_BRANDS)
+    _A = ("f.auth_date <= DATE '2025-12-31' AND "
+          "(f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')")
 
-    fig(2, "entry-vs-exit-2018",
-        "New authorizations and departures for small grocery stores. The last time stocking "
-        "standards tightened, the entry line moved and the exit line did not.",
-        figures.line_png, pre["years"],
-        [{"name": "new authorizations", "values": pre["new"], "slot": 1},
-         {"name": "departures", "values": pre["departed"], "slot": 2}],
-        ylabel="small grocery stores per year",
-        annotate=[{"year": 2018, "text": "2018 standard"}],
-        title="Last time the rules tightened, new sign-ups fell",
-        subtitle="small grocery stores per year")
+    _con.execute(f"""CREATE OR REPLACE TEMP TABLE _wc AS
+        SELECT DISTINCT p.record_id, p.zip_code AS zip, p.format,
+               p.longitude AS lon, p.latitude AS lat
+        FROM panel p JOIN fact_spell f
+          ON f.record_id = p.record_id AND NOT f.date_anomaly
+        WHERE {_A} AND p.zip_code IS NOT NULL AND length(p.zip_code) = 5""")
 
-    fig(3, "size-ladder",
-        "Change in new SNAP sign-ups per year, 2012-13 average against 2018-19 average, by "
-        "USDA's own store type.",
-        figures.table_png, ["USDA store type", "Change in new sign-ups"],
-        [[typ, f"{eu[typ]['pct']:+.0f}%"] for typ in LADDER if typ in eu],
-        title="The fall sorts by how much stock a store carries",
-        subtitle="new sign-ups per year, 2012-13 vs 2018-19")
+    # Convenience stores only. Chain pharmacies show no exposure to this rule
+    # and adding them moves the count by 90 ZIP codes; dollar stores are the
+    # tail, carried in prose rather than drawn as though it were the base case.
+    _keep = ("zip IN (SELECT zip FROM _wc WHERE format <> 'Convenience Store')")
 
-    fig(4, "positions",
-        "Who took a public position on the rule.",
-        figures.table_png, ["Organization", "Represents", "Position"],
-        [[p["who"], p["represents"], p["stance"]] for p in P["positions"]],
-        align=["left", "left", "right"],
-        title="Stores that already comply are in favor",
-        subtitle="public positions on the rule")
+    def _zips(where):
+        """One point per ZIP code, at the mean position of its stores.
 
-    md = f"""# In November, the rules change for the stores that are left
+        Mapping stores could not carry this: taking half the dots out of a
+        232,000-dot field still leaves dots everywhere. Places is the unit the
+        consequence is actually measured in, and it is a sparse enough field to
+        read.
+        """
+        rows = _con.execute(f"""
+            SELECT avg(lon), avg(lat) FROM _wc WHERE {where}
+              AND lon BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
+              AND lat BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}
+            GROUP BY zip""").fetchall()
+        xy = usmap.albers([r[0] for r in rows], [r[1] for r in rows])
+        return xy, len(rows)
 
-*An epilogue. The Thrifty Food Plan, the new SNAP stocking standard, and a prediction made before the
-deadline.*
+    _kept_xy, _n_kept = _zips(_keep)
+    _gone_xy, _n_gone = _zips(f"NOT ({_keep})")
+    fig(1, "worst-case-map",
+        f"Dot map of the lower 48, one dot per ZIP code. Faint grey marks the {_n_kept:,} "
+        f"ZIP codes that would still have a SNAP-authorized retailer if every convenience "
+        f"store gave up its authorization; pink marks the {_n_gone:,} that would have none, "
+        f"scattered across the interior and the rural East.",
+        figures.map_pair_png,
+        [{"title": "", "xy": _kept_xy, "color": figures.MUTED,
+          # figures.MUTED is the series' context grey and is contrast-checked
+          # against this ground; the hand-picked darker grey it replaced was
+          # near-invisible. The pink still reads as figure because it is the
+          # only chromatic layer and sits at nearly twice the dot size.
+          # 19,074 grey dots against 2,782 pink: at equal weight the grey wins
+          # on count alone. Grey is dimmed and shrunk, pink enlarged and set
+          # opaque, so the ground stays legible without becoming the figure.
+          "layers": [{"xy": _kept_xy, "color": "#4d565e", "size": 1.3, "alpha": 0.85},
+                     {"xy": _gone_xy, "color": figures.S[4], "size": 3.6, "alpha": 1.0}],
+          "keys": [{"label": f"{_n_kept:,} ZIP codes keep a SNAP retailer",
+                    "color": figures.MUTED},
+                   {"label": f"{_n_gone:,} would have none", "color": figures.S[4]}]}],
+        width=6.6,
+        title="The places that would be left with nothing",
+        subtitle="one dot per ZIP code, lower 48",
+        note=f"not a forecast — the ceiling, if every convenience store gave up its SNAP "
+             f"authorization · lower 48 shown, {wc['stages']['conv']['zips_to_zero']:,} "
+             f"ZIP codes nationally")
 
-**{im['small_share_of_retailers_pct']}% of stores, {im['small_share_of_redemptions_pct']}% of spending** — the small stores this rule hits hardest are most of the SNAP retailers in the country and almost none of the SNAP money.
+    fig(2, "worst-case-bands",
+        "Share of ZIP codes that would be left with no SNAP-authorized retailer, by the ZIP code's "
+        "2020 census population, if convenience stores, dollar stores and chain pharmacies all "
+        "dropped out.",
+        figures.hbar_png,
+        [{"label": f"{b['band']}   {b['zeroed']:,} of {b['zips']:,}", "value": b["pct"], "slot": 2}
+         for b in wc["bands"]],
+        suffix="%",
+        title="It lands almost entirely on the smallest places",
+        subtitle="share of ZIP codes left with no SNAP retailer, by population")
+
+    md = f"""# Sizing the risk of the imminent stocking rule changes
+
+*An epilogue. A stocking standard twelve years in the making, the guidance that still has not
+arrived, and a map of how much room there is between USDA's estimate and the edge of the board.*
+
+**{wc['stages']['conv']['population']/1e6:.1f} million people** live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out.
 **${im['cost_year_one_small']}** what USDA estimates it costs a small store to comply in the first year.
 **{n['compliance']}** the day every SNAP retailer has to meet it.
 
@@ -100,194 +142,268 @@ deadline.*
 
 ---
 
-The six chapters before this one are measurement. This piece is not. It is about a policy that rests on an assumption the measurement has quietly undercut. And about a rule that takes effect in a few months.
+This is an epilogue. Seven days looking back over twenty years left us with hard evidence that America
+is not one amorphous concept — your experience of it depends very much on where you live. Yes, we knew
+that already. But we spent the week steeped in what it does to the most foundational thing people need
+each day: healthy food.
 
-Two things here cannot be settled with this data, and both are labelled where they appear.
+Now we look forward. The obvious part first: the path of least resistance is for this to get worse,
+especially in the trickle-down world we have lived in since the 1980s. But the point of this post
+isn't that past performance predicts future performance. It's to point at one specific rule change,
+months away, that could severely impair food access in nonmetro areas.
 
-## The benefit is a shopping list
+It is a risk, not a certainty. It's like Y2K. Maybe the rule lands and nothing happens. Or maybe
+SNAP-authorized retail gets cut by a third. The scary part is that we don't know.
 
-The size of a SNAP benefit is not chosen. It is calculated. USDA builds a shopping list called the
-**Thrifty Food Plan**, prices it, and that price becomes the maximum monthly allotment. The plan was
-re-evaluated in {tfp['reevaluated']} for the first time since {tfp['previous']}, as Congress directed in
-the {tfp['directive']}.
+So let's start at the beginning.
 
-It is a real list, built to be cheap. It is priced for a family of four: {tfp['reference_family']}. Seafood is the most expensive category on it, at about **${tfp['seafood_weekly_cost']:.2f} a week**. The plan keeps that cost down by assuming cheap choices. It names **tilapia or canned tuna** as its examples. Someone worked out that a family on the lowest
-food budget the government models could buy frozen tilapia.
+## Stocking rule — background
 
-Now notice what the plan does not model. It prices the basket at national average prices. It assumes a
-working kitchen, time to cook, storage space, and a way to get to a store. It does not ask whether any
-store within reach of a household actually carries the items on the list.
+The rule that lands in November was written twelve years ago, and the story of why it took twelve
+years is most of the reason to pay attention to it.
 
-## SNAP's bar for a store is far lower than its own basket
+Congress raised the bar itself. Section 4002 of the
+**[{h['directive_act']}]({h['directive_url']})**, signed {h['directive_date']}, rewrote the definition
+of a retail food store so that a store had to offer "a variety of at least 7 foods" in each of the four
+staple categories ({n['category_names']}), "including perishable foods in at least 3 of the
+categories." Before that the statute named no number at all; the floor of three varieties was USDA's
+own regulation, not an act of Congress.
 
-Until this year the bar was low. A store needed three kinds of food in each of four staple categories, three units of each. That is **{o['total_items']} items** in total, of which {o['perishable_items']} had to be perishable, spread across at least {o['perishable_categories']} categories. That is the floor. A store can be fully SNAP-authorized
-and carry a small fraction of the basket the benefit was priced from.
+USDA wrote the matching rule two years later. *[Enhancing Retailer Standards in
+SNAP]({h['rule_2016_url']})* published {h['rule_2016_published']} at **{h['rule_2016_cite']}**,
+effective {h['rule_2016_effective']}, with existing stores given until
+{h['rule_2016_existing_stores']} to comply. Seven varieties in each of four categories, three stocking
+units of each, a perishable food in three categories: 84 units in all.
 
-Put that beside what this series found. In {tl['no_grocery']} of the ZIP codes that lost their last chain
-pharmacy, the only SNAP-authorized food retail left is a dollar store or a convenience store. Both are
-formats built around a narrow, shelf-stable assortment.
+Then Congress blocked its own instruction. [Section 765 of the Consolidated Appropriations Act,
+2017]({h['rider_url']}) (P.L. 115-31), signed {h['rider_date']}, barred the department from spending
+any money to "implement, administer, or enforce the 'variety' requirements" of that rule.
 
-So the question is simple, and **we cannot answer it**: how much of the Thrifty Food Plan can actually be
-bought in these places? There are no shelves in this data. We know where the stores are and what type they
-are; we have no idea what is inside them. Anyone offering a number here is guessing, and we are not going
-to.
+But read the rest of the sentence and it is not a repeal. It is a condition. The prohibition holds
+*until* the Secretary "amends the definition of the term 'variety' ... to increase the number of items
+that qualify as acceptable varieties in each staple food category." Until then, USDA was ordered to
+apply the standard in force the day before the 2014 Farm Bill passed.
 
-But the question did not use to matter as much, and now it does. The benefit is calculated as though a
-household shops somewhere that stocks a full-line basket. In a growing number of places, the store that
-stocks a full-line basket is the one that left.
+That fallback has governed every SNAP retailer for the nine years since, and it is the one still in
+force this morning: **{o['varieties_per_category']} varieties** in each of four categories,
+{o['units_per_variety']} stocking units of each — **{o['total_items']} units** — with a perishable food
+in {o['perishable_categories']} categories rather than three. The regulation on the books said
+something else the whole time. The codified text still read seven varieties; the
+{o['total_items']}-unit floor is what the rider made USDA actually enforce.
 
-## What changes in November
+And the rider never went away. It has ridden every agriculture appropriations act since, including the
+one signed {h['rider_latest_date']} that funds the government through this fiscal year, where it sits
+at [{h['rider_latest']}]({h['rider_latest_url']}). What changed is that USDA finally met its condition.
+It proposed a new framework for what counts as a distinct variety on {h['proposed_2025_date']}
+([{h['proposed_2025_cite']}]({h['proposed_2025_url']})), and finalized it on {n['published']} at
+**[{n['citation']}]({n['url']})** — effective {n['effective']}, with every authorized retailer required
+to implement by **{n['compliance']}**.
 
-The floor is about to move. Congress ordered a seven-variety standard back in the {n['directive']}. Then it blocked the same standard in 2017. Now USDA has finalized it. It takes effect **{n['effective']}**, and every authorized store must comply by **{n['compliance']}**.
+So the thing arriving in November is not really a new stocking standard. It is the 2014 standard,
+released. The unit count is not even new: USDA's 2016 rule computed the same
+{n['total_items']} units this one does. Nine years of argument were about a single word, and the rule
+that ends it is a rule about what "variety" means.
 
-![{figs["standard-change"]['caption']}](images/{figs["standard-change"]['file']})
+## What's a food?
 
-The four categories are {n['category_names']}. The variety requirement more than doubles.
+We are **{P['days_to_implementation']} days** from implementation day. You would think that after
+twelve years between the statute and its arrival, the details would be settled.
 
-USDA has published its own forecast, in an impact analysis filed with the rule. **{im['stores_needing_varieties']:,} stores** have to add varieties to keep selling to SNAP households. Of those, the agency expects about **{im['stores_denied']:,} to be denied** — a denial rate of {im['new_denial_rate_pct']}%, up from the {im['baseline_denial_rate_pct']}% and roughly {im['baseline_annual_denials']:,} denials a normal year produces.
+Give USDA its due: on the central question, they are. The rule defines a distinct variety at length
+([{v['citation']}]({v['url']})), in a default rule plus three carve-out groups. Foods differ if they come from a
+different plant, a different animal, or a different main ingredient. Different cuts of the same animal
+are not separate varieties — the rule says so in as many words, listing "{v['cuts_of_meat']}" among
+the things that do not count. So hamburger and steak are one protein, not two. Milk and cream are two,
+because the rule states that "{v['cream']}." Shredded wheat and a loaf of bread are two, because
+breakfast cereals and bread are named separately. USDA even published a worked answer for a compliant
+protein shelf: {v['usda_protein_example']}.
 
-That is not the same as {im['stores_denied']:,} stores gone, and it is worth being precise about it. USDA expects most of those stores to buy the stock and apply again: it budgets for {im['reauthorizations_expected']:,} reauthorizations. Its own projected net loss is about **{im['net_permanent_loss']:,} stores**. By USDA's count, **{im['small_share_of_retailers_pct']}%** of SNAP retailers are the small
-formats most exposed to the new standard.
+Your local Shell station is not going to have to stock goat.
 
-## Why USDA thinks that is acceptable
+So where is the problem? Two places, and the second is the one to watch.
 
-The same analysis says why the agency is not worried, and it is worth quoting, because it is the
-argument this whole series has been circling.
+**The framework has holes in the categories a small store lives on.** The rule makes "bread" a variety
+and never says what bread is. Are tortillas bread? Bagels? Pita? It matters, because USDA's own worked
+example for grains — {v['usda_grain_example']} — only reaches seven if corn tortillas are *not* bread.
+The rule does not say. It then splits bread into whole grain and non-whole grain and defines whole
+grain as products that "{v['whole_grain']}" — no threshold, no labeling test. Whether a store gets one
+bread variety or two turns on reading an ingredient list against a standard with no number in it.
+Where instant oatmeal, granola and muesli sit between raw grain, breakfast cereal and accessory food is
+unstated. Whether oat milk and oat yogurt are one variety or two is unstated. Sandwiches made at a
+commissary rather than in the store are unstated, and that was the question retailers raised most on an
+industry webinar this month.
 
-Only about **{im['small_share_of_redemptions_pct']}% of SNAP spending** happens at the small store types
-this rule hits hardest — the ones that make up about
-**{im['small_share_of_retailers_pct']}% of all SNAP-authorized retailers**. Meanwhile
-{im['large_share_of_redemptions_pct']}% of SNAP spending happens at superstores and supermarkets, which
-are {im['large_share_of_retailers_pct']}% of retailers. From that, USDA concludes: "If participants are
-not redeeming a significant amount of SNAP benefits at these smaller stores, then it is not likely that
-their removal from the program will pose hardship to many SNAP participants."
+**And the guidance that would answer all of it has not arrived.** On the day the rule published,
+[USDA's own page]({n['usda_page']}) said: "{v['guidance_promised']}" That was
+{v['guidance_promised_date']}. Nothing has followed — no FAQ, no variety list, no policy memo, and no
+further document in [the docket]({im['docket_url']}) in the {P['days_since_rule']} days since.
 
-Read one way, that is simply true. Most SNAP money is spent at big stores, and it always has been.
+Meanwhile the two pages a store owner or a field inspector opens for the standard itself —
+[retailer eligibility]({v['stale_pages'][0]}) and [staple foods]({v['stale_pages'][1]}) — still
+describe the old rule. They still say {v['stale_pages_say']}, a statement the new rule reverses. Both
+carry USDA's own banner: "{v['stale_banner']}"
 
-Read another way, it is the argument for every change in this series. A store that holds 11% of spending
-still holds all of the spending for the household that walks to it. The six days before this one were
-about which stores are near people and which are not, and averages do not answer that question. The
-7.7% of ZIP codes with a dollar store and no grocery are not visible in a national redemption share.
+The industry has noticed. On publication day the convenience store association said the rule
+"[{i['nacs_day_one']}]({i['nacs_day_one_url']})." Three months later:
+"[{i['nacs_august']}]({i['nacs_august_url']})." Its general counsel warned that the complexity
+"{i['nacs_disputes']}." The association is circulating a letter asking USDA to {i['nacs_ask']}; an
+amendment from {i['senate_sponsor']} to force that delay failed {i['senate_vote']} on
+{i['senate_vote_date']}.
 
-## Two problems with that forecast
+So: the rule is written, the framework is real, and roughly {i['cstores_snap']:,} convenience stores
+are {P['days_to_implementation']} days from a compliance review against a standard whose operative
+reference material still describes the rule it replaced.
 
-**The first is the cost.** USDA put compliance at about **${im['cost_year_one_small']} in the first year** and
-${im['cost_five_years_small']} over five years for a small store that needs to add varieties. That figure is what let
-the agency conclude the rule has "{im['rfa_finding']}".
+Here is why that matters. Put yourself behind the counter of your local gas station. You are a
+retailer, and you care very much how fast you turn inventory — the longer stock sits, especially stock
+with an expiration date, the more cash you have tied up in it. It is why Costco can price the way it
+does.
 
-But the requirement that actually bites is not the seven varieties. A small store can stock seven
-shelf-stable varieties in each category without much trouble. It is that perishable foods must now appear
-in **{n['perishable_categories']}** of the four categories rather than {o['perishable_categories']}.
-Perishable means refrigeration. A commercial cooler does not cost ${im['cost_year_one_small']}. If that is the
-binding constraint, the agency has priced the easy half of its own rule.
+Now put {n['total_items']} stocking units across {n['total_varieties']} varieties into a
+{i['cstore_sqft']:,}-square-foot box that takes deliveries once or twice a week, and require a
+perishable in {n['perishable_categories']} of the four categories. Some of that stock will move. Some
+will sit. The owner has {P['days_to_implementation'] // 7} weeks to decide whether the SNAP business is worth the shelf space and the
+spoilage — and to decide it without the guidance that would say which items clear the bar.
 
-**The second is that a store can be spared.** A third authorization pathway, **"need for access"**
-({nfa['citation']}), lets USDA keep a store in the program if it sits where food access is significantly
-limited. The agency weighs several things: {nfa['factors']}. It can also weigh, in the regulation's own words, "{nfa['catchall']}".
+The risk looks like it sits with the convenience store, which could realistically drop out if
+compliance proves too onerous. But the same arithmetic runs at the dollar store. The experts I spoke to
+think the risk there is low, and the published framework supports them: a dollar store can build a
+shelf-stable protein set out of canned tuna, canned chicken, peanut butter, dry beans and lentils
+without ever opening a cooler. The perishable requirement is the part that bites, and it bites hardest
+on the formats with the least refrigeration.
 
-That provision could protect exactly the stores this series has been describing. But it is discretionary,
-and **USDA has not published the scoring methodology it uses**. So whether those stores survive is an
-administrative decision that currently cannot be audited from outside.
+So call the dollar store risk low rather than zero. It is low because of how the rule reads today. What
+nobody can price is how it will be enforced, by inspectors working from the same missing guidance.
 
-## A prediction, before the deadline
+## Model the risk
 
-We are writing this before {n['compliance']}, which means we can say what we expect and then be checked
-against it. That seems fairer than explaining it afterwards.
+So we mapped the worst case.
 
-**First: it will look like an entry collapse, not a wave of closures.** This is the clearest prediction,
-because it already happened. When stocking standards last tightened in 2018, new small-grocery
-authorizations fell **{abs(pre['entry_pct']):.0f}%** while departures fell {abs(pre['exit_pct']):.0f}% —
-that is, exits did not rise at all. A rule that raises the bar mostly stops the next store from starting.
+It is not a forecast. [USDA's own projection]({im['url']}) is a net loss of about
+{im['net_permanent_loss']:,} stores. This is the ceiling — what the map looks like if the stores most
+exposed to the rule give up their authorizations rather than meet a strict variety standard. Nobody
+expects that. The point is to know how much room sits between the agency's number and the edge of the
+board.
 
-![{figs["entry-vs-exit-2018"]['caption']}](images/{figs["entry-vs-exit-2018"]['file']})
+Start with the format the evidence points at. Convenience stores are
+**{wc['stores_by_group']['conv']:,} of the {wc['stores_total']:,}** SNAP-authorized stores in the
+country — {100*wc['stores_by_group']['conv']/wc['stores_total']:.0f}% of them. They are the format the
+rule's own preamble singles out, the one whose trade association is asking Congress for a delay, and
+the one with the least room in a {i['cstore_sqft']:,}-square-foot box. So take them out, and ask what
+is left.
 
-**Second: the losses will fall on the stores that carry the least stock.** A stocking rule asks for a fixed amount of inventory. That is a large demand on a small store and no demand at all on a big one. When the standard last tightened, the fall sorted by exactly that, in USDA's own categories:
+Not the stores, though — the places. Half the dots can come out of a map of 232,000 stores and there
+are still dots everywhere. What matters is how many communities are left with nothing at all, so every
+dot below is a ZIP code, and the pink ones are the places where the only SNAP retailer is a
+convenience store.
 
-![{figs["size-ladder"]['caption']}](images/{figs["size-ladder"]['file']})
+![{figs["worst-case-map"]['caption']}](images/{figs["worst-case-map"]['file']})
 
-It is tempting to shorten this to "chains will be fine, independents will not." The record does not support that cleanly. Inside the one USDA category that holds both, the non-dollar chains fell as far as the independents did — and those chains are Walgreens, CVS, Rite Aid, Big Lots and Fred's, so their fall is tangled up with a bankruptcy and a liquidation. Scale helps a store stay in the program once it is in. It did not decide who stopped signing up.
+**{wc['stages']['conv']['zips_to_zero']:,} ZIP codes** would be left with no SNAP-authorized retailer
+of any kind, home to {wc['stages']['conv']['population']/1e6:.1f} million people. The cities barely
+register. It is the interior, and the rural East, and it is the same finding this series has been
+making for six days, only drawn at its limit.
 
-**Third: the access consequences will concentrate in the places in this series.** Losing one authorized
-store matters little in a city. It matters a great deal in a ZIP code of
-{den['lost_no_grocery']['median_pop']:,} people with no grocery store left.
+Now the tail. Adding the chain pharmacies barely moves it —
+{wc['stages']['conv_rx']['zips_to_zero']:,} ZIP codes — because a pharmacy is almost never the last
+store in town, and nothing in this rule particularly threatens one. But add the **dollar stores**, the
+outcome the experts call unlikely, and it more than doubles: **{wc['stages']['all']['zips_to_zero']:,}
+ZIP codes** and **{wc['stages']['all']['population']/1e6:.1f} million people**. That is the difference
+between a bad year and a different kind of event, and it turns on how one word gets enforced.
 
-**Fourth, and this is the one that matters: it will push in the direction things were already going.**
+Wherever it lands between those two numbers, it lands in the same places.
 
-Day 4 found two rules running through this whole series. Bigger stores kept their authorization — among
-independent stores, survival ran straight down the size order, from 46% for a super store to 4% for a
-small grocery. And a chain did not need to be big: a dollar store held its authorization as reliably as
-a super store did.
+![{figs["worst-case-bands"]['caption']}](images/{figs["worst-case-bands"]['file']})
 
-Now read the new standard against those two rules. It asks for a fixed quantity of stock — seven
-varieties in each of four categories, a perishable in three of them. A fixed demand is close to nothing
-for a large store and a great deal for a small one. It is also far easier for a chain, which has
-distribution, buying power and refrigeration it already owns, than for an independent buying at retail
-and finding somewhere to put a cooler.
+In ZIP codes with fewer than a thousand people, **{wc['bands'][0]['pct']:.0f}%** would be left with no
+SNAP retailer at all. In ZIP codes above twenty-five thousand, **{wc['bands'][-1]['pct']:.1f}%** would.
+The median ZIP code left with nothing holds {wc['median']['zeroed']['median_pop']:,} people; the median
+one that keeps a store holds {wc['median']['kept']['median_pop']:,}.
 
-That is the same axis. The rule does not create the trend this series has been describing. It leans on
-it.
+Which is the same sentence this series has been writing for a week, in a different tense.
 
-And USDA's own analysis amounts to a decision to accept that. The small stores are
-{im['small_share_of_retailers_pct']}% of SNAP retailers and {im['small_share_of_redemptions_pct']}% of
-SNAP spending, and from that the agency reasons that losing some of them will not cause hardship. As a
-reading of an average, that is defensible. It is also a judgment that twenty years of consolidation is
-not a thing worth slowing down.
+## Accountability is patriotism?
 
-## Who argued about this, and who did not
+No matter how much territory we cover, we keep coming back to one thing that is sorely missing —
+accountability.
 
-![{figs["positions"]['caption']}](images/{figs["positions"]['file']})
+First, we have the issue that government is failing our American brothers and sisters living in more
+remote territories. Don't blame capitalism. Capitalism is a tool — no different from a hammer, or AI.
+In my view, we need to use tools such as these responsibly to help benefit both sides of America.
+Without any intervention capitalism leads to inequality. This is just the way of things. But I truly
+believe it doesn't have to. We just need government to set the rules of the game to unleash the
+positive benefits of capitalism for all. We've drifted so far from this to not only an abdication of
+this responsibility by government, but elected officials (from both parties!) [using their power to
+enrich themselves]({trading['propublica_url']}) from this broken system. Again, where's the
+accountability. Where is the patriotism.
 
-That line-up is worth sitting with. The formats that already meet the standard are for it. The formats that do not are against it. Whatever the rule does for nutrition, it also hands an advantage to stores that already carry a full range.
+But then there is a deeper learning here. I wonder how many elected officials are aware of the
+ambiguity of this stocking regulation, and aware of the potential risk that their most vulnerable
+constituents face if this doesn't get ironed out in a way that can keep our retailers from dropping out
+of SNAP. Ignorance is not an excuse for inaction. All this data is accessible at a moment's notice. I
+guess, as I wrote a few days ago, it just boils down to awareness. There are only so many moments in a
+day. If our lawmakers are focused on [what stock to trade next]({trading['nyt_url']}), that is time
+that is taken away from understanding and protecting Americans from hidden risks like this one I
+surfaced today. The Times counted **{trading['nyt_members']}** of them — nearly a fifth of Congress —
+reporting trades in companies influenced by the very committees they sit on.
 
-The dollar store chains said nothing in public at all. Their actions point both ways. The largest of them has put SNAP payment on delivery apps for more than {dg['ebt_delivery_stores']:,} of its stores. Yet it sells fresh produce in fewer than one in three of them, and it is slowing that rollout down.
+None of this is solvable, and of course it is all just my own opinion and frustration with the lack of
+accountability that is spreading across America like a plague.
 
-There is precedent for what happens next. A version of this rule was proposed in 2019. It drew more than {P['precedent_2019']['opposing_comments']:,} comments against it. Most were about the same worry: {P['precedent_2019']['theme']}.
-
-## What we will do about it
-
-Every figure in this series comes from a file USDA updates. When it updates, the same code that made these charts will show which stores lost authorization. By format, by ZIP code, and by how many people live there. It will also show whether {im['net_permanent_loss']:,} was close.
-
-We will publish that either way.
-
-None of this argues for a particular policy. It argues something narrower. A benefit priced from a basket is only as good as the nearest store's willingness to stock that basket. And the economics under that assumption have moved a long way in twenty years. If the formats that survive in thin
-markets are the ones never designed to sell a week of groceries, then the question is not only how much
-money a household gets. It is how food reaches people who have the fewest ways to go and get it.
+So, what can we do? Little more, sadly. We will commit to tracking this USDA database as it gets
+updated and identifying the changes in SNAP retailers after this ruling hits. This is the least we can
+do, so we all have the facts on how this plays out. And then we will keep calling out lack of
+accountability when we see it. If this resonates with you, share it with a friend. The more people that
+expect more from those in power, the more likely we are to collectively drive the accountability
+Americans so sorely need.
 
 ## Limits
 
-**USDA's 71% is USDA's, and we cannot rebuild it.** The impact analysis does not publish the store
-types behind that share, and its universe is 269,217 authorized retailers against the 249,083 in this
-file — a different count, since theirs includes Alaska, Hawaii and the territories. On the store types
-here the nearest equivalent is 63%, and adding dollar stores overshoots to 78%. It is quoted as the
-agency's own reasoning, not as a measurement of ours.
+**The {wc['stages']['conv']['population']/1e6:.1f} million is everyone who lives there, not everyone on SNAP.**
+It is the 2020 census population of every ZIP code whose only SNAP-authorized retailers are convenience
+stores, and this file cannot see which of those residents use the program. It is also a ceiling, not a
+count of people who would lose access: it assumes every one of those stores gives up its authorization,
+and it says nothing about the store one town over. The map draws the lower 48, which holds
+{_n_gone:,} of the {wc['stages']['conv']['zips_to_zero']:,} ZIP codes; the rest are in Alaska and Hawaii
+or have no usable coordinates.
 
-**The Thrifty Food Plan question is a question, not a finding.** This data cannot see inside a store, so no
-estimate is made of how much of the plan's basket is stocked anywhere. Measuring that needs shelf-level
-audit data — the kind collected by in-store surveys such as NEMS-S, not by an authorization file. The
-stocking standards and the plan's assumptions are cited so the gap between them can be checked, not to
-imply it has been measured.
+**This data cannot see inside a store.** Whether any particular convenience store already clears the new
+standard, or could clear it for less than USDA's estimate, is not knowable from an authorization file.
+Measuring it needs shelf-level audit data — the kind collected by in-store surveys such as NEMS-S. That
+is why the map above is a ceiling rather than an estimate: it assumes every store in the exposed format
+fails, which no one expects.
 
 **We describe effects, not motives.** USDA's stated purpose for the rule is nutrition. Nothing here claims
 it is intended to reduce program spending, and this data could not establish intent if it were. Note also
 that fewer authorized stores does not by itself reduce SNAP benefits, which are set by household size and
-income against the Thrifty Food Plan price. Any spending effect would run indirectly, through households
-finding the program harder to use — which this data cannot observe either.
+income against the [Thrifty Food Plan]({tfp['url']}) price. Any spending effect would run indirectly,
+through households finding the program harder to use — which this data cannot observe either.
 
-**The predictions are predictions.** They follow from patterns measured in earlier chapters, not from any
-knowledge of how USDA will administer the rule. The "need for access" pathway gives the agency wide
-discretion, and a determined effort to protect rural stores could make all three wrong. That would be a
-good outcome and we would report it as one.
+**The worst case is arithmetic, not a forecast.** It says what the map looks like if a whole format gives
+up authorization, and nothing about how likely that is. The "need for access" pathway at
+[{nfa['citation']}]({nfa['url']}) gives USDA wide discretion, and a determined effort to protect rural
+stores could keep the count near the agency's own {im['net_permanent_loss']:,}. That would be a good
+outcome and we would report it as one.
 
 The compliance-cost and store-loss figures are USDA's own. We have not independently estimated either.
 
 ---
 
-*Sources: {tfp['source']}. {o['source']}. {n['source']} (docket {n['docket']}, effective {n['effective']},
-compliance {n['compliance']}). {im['source']}. Need-for-access pathway at {nfa['citation']}. Trade
-association positions from published statements by FMI and the National Grocers Association and the joint
-comments of NACS, NATSO and SIGMA filed 24 November 2025. {dg['source']}. Store-count and survival figures
-from USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, using 656,868 stores with usable
-coordinates. Code, pipeline and verification:
+*Sources: [{tfp['source']}]({tfp['url']}). [{o['source']}]({o['url']}).
+[{n['source']}]({n['url']}) (docket {n['docket']}, effective {n['effective']}, compliance
+{n['compliance']}), and the [proposed rule]({h['proposed_2025_url']}) that preceded it at
+{h['proposed_2025_cite']}. [{h['directive_act']}]({h['directive_url']}), {h['directive_cite']}, and the
+2016 rule it produced at [{h['rule_2016_cite']}]({h['rule_2016_url']}). The rider in current law at
+[{h['rider_latest']}]({h['rider_latest_url']}). Variety definition and need-for-access pathway at
+[{nfa['citation']}]({nfa['url']}). [{im['source']}]({im['url']}). Trade association positions from
+published statements by FMI and the National Grocers Association, the joint comments of NACS, NATSO and
+SIGMA filed 24 November 2025, and NACS on
+[{n['published']}]({i['nacs_day_one_url']}) and [10 August 2026]({i['nacs_august_url']}).
+{dg['source']}. {trading['propublica_source']}. {trading['nyt_source']}. Store-count and survival
+figures from [SNAP Retailer Locator Historical
+Data](https://www.fna.usda.gov/snap/retailer-locator/data), 2005–2025, published by USDA's Food and
+Nutrition Administration — the Food and Nutrition Service until it was renamed on 1 June 2026 — using
+656,868 stores with usable coordinates. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """
     (DIR / "post7.md").write_text(md)

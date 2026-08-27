@@ -470,6 +470,88 @@ def box_png(path, rows, width=6.6, title="", subtitle="", note="", xsuffix=""):
     return path
 
 
+def map_pair_png(path, panels, width=7.4, title="", subtitle="", note=""):
+    """Two dot maps of the lower 48 side by side, for a before and after.
+
+    `panels` = [{"title", "sub", "xy", "color"}] where xy is the (xs, ys) pair
+    that usmap.albers returns. Both panels share one set of axis limits, so the
+    country is the same size in each and the only difference the eye can see is
+    the dots.
+
+    Deliberately not the hero renderer: that one is a 1680x1080 lockup for a
+    page banner. This is a figure that sits in the body at the same width as
+    every other chart.
+    """
+    from analysis import usmap
+    from matplotlib.collections import LineCollection
+    n = len(panels)
+    titled = any(p.get("title") for p in panels)
+    fig, axes = plt.subplots(1, n, figsize=(width, width / n * 0.70 + (0.75 if titled else 0.45)),
+                             dpi=DPI, facecolor=PAPER)
+    if n == 1:
+        axes = [axes]
+    segs = []
+    for ring in usmap.rings():
+        xs, ys = usmap.albers([q[0] for q in ring], [q[1] for q in ring])
+        segs.append(list(zip(xs, ys)))
+    for ax, panel in zip(axes, panels):
+        ax.set_facecolor(PAPER)
+        ax.set_axis_off()
+        ax.add_collection(LineCollection(segs, colors=RULE, linewidths=0.4, zorder=1))
+        # A panel is either one dot field or a stack of them, ground first, so a
+        # figure can sit over the context it is a subset of.
+        for i, layer in enumerate(panel.get("layers", [panel])):
+            xs, ys = layer["xy"]
+            ax.scatter(xs, ys, s=layer.get("size", 0.22), c=layer["color"],
+                       marker=".", linewidths=0, alpha=layer.get("alpha", 0.55),
+                       zorder=2 + i)
+        ax.autoscale_view()
+        ax.set_aspect("equal")
+        ax.set_title(panel["title"], loc="center", fontsize=9.5, family=MONO,
+                     color=INK, fontweight="bold", pad=6)
+        if panel.get("sub"):
+            ax.annotate(panel["sub"], (0.5, 0), xycoords="axes fraction",
+                        textcoords="offset points", xytext=(0, -6), ha="center",
+                        va="top", fontsize=8, family=MONO, color=INK_SOFT,
+                        annotation_clip=False)
+        # A stacked panel needs a key. The font is monospace, so character count
+        # is width: lay the labels out on a centred line and colour each one.
+        if panel.get("keys"):
+            fs, sep = 8, "   "
+            cw = fs * 0.60
+            labs = [k["label"] for k in panel["keys"]]
+            dx = -cw * len(sep.join(labs)) / 2
+            dy = -20 if panel.get("sub") else -6
+            for k, lab in zip(panel["keys"], labs):
+                ax.annotate(lab, (0.5, 0), xycoords="axes fraction",
+                            textcoords="offset points", xytext=(dx, dy),
+                            ha="left", va="top", fontsize=fs, family=MONO,
+                            color=k["color"], annotation_clip=False)
+                dx += cw * (len(lab) + len(sep))
+    # One shared window, so a smaller dot field does not get scaled up to fill
+    # its panel and read as the same density.
+    lims = [ax.get_xlim() + ax.get_ylim() for ax in axes]
+    x0 = min(l[0] for l in lims); x1 = max(l[1] for l in lims)
+    y0 = min(l[2] for l in lims); y1 = max(l[3] for l in lims)
+    for ax in axes:
+        ax.set_xlim(x0, x1)
+        ax.set_ylim(y0, y1)
+    if title:
+        fig.text(0.012, 0.995, title, ha="left", va="top", fontsize=10.5,
+                 family=MONO, color=INK, fontweight="bold")
+    if subtitle:
+        fig.text(0.012, 0.945, subtitle, ha="left", va="top", fontsize=8,
+                 family=MONO, color=INK_SOFT)
+    if note:
+        fig.text(0.012, 0.012, note, ha="left", va="bottom", fontsize=7,
+                 family=MONO, color=INK_SOFT)
+    fig.subplots_adjust(top=0.84 if titled else 0.90, bottom=0.10,
+                        left=0.01, right=0.99, wspace=0.02)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
 def scatter_png(path, points, xlabel="", ylabel="", width=6.6, height=4.2,
                 xsuffix="", ysuffix="", quadrant=None, title="", subtitle="",
                 note=""):
@@ -594,7 +676,17 @@ def ledger_png(path, items, width=8.6, accent=None):
     scratch.canvas.draw()
     avail = col - 2 * pad_x
     wrapped = [_wrap_px(scratch, i["label"], avail, avail, **lab_kw) for i in items]
+    # The numerals were measured by nobody, so a long value silently ran across
+    # its divider and printed on top of the next column. Fit them to the column
+    # instead, at one shared size so the band still reads as one row of figures.
+    fits = [num_kw["fontsize"] * avail / w
+            for w in (_text_px(scratch, i["value"], **num_kw) for i in items) if w > avail]
     plt.close(scratch)
+    if fits:
+        num_kw["fontsize"] = round(min(min(fits), num_kw["fontsize"]), 1)
+        longest = max(items, key=lambda i: len(i["value"]))["value"]
+        print(f"    note: ledger value {longest!r} does not fit its column — "
+              f"numerals set at {num_kw['fontsize']}pt, consider shortening it")
     lines = max(len(w) for w in wrapped)
     # No truncation. An earlier version capped this at three lines, which cut a
     # caption off mid-phrase and looked deliberate rather than broken. The band
