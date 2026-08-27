@@ -54,13 +54,17 @@ def main():
                                     if r["format"] == "Dollar Store"), 0.782))
 
     print("figures:")
+    # The three figures are the piece's argument in order: what changed, the
+    # explanation that is wrong, and the one that holds.
     fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        [{"value": f"{mix['chain']['share_2006']:.0f}% → {mix['chain']['share_2025']:.0f}%",
-          "label": "chains' share of every SNAP retailer in the country, 2006 to 2025"},
-         {"value": f"{grp['lost']:,}",
-          "label": "ZIP codes lost their last SNAP-authorized chain pharmacy since 2021"},
-         {"value": f"{den['lost_no_grocery']['median_pop']:,}",
-          "label": "median population of those that now have no grocery at all"}])
+        [{"value": f"{d['mix']['2006']['groc_drug_pct']:.0f}% → {d['mix']['2025']['groc_drug_pct']:.0f}%",
+          "label": "grocery and chain pharmacy, as a share of the food retail in these ZIP codes, "
+                   "2006 to 2025"},
+         {"value": f"{d['grocer_test']['lost_last_grocery']['total']:,}",
+          "label": "ZIP codes had a grocery store of any size in 2006 and have none today"},
+         {"value": f"{d['spread']['lost_grocer']['median']:,}",
+          "label": "median population where the last grocery store went, against "
+                   f"{d['spread']['kept_grocer']['median']:,} where it stayed"}])
 
     fig(1, "twenty-year-arc",
         f"SNAP-authorized stores by format across the {grp['lost']:,} ZIP codes that lost their "
@@ -111,13 +115,13 @@ def main():
         title="And far smaller places lost their grocery store",
         subtitle="ZIP code population (2020 census), by whether the ZIP still has one in 2025")
 
-    md = f"""# Twenty years, one pattern
+    md = f"""# Twenty years drive two Americas further apart
 
 *SNAP-authorized retailers, 2006–2025, with 2020 census population by ZCTA. The last chapter; an epilogue follows.*
 
-**{mix['chain']['share_2006']:.0f}% → {mix['chain']['share_2025']:.0f}%** chains' share of every SNAP retailer in the country, 2006 to 2025.
-**{grp['lost']:,}** ZIP codes lost their last SNAP-authorized chain pharmacy since 2021.
-**{den['lost_no_grocery']['median_pop']:,}** median population of those that now have no grocery at all.
+**{fmix['2006']['groc_drug_pct']:.0f}% → {fmix['2025']['groc_drug_pct']:.0f}%** grocery and chain pharmacy, as a share of the food retail in these ZIP codes, 2006 to 2025.
+**{gt['lost_last_grocery']['total']:,}** ZIP codes had a grocery store of any size in 2006 and have none today.
+**{sp['lost_grocer']['median']:,}** median population where the last grocery store went, against {sp['kept_grocer']['median']:,} where it stayed.
 
 ![Headline figures](images/00-key-figures.png)
 
@@ -227,9 +231,9 @@ what is standing now that it has gone.
 So if the dollar store did not do it, what did? The distinguishing feature of these places is not
 what arrived. It is how small they are.
 
-To gauge that relationship we zoomed back to 2006, the earliest date we have, and asked the same
-question of both formats: of the ZIP codes that had one then, which still have one now? That is a
-wider window than the pharmacy collapse we covered yesterday, so the counts here are not the 976.
+To gauge that relationship we zoomed back to 2006, the earliest date we have, and ran the same test
+twice. Take every ZIP code that had a chain pharmacy in 2006, and see which of them still has one
+today. Then do the same for grocery stores.
 
 Start with the pharmacies. Of the ZIP codes that had a chain pharmacy in 2006, the ones that have
 none today have a median population of **{sp['lost_pharmacy']['median']:,}**. The ones that still have
@@ -238,30 +242,41 @@ pharmacy — but the whole distribution sits lower.
 
 ![{figs["pharmacy-size"]['caption']}](images/{figs["pharmacy-size"]['file']})
 
-Now the grocery stores, asked the same way, where it is not a shift but a chasm. Of the ZIP codes
+Now the grocery stores, where it is not a shift but a chasm. Of the ZIP codes
 that had a grocery store of any size in 2006, the ones that have none today have a median population
 of **{sp['lost_grocer']['median']:,}**. Half of
-them fall between {sp['lost_grocer']['p25']:,} and {sp['lost_grocer']['p75']:,} people. Half of the
-ones that kept a grocery store fall between {sp['kept_grocer']['p25']:,} and
+them fall between {sp['lost_grocer']['p25']:,} and {sp['lost_grocer']['p75']:,} people. Half of the ZIP
+codes that kept a grocery store fall between {sp['kept_grocer']['p25']:,} and
 {sp['kept_grocer']['p75']:,}.
 
 ![{figs["grocery-size"]['caption']}](images/{figs["grocery-size"]['file']})
 
-## What is at stake
+## Stitching together our fractured country
 
-In **{tl['no_grocery']}** of these ZIP codes the only SNAP-authorized food retail left is a dollar store
-or a convenience store. In **{tl['no_snap_retail_at_all']}** there is no SNAP-authorized retailer of any
-kind. A household with an EBT card in those places is choosing among shelf-stable groceries, or driving.
+This series started with the goal of understanding the change in authorized SNAP retail locations over
+the past two decades. Over seven days it has morphed into something larger — a study of the widening
+chasm between two Americas.
 
-That is the part of this that should be hard to sit with. Nothing here was done to these places. No one
-decided they should have less. Each closure was, on its own terms, a rational decision by someone
-reading their own numbers — and the sum of all of them is a town of six thousand with a dollar store
-and nothing else. A competitor can be regulated. A merger can be blocked. There is no equivalent move
-against arithmetic that stops working below a certain population.
+It's obvious why this matters for the "have-nots." Just put yourself in the shoes of someone who lives
+in a town with no pharmacy and no grocery store, and then think about how meaningless something like
+yesterday evening's Nvidia earnings release must seem.
 
-That is where the measurement ends. It leaves a question about policy that this data cannot settle on its
-own, and a rule that changes the answer in a few months. Both are taken up in the epilogue that follows
-this piece.
+But if you are lucky enough to be one of the "haves," this matters for you too. We don't all have
+equal bank accounts, but we all have equal votes. And votes determine the future of this country. You
+may not agree with how others vote. But have you tried to understand them? Have you tried to imagine
+the life they have had to live?
+
+This is the problem, in my view. We have largely stopped trying to understand people, and jump to
+judging them instead. Data can help us understand, but only if we bring a beginner's mind to the
+analysis. And truly understanding others is the first step to stitching it back together.
+
+So let's use this data to understand — at least how people feed themselves. Maybe try grocery
+shopping one week at a dollar store only. Maybe set your family's grocery budget at $229 for a week,
+and see how that feels when you get to Thursday. Data can only help us identify our
+shortsightedness. It is experiences like these that have the potential to solidify our learning and
+our empathy.
+
+**Tomorrow: a glimpse into how the future could get more unequal, thanks to coming rule changes.**
 
 ## Limits
 

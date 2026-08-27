@@ -152,13 +152,14 @@ def main():
                            f"{g('post4','chain','latest', default=0):,}"},
         # The summary card. Chains crossing from a minority of SNAP retailers to
         # a majority is the one-number version of the whole run, and it appears
-        # nowhere else in the series. Reported over ALL stores including the
-        # unclassified, so the real shift is at least this large.
-        "post5": {"value": f"{g('post5','ownership_mix','chain','share_2006'):.0f}% → "
-                           f"{g('post5','ownership_mix','chain','share_2025'):.0f}%",
-                  "label": "chains' share of every SNAP retailer in the country, 2006 "
-                           "to 2025. Size decided who survived; being a chain decided "
-                           "it more"},
+        # The chain-share figure that used to sit here is no longer in the post:
+        # Day 6 was rebuilt around the format mix and the size of the places
+        # losing stores, and the ownership material was cut. This is the piece's
+        # own headline figure now.
+        "post5": {"value": f"{g('post5','grocer_test','lost_last_grocery','total', default=0):,}",
+                  "label": "ZIP codes had a grocery store of any size in 2006 and have "
+                           "none today. The ones that lost it are a fraction of the size "
+                           "of the ones that kept it"},
         # NOT the 5,000 that used to sit here. That figure is denials, and USDA
         # budgets for 4,500 of those stores to restock and reapply, so its own
         # projected net loss is about 500. This is the agency's reasoning for
@@ -190,9 +191,8 @@ def main():
                  f"theirs — down {abs(ss_nm)}%.",
         "post4": f"Chain pharmacies peaked at {g('post4','chain','peak', default=0):,} and stand "
                  f"at {g('post4','chain','latest', default=0):,}.",
-        "post5": f"Chains went from {g('post5','ownership_mix','chain','share_2006'):.0f}% to "
-                 f"{g('post5','ownership_mix','chain','share_2025'):.0f}% of every SNAP retailer "
-                 "in the country.",
+        "post5": f"{g('post5','grocer_test','lost_last_grocery','total', default=0):,} ZIP codes "
+                 "had a grocery store in 2006 and have none today.",
         "post7": f"The stores it hits hardest are {g('post7','policy','impact','small_share_of_retailers_pct')}% "
                  f"of SNAP retailers and {g('post7','policy','impact','small_share_of_redemptions_pct')}% "
                  "of SNAP spending.",

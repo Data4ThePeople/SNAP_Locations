@@ -1,7 +1,7 @@
 # Day 6 page — titles, meta, schema and alt text
 
-Copy blocks for the Prismic page carrying Day 6 of the series (post5, the
-synthesis). Companion files: `reports/day0-page-meta.md` through
+Copy blocks for the Prismic page carrying Day 6 of the series (post5, the last
+chapter). Companion files: `reports/day0-page-meta.md` through
 `day5-page-meta.md` and `reports/visualization-page-meta.md`.
 
 Fill the three placeholders before publishing: `[[slug]]`, `[[PRISMIC HERO URL]]`,
@@ -14,13 +14,13 @@ numbers quoted in the alt text below.
 ## 1. Page title (H1)
 
 ```
-Twenty years, one pattern
+Twenty years drive two Americas further apart
 ```
 
 ## 2. Page subtitle
 
 ```
-Dollar stores did not push anyone out — they were already there. What the places losing their stores have in common is not what arrived, but how small they are.
+Grocery and pharmacy were more than half the food retail in these places. They are under a third now — and the towns that lost a grocery store have a median population of 1,955.
 ```
 
 ## 3. Hero image
@@ -44,24 +44,24 @@ Dot map of US SNAP retail turnover since 2006: 87,719 stores authorized since th
 
 ## 4. Meta title
 
-47 characters — will not truncate.
+45 characters — will not truncate.
 
 ```
-Twenty Years, One Pattern: What SNAP Data Shows
+Twenty Years Drive Two Americas Further Apart
 ```
 
 ## 5. Meta description
 
-154 characters.
+148 characters.
 
 ```
-The obvious explanation is wrong. Dollar stores did not push pharmacies and grocers out — they were already there. What these places share is being small.
+Grocery and pharmacy were half the food retail in these ZIP codes and are now under a third. The places that lost a grocery store have 1,955 people.
 ```
 
 ## 6. Meta keywords
 
 ```
-food deserts, dollar stores, store closures, rural food access, SNAP retailers, pharmacy deserts, retail consolidation, chain stores
+food deserts, rural food access, grocery store closures, dollar stores, pharmacy deserts, SNAP retailers, geographic inequality, Thrifty Food Plan
 ```
 
 ## 7. Schema
@@ -70,8 +70,8 @@ food deserts, dollar stores, store closures, rural food access, SNAP retailers, 
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Twenty years, one pattern",
-  "description": "The obvious explanation is wrong. Dollar stores did not push pharmacies and grocers out — they were already there. What these places share is being small.",
+  "headline": "Twenty years drive two Americas further apart",
+  "description": "Grocery and pharmacy were half the food retail in these ZIP codes and are now under a third. The places that lost a grocery store have 1,955 people.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
   "dateModified": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
@@ -80,7 +80,7 @@ food deserts, dollar stores, store closures, rural food access, SNAP retailers, 
   "position": 6,
   "inLanguage": "en-US",
   "isAccessibleForFree": true,
-  "keywords": ["food deserts", "dollar stores", "store closures", "rural food access", "SNAP retailers", "pharmacy deserts", "retail consolidation", "chain stores"],
+  "keywords": ["food deserts", "rural food access", "grocery store closures", "dollar stores", "pharmacy deserts", "SNAP retailers", "geographic inequality", "Thrifty Food Plan"],
   "author": {
     "@type": "Person",
     "name": "Eric Pachman",
@@ -100,59 +100,56 @@ food deserts, dollar stores, store closures, rural food access, SNAP retailers, 
 
 ## 8. In-body images and alt text
 
-Six images, in page order. The charts' alt text states the numbers, not just
+Five images, in page order. The charts' alt text states the numbers, not just
 the shape, so a screen reader gets the same facts a sighted reader does.
 
 ### `images/00-key-figures.png` (1720×422) — headline figures
 
 ```
-Three headline figures: chains went from 39% to 50% of every SNAP retailer in the country between 2006 and 2025. 976 ZIP codes lost their last SNAP-authorized chain pharmacy since 2021. 6,488 is the median population of those that now have no grocery store of any size.
+Three headline figures: grocery and chain pharmacy fell from 51% to 30% of the food retail in these ZIP codes between 2006 and 2025. 2,267 ZIP codes had a grocery store of any size in 2006 and have none today. 1,955 is the median population where the last grocery store went, against 15,716 where it stayed.
 ```
 
-### `images/01-twenty-year-arc.png` (1161×688) — the arc
+### `images/01-twenty-year-arc.png` (1259×688) — the arc
 
 ```
-Line chart of SNAP-authorized stores by format across the 976 ZIP codes that lost their last chain pharmacy, 2006 to 2025. Grocery of every size falls from 5,301 to 4,425. Dollar stores climb from 494 to 2,054, a rise of 316%. Pharmacies peak at 1,192 in 2016 and fall to zero by 2025. In 2006 these places had about ten times as many grocery stores as dollar stores; today grocery leads by about two to one.
+Line chart of SNAP-authorized stores by format across the 976 ZIP codes that lost their last chain pharmacy, 2006 to 2025. Convenience stores rise from 5,447 to 8,413. Grocery of every size falls from 5,301 to 4,425. Dollar stores climb from 494 to 2,054. Chain pharmacies peak at 1,192 in 2016 and fall to zero. Title: Dollar and convenience stores grew. Grocery and pharmacy did not.
 ```
 
-### `images/02-presence-vs-control.png` (1087×540) — presence against the control
+### `images/02-mix-2006-2025.png` (1421×620) — the mix, then and now
 
 ```
-Bar chart comparing what ZIP codes have in 2025: those that lost their last chain pharmacy against the 7,367 that kept one. Dollar stores are present in 83.3% of the loss group and 81.4% of the control. Convenience stores 96.8% against 97.8%. Dollar or convenience 98.6% against 98.3%. No grocery of any size 7.4% against 3.0%. Title: What each group of ZIP codes has in 2025.
+Two donut charts comparing the format mix in the same ZIP codes. In 2006, across 12,118 stores: convenience 45%, grocery 44%, chain pharmacy 7%, dollar 4%. In 2025, across 14,892 stores: convenience 56%, grocery 30%, dollar 14%, and no chain pharmacies at all. Title: Grocery and pharmacy were half of this retail. Now they are under a third.
 ```
 
-### `images/03-growth-vs-control.png` (1476×563) — growth against the control
+### `images/03-pharmacy-size.png` (1410×676) — pharmacy, by ZIP size
 
 ```
-Bar chart of store-count change from 2021 to 2025 in ZIP codes that lost their last chain pharmacy against those that kept one. Dollar stores grew 2.6% where the pharmacy went, against 5.7% where it stayed. Convenience stores grew 4.9% against 3.5%. If dollar stores were moving into vacated ground the first comparison would run the other way.
+Box plot of ZIP code population for the 814 ZIP codes that had a chain pharmacy in 2006 and have none today, against the 5,247 that still have one. The losers' median is 16,082 and their middle half runs 8,559 to 27,178. The keepers' median is 28,703, middle half 18,560 to 41,147. Whiskers mark the 10th and 90th percentiles. Title: Smaller places lost their chain pharmacy.
 ```
 
-### `images/04-median-population.png` (1461×500) — how small these places are
+### `images/04-grocery-size.png` (1396×676) — grocery, by ZIP size
 
 ```
-Bar chart of median 2020 census population by ZIP code group. ZIP codes that lost their last chain pharmacy have a median of 14,364 residents, against 26,583 where the pharmacy survived. Among the loss group that has also lost every grocery store, the median is 6,488. Title: Median 2020 census population of the ZIP code.
-```
-
-### `images/05-small-zip-share.png` (1447×564) — share below population thresholds
-
-```
-Bar chart of the share of ZIP codes below population thresholds, by group. Among those that lost their last chain pharmacy, 34.6% have fewer than ten thousand residents and 12.6% fewer than five thousand. Among those that kept a pharmacy, 10.7% and 2.9%. Roughly a third against a tenth, and one in eight against one in thirty-five.
+Box plot of ZIP code population for the 2,232 ZIP codes that had a grocery store in 2006 and have none today, against the 13,223 that still have one. The losers' median is 1,955 and their middle half runs 956 to 3,740. The keepers' median is 15,716, middle half 5,717 to 30,308. The two barely overlap. Title: And far smaller places lost their grocery store.
 ```
 
 ## Notes
 
 - The headline figures also appear as live text above the image on the page;
   keep both so the numbers survive images-off rendering.
-- The 39% → 50% chain share is the one-number summary of the whole series and
-  appears in no other post. It is also the Day 6 card stat in the Day 0
-  announcement, which still matches the pipeline.
-- The control group is the spine of this piece: 7,367 ZIP codes that had a
-  chain pharmacy in 2021 and kept one. Do not drop the comparison from any
-  chart caption in layout — without it the numbers read as substitution, which
-  is exactly what the section disproves.
-- This post carries figures from Days 3 and 5 by reference (fuel-chain
-  survival, the Murphy USA margin, the Walgreens authorization-to-store
-  ratio). If those posts are rebuilt, re-check them here.
-- Day 6 is the last chapter of the story; Day 7 is an epilogue. The subtitle
-  and the closing paragraph both say so, and the Day 7 page opens by counting
-  "the six chapters before this one".
+- **The hero is stale.** `day-6.png` still carries the old chain-share framing
+  ("Chain share of all SNAP stores: 39% to 50%"), a figure this post no longer
+  contains. Regenerate it with `python -m analysis.hero 6` once its keyed
+  numbers are decided, then redo the hero alt text above.
+- The four named towns — Mount Clemens MI, Glassport PA, Yorkville OH,
+  Whitesville WV — are checkable by anyone who lives there. They count chain
+  pharmacies only, and grocery means a SNAP-authorized store in one of USDA's
+  five grocery formats; a specialty shop or farmers' market does not count.
+- Both size charts start from 2006, the earliest year in the data, so they ask
+  the same question of each format. That is why the pharmacy count is 814
+  rather than the 976 the rest of the piece uses — different window, stated in
+  the body.
+- The closing section names **yesterday evening's Nvidia earnings release**.
+  That only works if the post goes out the morning after Nvidia reports.
+  Confirm before scheduling; otherwise cut the word "yesterday evening's".
+- The $229 weekly figure is the Thrifty Food Plan for a family of four, FY2026.
