@@ -33,13 +33,13 @@ Grocery and pharmacy were more than half the food retail in these places. They a
 **Hero alt text:**
 
 ```
-Dot map of the lower 48 states on a dark ground showing twenty years of SNAP retail turnover. Bright blue dots mark the 87,719 stores authorized since 2006, densest along the eastern seaboard and in California; grey dots mark the 37,264 authorized in 2006 and still authorized now, and the 25,138 that have left. Text on the map reads: The Stores That Stayed. Day 6. Chain share of all SNAP stores: 39% to 50%.
+Dot map of the lower 48 states on a dark ground. A faint grey field shows the 63,497 SNAP-authorized grocery stores open today, dense along both coasts and around cities. Brighter blue dots mark the 2,546 grocery stores that stood in 2006 in the 2,267 ZIP codes that now have none — scattered across the Plains and interior West, where little grey surrounds them. Text on the map reads: The Stores That Stayed. Day 6. 2,267 ZIP codes lost their last grocery store.
 ```
 
 Short version if the field is tight:
 
 ```
-Dot map of US SNAP retail turnover since 2006: 87,719 stores authorized since then, 37,264 there throughout, 25,138 gone.
+Dot map of the lower 48: 2,546 grocery stores in blue that stood where 2,267 ZIP codes now have none, over a faint grey field of the 63,497 open today.
 ```
 
 ## 4. Meta title
@@ -137,10 +137,11 @@ Box plot of ZIP code population for the 2,232 ZIP codes that had a grocery store
 
 - The headline figures also appear as live text above the image on the page;
   keep both so the numbers survive images-off rendering.
-- **The hero is stale.** `day-6.png` still carries the old chain-share framing
-  ("Chain share of all SNAP stores: 39% to 50%"), a figure this post no longer
-  contains. Regenerate it with `python -m analysis.hero 6` once its keyed
-  numbers are decided, then redo the hero alt text above.
+- The hero keys the middle headline figure: the grocery stores that stood, in
+  2006, in the 2,267 ZIP codes with none today, over a faint field of every
+  grocery store open now. The blue reads in the interior because those ZIP
+  codes are small and far apart, which is the piece's finding drawn on a map.
+  Regenerate with `python -m analysis.hero 6`.
 - The four named towns — Mount Clemens MI, Glassport PA, Yorkville OH,
   Whitesville WV — are checkable by anyone who lives there. They count chain
   pharmacies only, and grocery means a SNAP-authorized store in one of USDA's

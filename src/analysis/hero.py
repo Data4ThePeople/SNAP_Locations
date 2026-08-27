@@ -327,28 +327,41 @@ def main():
                "Chain pharmacies")
 
     if want is None or 6 in want:
-        # Not chain against independent: two dense categories over the whole
-        # country cannot show a 59/41 split, because whichever draws last buries
-        # the other. This shows what happened to the chain estate instead.
+        # The title in dots. Grey is every grocery store authorized today; the
+        # bright layer is the grocery stores that stood, in 2006, in the 2,267
+        # ZIP codes that have none now. Those ZIP codes are small and mostly
+        # interior, so the two layers separate on the map the way the piece says
+        # they separate in the data.
         #
-        # All THREE buckets are plotted and keyed. An earlier cut dropped the
-        # departures and labelled the survivors "chain, authorized in 2006",
-        # which read as the 2006 total — 62,402 — when it is the 37,264 of them
-        # that were still authorized in 2025. The 25,138 that left were nowhere
-        # on the frame. With all three, both totals are recoverable: survivors
-        # plus departures is 2006 (62,402), survivors plus arrivals is 2025
-        # (124,983) — the counts post 5 publishes.
-        s = split(con, "p.ownership = 'chain'", 2006, 2025)
+        # The chain-share version this replaces keyed a figure the rebuilt post
+        # no longer contains.
+        from analysis.post5_synthesis import GROC as _GROC
+        con.execute(f"""
+            CREATE OR REPLACE TEMP TABLE zg6 AS
+            SELECT y.yr, p.zip_code AS zip,
+                   count(DISTINCT CASE WHEN p.format IN {_GROC} THEN p.record_id END) AS groc
+            FROM generate_series(2006, 2025) AS y(yr)
+            JOIN fact_spell f ON NOT f.date_anomaly
+                             AND f.auth_date <= make_date(y.yr,12,31)
+                             AND (f.end_date IS NULL OR f.end_date >= make_date(y.yr,12,31))
+            JOIN panel p ON p.record_id = f.record_id
+            WHERE p.zip_code IS NOT NULL AND length(p.zip_code) = 5
+            GROUP BY 1, 2""")
+        con.execute("""
+            CREATE OR REPLACE TEMP TABLE lostzip6 AS
+            SELECT a.zip FROM (SELECT zip, groc FROM zg6 WHERE yr = 2006) a
+            LEFT JOIN (SELECT zip, groc FROM zg6 WHERE yr = 2025) b USING(zip)
+            WHERE a.groc > 0 AND coalesce(b.groc,0) = 0""")
+        n_lost_zips = con.execute("SELECT count(*) FROM lostzip6").fetchone()[0]
+        now_xy, n_now = points(con, f"p.format IN {_GROC}", 2025)
+        gone_xy, n_gone = points(
+            con, f"p.format IN {_GROC} AND p.zip_code IN (SELECT zip FROM lostzip6)", 2006)
         render(OUT / "day-6.png", 6,
-               [{"xy": s["lost"][0], "color": MUTED, "size": 0.6, "alpha": 0.45,
-                 "label": f"left SNAP since 2006  {s['lost'][1]:,}"},
-                {"xy": s["kept"][0], "color": MUTED, "size": 0.6, "alpha": 0.95,
-                 "label": f"authorized in 2006 and now  {s['kept'][1]:,}"},
-                {"xy": s["added"][0], "color": HUE[6], "size": 0.6, "alpha": 0.9,
-                 "label": f"authorized since 2006  {s['added'][1]:,}"}],
-               # "Chains went 39% to 50%" invited the reader to derive a share
-               # from two counts it cannot be derived from. Says share now.
-               "Chain share of all SNAP stores: 39% to 50%")
+               [{"xy": now_xy, "color": MUTED, "size": 0.6, "alpha": 0.42,
+                 "label": f"grocery stores today  {n_now:,}"},
+                {"xy": gone_xy, "color": HUE[6], "size": 1.9, "z": 3,
+                 "label": f"the last one in {n_lost_zips:,} ZIP codes  {n_gone:,}"}],
+               f"{n_lost_zips:,} ZIP codes lost their last grocery store")
 
     if want is None or 7 in want:
         # Only ONE count is keyed here, deliberately.
