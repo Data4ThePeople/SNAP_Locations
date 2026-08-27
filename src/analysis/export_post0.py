@@ -140,7 +140,7 @@ Every figure in every piece is produced by a script with assertions in it, not b
 
 ---
 
-*Source: USDA FNS SNAP Retailer Locator Historical Data, {ds['first_year'] - 1}–{ds['last_year']}.
+*Source: SNAP Retailer Locator Historical Data, {ds['first_year'] - 1}–{ds['last_year']}, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026).
 {ds['stores']:,} stores, {ds['spells']:,} authorization spells, of which {ds['multi_spell']:,} stores hold
 more than one. {ds['mappable']:,} have coordinates good enough to map. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations]({MAP_URL}).*

@@ -256,7 +256,7 @@ what carries the claim beyond these two, and it agrees with them.</p>
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025 · EIA weekly US retail regular
+Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026) · EIA weekly US retail regular
 gasoline (EMM_EPMR_PTE_NUS_DPG) and NY Harbor conventional regular spot (EER_EPMRU_PF4_Y35NY_DPG) ·
 Murphy USA (CIK 1573516) and Casey's General Stores (CIK 726958) 10-K filings via SEC EDGAR · Census
 County Business Patterns, NAICS {'/'.join(cbp['cbp'][str(cbp['years'][0])]['naics'])}. A store counts

@@ -12,7 +12,7 @@ ZIP_PATH = RAW / "snap-retailer-locator-data2005-2025.zip"
 BRANDS_CSV = DATA / "brands.csv"
 
 SOURCE_URL = (
-    "https://www.fns.usda.gov/sites/default/files/resource-files/"
+    "https://www.fna.usda.gov/sites/default/files/resource-files/"
     "snap-retailer-locator-data2005-2025.zip"
 )
 ZIP_MEMBER = "Historical SNAP Retailer Locator Data 2005-2025.csv"

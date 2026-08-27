@@ -51,7 +51,7 @@ def main():
 <style>{CSS}</style>
 <main>
 <h1>The one chain format that did not work</h1>
-<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
+<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Administration authorization
 records · drug chains peaked at {ch['peak']:,} in {ch['peak_year']} and stand at {ch['latest']:,}</p>
 
 <div class="ledger">
@@ -233,7 +233,7 @@ not measurement.</p>
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
+Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026). Analysis uses 656,868 stores with
 usable coordinates; a store counts as active in a year if an authorization covered 31 December.
 Corporate events and reimbursement language from company 10-K filings (Walgreens Boots Alliance FY2024, Rite Aid FY2023, CVS Health FY2025) and contemporaneous trade press. Code, pipeline and verification:
 <a href="https://github.com/Data4ThePeople/SNAP_Locations">Data4ThePeople/SNAP_Locations</a>.

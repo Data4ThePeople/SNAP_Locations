@@ -229,7 +229,7 @@ relationship to a metro area, not any single household's drive to a store.
 
 ---
 
-*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. USDA ERS Rural-Urban Continuum
+*Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026). USDA ERS Rural-Urban Continuum
 Codes, 2023 (Connecticut: 2013), with 2020 census county populations. Analysis uses 656,868 stores
 with usable coordinates; a store counts as active in a year if an authorization covered 31 December.
 Code, pipeline and verification:

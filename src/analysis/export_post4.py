@@ -75,7 +75,7 @@ def main():
 
     md = f"""# The one chain format that did not work
 
-*SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Service authorization records.
+*SNAP-authorized retailers, 2006–2025. USDA Food and Nutrition Administration authorization records.
 Drug chains peaked at {ch['peak']:,} in {ch['peak_year']} and stand at {ch['latest']:,}.*
 
 **{ch['2021_to_latest_pct']}%** fall in authorized drug chain stores, 2021 to 2025.
@@ -247,7 +247,7 @@ or health. Where this piece reasons from one of those to the next, it is reasoni
 
 ---
 
-*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025. Analysis uses 656,868 stores with
+*Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026). Analysis uses 656,868 stores with
 usable coordinates; a store counts as active in a year if an authorization covered 31 December.
 Corporate events and reimbursement language from company 10-K filings (Walgreens Boots Alliance FY2024, Rite Aid FY2023, CVS Health FY2025) and contemporaneous trade press. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*

@@ -199,7 +199,7 @@ owner with no payroll is not in that count, so the comparison covers employer bu
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, and Census County Business
+Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026), and Census County Business
 Patterns, NAICS 445110. Analysis uses 656,868 stores with usable coordinates; a store counts as
 active in a year if an authorization covered 31 December. Entries and exits count stores, not
 authorization spells, so a store that lapsed and resumed is not double-counted. Code, pipeline and

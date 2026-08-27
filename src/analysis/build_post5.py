@@ -58,7 +58,7 @@ def main():
 <style>{CSS}</style>
 <main>
 <h1>Twenty years drive two Americas further apart</h1>
-<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
+<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Administration authorization
 records, with 2020 census population by ZCTA · the last chapter; an epilogue follows</p>
 
 <div class="ledger">
@@ -256,7 +256,7 @@ different source.</p>
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, and 2020 Decennial Census
+Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026), and 2020 Decennial Census
 (DHC, table P1) population by ZCTA. Analysis uses 656,868 stores with usable coordinates; a store
 counts as active in a year if an authorization covered 31 December. Fuel-chain survival and margin
 figures are from the gas station chapter. Code, pipeline and verification:

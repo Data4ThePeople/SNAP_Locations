@@ -107,7 +107,7 @@ def main():
 <style>{CSS}</style>
 <main>
 <h1>Dollar store domination</h1>
-<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Service authorization
+<p class="sub">SNAP-authorized retailers, 2006–2025 · USDA Food and Nutrition Administration authorization
 records · {d['headline']['dollar_2025']:,} dollar stores authorized at the end of 2025, against
 {d['headline']['all_grocery_2025']:,} grocery stores of every size</p>
 
@@ -278,7 +278,7 @@ the end of 2025, so the ratios are close, not exact.</p>
 </div>
 
 <footer>
-Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, covering retailers authorized at
+Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026), covering retailers authorized at
 any point in the window. Analysis uses 656,868 stores with usable coordinates. A store counts as
 active in a year if an authorization covered 31 December. Company store counts from Dollar General and
 Dollar Tree investor releases; Family Dollar via trade press; 2006 store counts from each company's

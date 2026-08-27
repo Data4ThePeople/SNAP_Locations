@@ -307,7 +307,7 @@ source.
 
 ---
 
-*Source: USDA FNS SNAP Retailer Locator Historical Data, 2005–2025, and 2020 Decennial Census (DHC,
+*Source: SNAP Retailer Locator Historical Data, 2005–2025, from USDA's Food and Nutrition Administration (the Food and Nutrition Service until June 2026), and 2020 Decennial Census (DHC,
 table P1) population by ZCTA. Analysis uses 656,868 stores with usable coordinates; a store counts as
 active in a year if an authorization covered 31 December. Fuel-chain survival and margin figures are from
 the gas station chapter. Code, pipeline and verification:

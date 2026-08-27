@@ -230,7 +230,7 @@ def main():
             "last_year": 2025,
         },
         "sources": [
-            "USDA FNS SNAP Retailer Locator Historical Data, 2005-2025",
+            "SNAP Retailer Locator Historical Data, 2005-2025, from USDA's Food and Nutrition Administration",
             "2020 Decennial Census (DHC table P1) population by ZCTA and tract",
             "2020 Census Gazetteer tract centroids",
             "Census County Business Patterns establishment counts",
