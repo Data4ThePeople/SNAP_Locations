@@ -57,6 +57,10 @@ main {
   max-width: 880px; margin: 0 auto; padding: 64px 24px 110px;
   display: grid; gap: 0;
 }
+/* main is a one-column grid, so its column is sized to the widest child's
+   min-content. Without this, one wide item (the ledger, a table) stretched the
+   column past max-width and every paragraph and heading widened with it. */
+main > * { min-width: 0; }
 /* Prose keeps a readable measure; figures use the full field. */
 h1, h2, p, table, .caveat, .sub, footer, .legend { max-width: 62ch; }
 
@@ -82,8 +86,12 @@ strong { font-weight: 600; }
   display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 0 30px; margin: 34px 0 40px;
   border-top: 2px solid var(--ink); border-bottom: 1px solid var(--rule);
+  min-width: 0;
 }
-.ledger div { padding: 16px 0 15px; }
+/* min-width:0 because a grid item defaults to min-content: a long value in
+   34px mono forced its column past 1fr and clipped the card to its right. */
+.ledger div { padding: 16px 0 15px; min-width: 0; }
+.ledger b { overflow-wrap: anywhere; }
 .ledger div + div { border-left: 1px solid var(--rule); padding-left: 24px; }
 .ledger b {
   display: block; font: 400 34px/1.05 var(--mono);

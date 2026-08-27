@@ -40,19 +40,27 @@ def main():
     eu = {r["store_type"]: r for r in d["entry_change_usda"]}
     den, tl = tm["density"], tm["total_loss"]
 
+    # One definition, three renderings: the PNG below, the live text in the
+    # markdown, and the .ledger block build_post7 makes from that text. They
+    # used to be written out separately and had drifted into saying different
+    # things, and the longer hand-written values overflowed the HTML's columns.
+    # The lead card is the piece's own finding rather than USDA's share of
+    # retailers: people, not percentages. The conditional does the work of
+    # keeping a ceiling from reading as a forecast, so it stays in the label.
+    LEDGER = [
+        {"value": f"{wc['stages']['conv']['population']/1e6:.1f} million",
+         "label": "people whose ZIP code would have no SNAP retailer at all "
+                  "if convenience stores drop out"},
+        {"value": f"${im['cost_year_one_small']}",
+         "label": "what USDA estimates it costs a small store to comply in the "
+                  "first year"},
+        {"value": n["compliance"].replace(" 2026", ""),
+         "label": "the 2026 date by which every SNAP retailer has to meet it"},
+    ]
+    ledger_md = "\n".join(f"**{it['value']}** {it['label']}." for it in LEDGER)
+
     print("figures:")
-    fig(0, "key-figures", "Headline figures.", figures.ledger_png,
-        # The lead card is the piece's own finding rather than USDA's share of
-        # retailers: people, not percentages. The conditional does the work of
-        # keeping a ceiling from reading as a forecast, so it stays in the label.
-        [{"value": f"{wc['stages']['conv']['population']/1e6:.1f} million",
-          "label": "people whose ZIP code would have no SNAP retailer at all "
-                   "if convenience stores drop out"},
-         {"value": f"${im['cost_year_one_small']}",
-          "label": "what USDA estimates it costs a small store to comply in the "
-                   "first year"},
-         {"value": n["compliance"].replace(" 2026", ""),
-          "label": "the 2026 date by which every SNAP retailer has to meet it"}])
+    fig(0, "key-figures", "Headline figures.", figures.ledger_png, LEDGER)
 
     # ---- worst-case figures -------------------------------------------------
     from analysis import usmap
@@ -134,9 +142,7 @@ def main():
 *An epilogue. A stocking standard twelve years in the making, the guidance that still has not
 arrived, and a map of how much room there is between USDA's estimate and the edge of the board.*
 
-**{wc['stages']['conv']['population']/1e6:.1f} million people** live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out.
-**${im['cost_year_one_small']}** what USDA estimates it costs a small store to comply in the first year.
-**{n['compliance']}** the day every SNAP retailer has to meet it.
+{ledger_md}
 
 ![Headline figures](images/00-key-figures.png)
 
@@ -407,7 +413,9 @@ Nutrition Administration — the Food and Nutrition Service until it was renamed
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """
     (DIR / "post7.md").write_text(md)
-    shutil.copy(ROOT / "reports" / "post7.html", DIR / "post7-archive.html")
+    # The archive is written by build_post7 from this markdown. Copying
+    # reports/post7.html here copied whatever the LAST build produced, which
+    # is how a stale draft ended up shipped as this chapter's archive.
     shutil.copy(SRC, DIR / "data.json")
     print(f"\nwrote {DIR}/post7.md ({len(md)//1000} KB), {len(figs)} images, "
           f"html archive, data.json")
