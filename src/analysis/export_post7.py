@@ -54,7 +54,7 @@ def main():
         {"value": f"${im['cost_year_one_small']}",
          "label": "what USDA estimates it costs a small store to comply in the "
                   "first year"},
-        {"value": n["compliance"].replace(" 2026", ""),
+        {"value": n["compliance"].replace(", 2026", ""),   # "November 4, 2026" -> "November 4"
          "label": "the 2026 date by which every SNAP retailer has to meet it"},
     ]
     ledger_md = "\n".join(f"**{it['value']}** {it['label']}." for it in LEDGER)
@@ -100,6 +100,22 @@ def main():
 
     _kept_xy, _n_kept = _zips(_keep)
     _gone_xy, _n_gone = _zips(f"NOT ({_keep})")
+
+    # The body quotes the dot count off the map, so it has to quote the
+    # population of those same ZIP codes. The pipeline's 5.3 million belongs to
+    # all 2,871 nationally; the map draws the lower 48, and pairing the two
+    # would attribute the national population to a smaller set of dots.
+    from analysis.post5_synthesis import zcta_population
+    _pop = zcta_population()
+    _gone_zips = [r[0] for r in _con.execute(f"""
+        SELECT DISTINCT zip FROM _wc WHERE NOT ({_keep})
+          AND lon BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
+          AND lat BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}""").fetchall()]
+    _gone_pop = sum(_pop[z] for z in _gone_zips if z in _pop)
+    assert len(_gone_zips) == _n_gone, (len(_gone_zips), _n_gone)
+    print(f"  mapped: {_n_gone:,} ZIP codes, {_gone_pop:,} people "
+          f"(national {wc['stages']['conv']['zips_to_zero']:,} / "
+          f"{wc['stages']['conv']['population']:,})")
     fig(1, "worst-case-map",
         f"Dot map of the lower 48, one dot per ZIP code. Faint grey marks the {_n_kept:,} "
         f"ZIP codes that would still have a SNAP-authorized retailer if every convenience "
@@ -128,19 +144,19 @@ def main():
 
     fig(2, "worst-case-bands",
         "Share of ZIP codes that would be left with no SNAP-authorized retailer, by the ZIP code's "
-        "2020 census population, if convenience stores, dollar stores and chain pharmacies all "
-        "dropped out.",
+        "2020 census population, if every convenience store gave up its SNAP authorization.",
         figures.hbar_png,
         [{"label": f"{b['band']}   {b['zeroed']:,} of {b['zips']:,}", "value": b["pct"], "slot": 2}
          for b in wc["bands"]],
         suffix="%",
         title="It lands almost entirely on the smallest places",
-        subtitle="share of ZIP codes left with no SNAP retailer, by population")
+        subtitle="share of ZIP codes left with no SNAP retailer if convenience stores "
+                 "drop from SNAP program, by population")
 
     md = f"""# Sizing the risk of the imminent stocking rule changes
 
 *An epilogue. A stocking standard twelve years in the making, the guidance that still has not
-arrived, and a map of how much room there is between USDA's estimate and the edge of the board.*
+arrived, and a map of who would bear the risk if it goes wrong.*
 
 {ledger_md}
 
@@ -224,11 +240,11 @@ because the rule states that "{v['cream']}." Shredded wheat and a loaf of bread 
 breakfast cereals and bread are named separately. USDA even published a worked answer for a compliant
 protein shelf: {v['usda_protein_example']}.
 
-Your local Shell station is not going to have to stock goat.
+So, your local Shell station is not going to have to stock goat meat.
 
-So where is the problem? Two places, and the second is the one to watch.
+Then, where is the problem? Two places.
 
-**The framework has holes in the categories a small store lives on.** The rule makes "bread" a variety
+**First, the framework has holes in the categories a small store lives on.** The rule makes "bread" a variety
 and never says what bread is. Are tortillas bread? Bagels? Pita? It matters, because USDA's own worked
 example for grains — {v['usda_grain_example']} — only reaches seven if corn tortillas are *not* bread.
 The rule does not say. It then splits bread into whole grain and non-whole grain and defines whole
@@ -239,9 +255,10 @@ unstated. Whether oat milk and oat yogurt are one variety or two is unstated. Sa
 commissary rather than in the store are unstated, and that was the question retailers raised most on an
 industry webinar this month.
 
-**And the guidance that would answer all of it has not arrived.** On the day the rule published,
+**Second, the guidance that would answer all of it has not arrived.** On the day the rule published,
 [USDA's own page]({n['usda_page']}) said: "{v['guidance_promised']}" That was
-{v['guidance_promised_date']}. Nothing has followed — no FAQ, no variety list, no policy memo, and no
+{v['guidance_promised_date']}. Scroll to the bottom of [that page]({n['usda_page']}) and, as of last
+night, it still reads *{v['page_updated_stamp']}*. Nothing has followed — no FAQ, no variety list, no policy memo, and no
 further document in [the docket]({im['docket_url']}) in the {P['days_since_rule']} days since.
 
 Meanwhile the two pages a store owner or a field inspector opens for the standard itself —
@@ -262,8 +279,7 @@ reference material still describes the rule it replaced.
 
 Here is why that matters. Put yourself behind the counter of your local gas station. You are a
 retailer, and you care very much how fast you turn inventory — the longer stock sits, especially stock
-with an expiration date, the more cash you have tied up in it. It is why Costco can price the way it
-does.
+with an expiration date, the more cash you have tied up in it.
 
 Now put {n['total_items']} stocking units across {n['total_varieties']} varieties into a
 {i['cstore_sqft']:,}-square-foot box that takes deliveries once or twice a week, and require a
@@ -285,48 +301,37 @@ nobody can price is how it will be enforced, by inspectors working from the same
 
 So we mapped the worst case.
 
-It is not a forecast. [USDA's own projection]({im['url']}) is a net loss of about
-{im['net_permanent_loss']:,} stores. This is the ceiling — what the map looks like if the stores most
-exposed to the rule give up their authorizations rather than meet a strict variety standard. Nobody
-expects that. The point is to know how much room sits between the agency's number and the edge of the
-board.
+It is not a forecast. It is a modeled scenario. As we have written, all models are wrong. Some are
+useful. This one is useful because we can see WHO bears the most risk if such a scenario were to
+manifest.
 
 Start with the format the evidence points at. Convenience stores are
 **{wc['stores_by_group']['conv']:,} of the {wc['stores_total']:,}** SNAP-authorized stores in the
 country — {100*wc['stores_by_group']['conv']/wc['stores_total']:.0f}% of them. They are the format the
 rule's own preamble singles out, the one whose trade association is asking Congress for a delay, and
-the one with the least room in a {i['cstore_sqft']:,}-square-foot box. So take them out, and ask what
-is left.
+the one with the least room in a {i['cstore_sqft']:,}-square-foot box. So take them out, and see where
+the cuts hurt the most.
 
-Not the stores, though — the places. Half the dots can come out of a map of 232,000 stores and there
-are still dots everywhere. What matters is how many communities are left with nothing at all, so every
-dot below is a ZIP code, and the pink ones are the places where the only SNAP retailer is a
-convenience store.
+The map below shows this. There are {_n_gone:,} pink dots on this map, representing the {_n_gone:,}
+ZIP codes that would be left with no SNAP retailers if their convenience stores opted out of the SNAP
+program. These ZIP codes are home to {_gone_pop/1e6:.1f} million Americans — {wc['stages']['conv']['population']/1e6:.1f} million
+nationally, once you count Alaska, Hawaii and the stores we cannot place on a map.
 
 ![{figs["worst-case-map"]['caption']}](images/{figs["worst-case-map"]['file']})
 
-**{wc['stages']['conv']['zips_to_zero']:,} ZIP codes** would be left with no SNAP-authorized retailer
-of any kind, home to {wc['stages']['conv']['population']/1e6:.1f} million people. The cities barely
-register. It is the interior, and the rural East, and it is the same finding this series has been
-making for six days, only drawn at its limit.
+Note that the dots rarely touch large cities. Instead the risk lies in the interior and the rural
+East — the same geographic inequality finding we have stumbled upon throughout this entire series.
 
-Now the tail. Adding the chain pharmacies barely moves it —
-{wc['stages']['conv_rx']['zips_to_zero']:,} ZIP codes — because a pharmacy is almost never the last
-store in town, and nothing in this rule particularly threatens one. But add the **dollar stores**, the
-outcome the experts call unlikely, and it more than doubles: **{wc['stages']['all']['zips_to_zero']:,}
-ZIP codes** and **{wc['stages']['all']['population']/1e6:.1f} million people**. That is the difference
-between a bad year and a different kind of event, and it turns on how one word gets enforced.
-
-Wherever it lands between those two numbers, it lands in the same places.
+This next bar chart hammers this home directly. In ZIP codes with fewer than a thousand people,
+**{wc['bands'][0]['pct']:.0f}%** would be left with no SNAP retailer at all. In ZIP codes above
+twenty-five thousand, **{wc['bands'][-1]['pct']:.1f}%** would. The median ZIP code left with no SNAP
+retailer holds {wc['median']['zeroed']['median_pop']:,} people; the median one that keeps at least one
+SNAP retailer holds {wc['median']['kept']['median_pop']:,}.
 
 ![{figs["worst-case-bands"]['caption']}](images/{figs["worst-case-bands"]['file']})
 
-In ZIP codes with fewer than a thousand people, **{wc['bands'][0]['pct']:.0f}%** would be left with no
-SNAP retailer at all. In ZIP codes above twenty-five thousand, **{wc['bands'][-1]['pct']:.1f}%** would.
-The median ZIP code left with nothing holds {wc['median']['zeroed']['median_pop']:,} people; the median
-one that keeps a store holds {wc['median']['kept']['median_pop']:,}.
-
-Which is the same sentence this series has been writing for a week, in a different tense.
+This is the point of the model — it shows us that even if we don't end up with the worst case
+scenario, we are likely to end up with greater geographic inequality.
 
 ## Accountability is patriotism?
 
@@ -388,7 +393,8 @@ through households finding the program harder to use — which this data cannot 
 **The worst case is arithmetic, not a forecast.** It says what the map looks like if a whole format gives
 up authorization, and nothing about how likely that is. The "need for access" pathway at
 [{nfa['citation']}]({nfa['url']}) gives USDA wide discretion, and a determined effort to protect rural
-stores could keep the count near the agency's own {im['net_permanent_loss']:,}. That would be a good
+stores could keep the count near USDA's own projection of about
+{im['net_permanent_loss']:,} stores. That would be a good
 outcome and we would report it as one.
 
 The compliance-cost and store-loss figures are USDA's own. We have not independently estimated either.
@@ -403,12 +409,12 @@ The compliance-cost and store-loss figures are USDA's own. We have not independe
 [{h['rider_latest']}]({h['rider_latest_url']}). Variety definition and need-for-access pathway at
 [{nfa['citation']}]({nfa['url']}). [{im['source']}]({im['url']}). Trade association positions from
 published statements by FMI and the National Grocers Association, the joint comments of NACS, NATSO and
-SIGMA filed 24 November 2025, and NACS on
-[{n['published']}]({i['nacs_day_one_url']}) and [10 August 2026]({i['nacs_august_url']}).
+SIGMA filed November 24, 2025, and NACS on
+[{n['published']}]({i['nacs_day_one_url']}) and [August 10, 2026]({i['nacs_august_url']}).
 {dg['source']}. {trading['propublica_source']}. {trading['nyt_source']}. Store-count and survival
 figures from [SNAP Retailer Locator Historical
 Data](https://www.fna.usda.gov/snap/retailer-locator/data), 2005–2025, published by USDA's Food and
-Nutrition Administration — the Food and Nutrition Service until it was renamed on 1 June 2026 — using
+Nutrition Administration — the Food and Nutrition Service until it was renamed on June 1, 2026 — using
 656,868 stores with usable coordinates. Code, pipeline and verification:
 [Data4ThePeople/SNAP_Locations](https://github.com/Data4ThePeople/SNAP_Locations).*
 """

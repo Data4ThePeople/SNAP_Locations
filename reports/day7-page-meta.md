@@ -20,7 +20,7 @@ Sizing the risk of the imminent stocking rule changes
 ## 2. Page subtitle
 
 ```
-An epilogue. A stocking standard twelve years in the making, the guidance that still has not arrived, and a map of how much room there is between USDA's estimate and the edge of the board.
+An epilogue. A stocking standard twelve years in the making, the guidance that still has not arrived, and a map of who would bear the risk if it goes wrong.
 ```
 
 ## 3. Hero image
@@ -33,16 +33,14 @@ An epilogue. A stocking standard twelve years in the making, the guidance that s
 **Hero alt text:**
 
 ```
-Dot map of the lower 48 states on a dark ground. Pink dots mark the 157,889 SNAP-authorized stores in the small formats most exposed to the new stocking rule — convenience stores, dollar stores and chain pharmacies — dense along both coasts and around cities, thinner but present across the interior. Text on the map reads: The Stores That Stayed. Day 7. Small formats 157,889. Stores at most risk from new rule.
+Dot map of the lower 48 states on a dark ground, one dot per ZIP code. A faint grey field shows the ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization, clustering into cities. Pink dots mark the ZIP codes that would have none, scattered across the interior West, the northern Plains and the rural East. Text on the map reads: The Stores That Stayed. Day 7. ZIP codes left with nothing 2,871. If the convenience stores go.
 ```
 
 Short version if the field is tight:
 
 ```
-Dot map of the lower 48 showing the 157,889 SNAP-authorized stores in the small formats most exposed to the new stocking rule.
+Dot map of the lower 48 showing, in pink, the 2,871 ZIP codes that would be left with no SNAP retailer at all if every convenience store gave up its authorization.
 ```
-
-**See the note below — this hero does not match the piece as it now stands.**
 
 ## 4. Meta title
 
@@ -54,10 +52,10 @@ Sizing the Risk of the Imminent Stocking Rule Changes
 
 ## 5. Meta description
 
-152 characters.
+157 characters.
 
 ```
-A new SNAP stocking standard takes effect 4 November. At the ceiling, 2,871 ZIP codes and 5.3 million people would be left with no SNAP retailer at all.
+A new SNAP stocking standard takes effect November 4. Model the scenario and 2,871 ZIP codes, home to 5.3 million people, would have no SNAP retailer at all.
 ```
 
 ## 6. Meta keywords
@@ -73,7 +71,7 @@ SNAP stocking standards, SNAP retailers, food access, convenience stores, rural 
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Sizing the risk of the imminent stocking rule changes",
-  "description": "A new SNAP stocking standard takes effect 4 November. At the ceiling, 2,871 ZIP codes and 5.3 million people would be left with no SNAP retailer at all.",
+  "description": "A new SNAP stocking standard takes effect November 4. Model the scenario and 2,871 ZIP codes, home to 5.3 million people, would have no SNAP retailer at all.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
   "dateModified": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
@@ -108,7 +106,7 @@ the shape, so a screen reader gets the same facts a sighted reader does.
 ### `images/00-key-figures.png` (1720×422) — headline figures
 
 ```
-Three headline figures: 5.3 million people live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out. $407 is what USDA estimates it costs a small store to comply in the first year. 4 November is the 2026 date by which every SNAP retailer has to meet the new standard.
+Three headline figures: 5.3 million people live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out. $407 is what USDA estimates it costs a small store to comply in the first year. November 4 is the 2026 date by which every SNAP retailer has to meet the new standard.
 ```
 
 ### `images/01-worst-case-map.png` (1615×1060) — the places left with nothing
@@ -120,21 +118,18 @@ Dot map of the lower 48, one dot per ZIP code. Faint grey marks the 19,074 ZIP c
 ### `images/02-worst-case-bands.png` (1547×694) — by ZIP code population
 
 ```
-Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-authorized retailer, by 2020 census population. Under 1,000 people: 72.0%, or 1,893 of 2,628. 1,000 to 2,500: 60.1%, 2,439 of 4,061. 2,500 to 5,000: 40.5%, 1,352 of 3,335. 5,000 to 10,000: 19.6%, 589 of 2,999. 10,000 to 25,000: 4.6%, 200 of 4,338. 25,000 and up: 0.7%, 30 of 4,558. Title: It lands almost entirely on the smallest places.
+Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-authorized retailer if every convenience store gave up its authorization, by 2020 census population. Under 1,000 people: 49.8%, or 1,310 of 2,628. 1,000 to 2,500: 22.8%, 924 of 4,061. 2,500 to 5,000: 9.1%, 305 of 3,335. 5,000 to 10,000: 5.6%, 167 of 2,999. 10,000 to 25,000: 1.3%, 58 of 4,338. 25,000 and up: 0.1%, 5 of 4,558. Title: It lands almost entirely on the smallest places.
 ```
 
 ## Notes
 
-- **The hero does not match the piece.** It leads on *157,889 small formats*,
-  which was the framing of an earlier draft. That number appears nowhere in the
-  post as it now stands, and the piece deliberately excludes dollar stores and
-  chain pharmacies from the base case — the research found their exposure close
-  to negligible, and they are carried in prose as a tail rather than drawn as
-  the headline. Either regenerate the hero on the convenience-store figure
-  (109,791 stores) or, better, on the finding the post actually leads with —
-  the 2,871 ZIP codes left with nothing. Regenerate with
-  `python -m analysis.hero 7`; the hero copy lives in `src/analysis/hero.py`.
-  The alt text above describes the current file and must be rewritten with it.
+- The hero keys the chapter's own finding and uses the same unit as its map:
+  one dot per ZIP code, pink for the places left with no SNAP retailer at all
+  if convenience stores give up authorization. It replaces an earlier frame
+  built on 157,889 "small formats", a figure the piece no longer contains —
+  it models convenience stores alone. Dots are the lower 48 and the keyed
+  count is national, per the series convention stated in the corner note.
+  Regenerate with `python -m analysis.hero 7`.
 - The headline figures also appear as live text above the image on the page;
   keep both so the numbers survive images-off rendering.
 - **Two numbers differ on purpose and should not be "corrected" to match.** The
@@ -142,9 +137,9 @@ Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-a
   lower 48; the count is national. The gap is Alaska, Hawaii and stores without
   usable coordinates, and it is stated in the map's corner note and again in
   Limits.
-- **The post is dated 29 August 2026** in the pipeline (`POLICY["post_date"]`
+- **The post is dated August 29, 2026** in the pipeline (`POLICY["post_date"]`
   in `src/analysis/post7_policy.py`), and two figures are computed from it: the
-  67 days to the 4 November compliance date, and the 113 days since the rule
+  67 days to the November 4 compliance date, and the 113 days since the rule
   published. If the publication date moves, change `post_date` and rebuild, or
   both numbers will be wrong.
 - Every rule, statute and regulation in the body is linked to its primary
@@ -155,7 +150,7 @@ Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-a
   and regulations.gov (blocks non-browser clients).
 - **USDA links point at `fna.usda.gov`, not `fns.usda.gov`.** The Food and
   Nutrition Service was renamed the Food and Nutrition Administration on
-  1 June 2026. The old host still redirects, but the canonical URLs have moved
+  June 1, 2026. The old host still redirects, but the canonical URLs have moved
   and the data download page is now `/snap/retailer-locator/data`.
 - The closing section is Eric's. The only editorial additions are the two
   citation links and the sentence attributing the count of 97 members to the

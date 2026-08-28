@@ -379,21 +379,44 @@ def main():
         # contradicting itself when it is really two different measurements. So
         # the backdrop is drawn as context and left uncounted, and the frame
         # claims only what it can source: where these stores are.
-        SMALL = ("p.format IN ('Convenience Store','Grocery (Small)',"
-                 "'Grocery (Medium)','Combination Grocery/Other')")
-        rest, _ = points(con, f"NOT ({SMALL})", 2025)
-        small, ns = points(con, SMALL, 2025)
+        # Places, not stores — the same unit the chapter's own map uses. An
+        # earlier version keyed this on 157,889 "small formats", a figure the
+        # piece no longer contains: it models convenience stores alone, having
+        # found dollar-store and pharmacy exposure close to negligible.
+        con.execute(f"""CREATE OR REPLACE TEMP TABLE _h7 AS
+            SELECT DISTINCT p.record_id, p.zip_code AS zip, p.format,
+                   p.longitude AS lon, p.latitude AS lat
+            FROM panel p JOIN fact_spell s USING(record_id)
+            WHERE NOT s.date_anomaly AND {ACTIVE.format(y=2025)}
+              AND p.zip_code IS NOT NULL AND length(p.zip_code) = 5""")
+        KEEP = "zip IN (SELECT zip FROM _h7 WHERE format <> 'Convenience Store')"
+
+        def zip_dots(where):
+            rows = con.execute(f"""
+                SELECT avg(lon), avg(lat) FROM _h7 WHERE {where}
+                  AND lon BETWEEN {usmap.LO48[0]} AND {usmap.LO48[2]}
+                  AND lat BETWEEN {usmap.LO48[1]} AND {usmap.LO48[3]}
+                GROUP BY zip""").fetchall()
+            return usmap.albers([r[0] for r in rows], [r[1] for r in rows])
+
+        rest = zip_dots(KEEP)
+        small = zip_dots(f"NOT ({KEEP})")
+        # National, like every other hero count: the dots are the lower 48.
+        ns, = con.execute(f"""
+            SELECT count(DISTINCT zip) FROM _h7 WHERE NOT ({KEEP})""").fetchone()
         # Pink rather than the blue used everywhere else. Day 6 is also
         # blue-dominant and the two frames read as the same picture side by
         # side, which is how these will be seen on the site. Of the two hues
         # not already in the set, pink sits dE 19.3 from the nearest colour in
         # play against violet's 9.8 — violet is close to the very blue this is
         # separating from — and clears the contrast floor on this ground.
+        # Sized up from the store heroes: 2,782 dots on a 1680px frame, not
+        # 150,000, so they have to carry at this scale to read at all.
         render(OUT / "day-7.png", 7,
-               [{"xy": rest, "color": MUTED, "size": 0.5, "alpha": 0.4},
-                {"xy": small, "color": HUE[7], "size": 0.6,
-                 "label": f"small formats  {ns:,}"}],
-               "Stores at most risk from new rule")
+               [{"xy": rest, "color": MUTED, "size": 1.6, "alpha": 0.45},
+                {"xy": small, "color": HUE[7], "size": 3.4,
+                 "label": f"ZIP codes left with nothing  {ns:,}"}],
+               "If the convenience stores go")
 
 
 if __name__ == "__main__":

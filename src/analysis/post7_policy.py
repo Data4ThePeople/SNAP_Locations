@@ -9,7 +9,7 @@ cannot see:
      question "can the Thrifty Food Plan basket be bought here?" is posed and
      explicitly left unanswered. No estimate is made.
   2. What has not happened yet. The stocking rule's compliance date is
-     4 November 2026, so the predictions here are stated before the fact and
+     November 4, 2026, so the predictions here are stated before the fact and
      designed to be checked against the same data afterwards.
 
 Because so much of this rests on outside documents rather than the panel, the
@@ -50,7 +50,7 @@ POLICY = {
         "reevaluated": 2021,
         "previous": 2006,
         "directive": "Agriculture Improvement Act of 2018 (2018 Farm Bill)",
-        "effective": "1 October 2021",
+        "effective": "October 1, 2021",
         "reference_family": "a man and a woman 20 to 50 years old, a child 6 to 8, "
                            "and a child 9 to 11",
         "seafood_weekly_cost": 12.80,
@@ -99,7 +99,7 @@ POLICY = {
         "url": "https://www.ecfr.gov/current/title-7/subtitle-B/chapter-II/subchapter-C/part-278/section-278.1",
         # The two pages a retailer or inspector actually opens for the standard
         # itself. Both still carried the pre-rule numbers and USDA's own
-        # not-up-to-date banner when checked on 27 August 2026.
+        # not-up-to-date banner when checked on August 27, 2026.
         "stale_pages": ["https://www.fna.usda.gov/snap/retailer/eligible",
                         "https://www.fna.usda.gov/snap/retailer/staple-foods"],
         "cuts_of_meat": "different cuts of meat",
@@ -110,15 +110,20 @@ POLICY = {
         "usda_grain_example": "sourdough bread, corn tortillas, whole grain spaghetti, "
                               "quick-cook oats, brown rice, pearled barley, and white flour",
         "guidance_promised": "We will update our website with guidance for retailers soon.",
-        "guidance_promised_date": "8 May 2026",
+        "guidance_promised_date": "May 8, 2026",
         "stale_banner": "Attention: Some content on this page is not up to date.",
         "stale_pages_say": "a minimum of 36 staple food items, three varieties per "
                            "category, and that chocolate milk and regular milk count "
                            "as one variety",
-        "docket_quiet_since": "8 May 2026",
+        "docket_quiet_since": "May 8, 2026",
+        # The page carrying the promise stamps its own last-updated date at
+        # the foot, which makes the claim checkable by any reader in one
+        # click. Quoted in the page's own format rather than the house one.
+        "page_updated_stamp": "Page updated: May 08, 2026",
+        "page_updated_checked": "August 27, 2026",
         "source": "91 FR 25082 regulatory text; fns.usda.gov/snap/retailer/eligible and "
                   "/staple-foods, both still carrying the pre-rule standard and a "
-                  "not-up-to-date banner as of 27 August 2026",
+                  "not-up-to-date banner as of August 27, 2026",
     },
     "industry": {
         "nacs_day_one": "raises more questions than it answers",
@@ -133,29 +138,29 @@ POLICY = {
                            "august/10/what-convenience-retailers-need-to-know-about-snap",
         "senate_sponsor": "Sen. Jim Justice (R-WV)",
         "senate_vote": "10-11",
-        "senate_vote_date": "6 August 2026",
+        "senate_vote_date": "August 6, 2026",
         "cstores_snap": 118000,
         "cstore_sqft": 3600,
-        "source": "NACS, 8 May and 10 August 2026; Senate Agriculture Committee markup, "
-                  "6 August 2026",
+        "source": "NACS, 8 May and August 10, 2026; Senate Agriculture Committee markup, "
+                  "August 6, 2026",
     },
     "history": {
         "directive_act": "Agricultural Act of 2014",
         "directive_cite": "Pub. L. 113-79, section 4002(a)",
-        "directive_date": "7 February 2014",
+        "directive_date": "February 7, 2014",
         "directive_codified": "7 U.S.C. 2012(o)(1)(A)",
         "rule_2016_cite": "81 FR 90675",
-        "rule_2016_published": "15 December 2016",
-        "rule_2016_effective": "17 January 2017",
-        "rule_2016_existing_stores": "17 January 2018",
+        "rule_2016_published": "December 15, 2016",
+        "rule_2016_effective": "January 17, 2017",
+        "rule_2016_existing_stores": "January 17, 2018",
         "rider_cite": "section 765 of the Consolidated Appropriations Act, 2017 "
                       "(P.L. 115-31)",
-        "rider_date": "5 May 2017",
+        "rider_date": "May 5, 2017",
         "rider_blocked": "variety and breadth of stock",
         "rider_latest": "section 726 of Division B of P.L. 119-37",
-        "rider_latest_date": "12 November 2025",
+        "rider_latest_date": "November 12, 2025",
         "proposed_2025_cite": "90 FR 46081",
-        "proposed_2025_date": "25 September 2025",
+        "proposed_2025_date": "September 25, 2025",
         # Every URL below was resolved and read, not inferred from a citation
         # pattern. The two Federal Register documents came from the FR API by
         # docket, and the three public laws from govinfo by PLAW id.
@@ -176,9 +181,9 @@ POLICY = {
         "total_items": 84,
         "perishable_items": 9,
         "category_names": "dairy, fruits or vegetables, grains, and protein",
-        "published": "8 May 2026",
-        "effective": "7 July 2026",
-        "compliance": "4 November 2026",
+        "published": "May 8, 2026",
+        "effective": "July 7, 2026",
+        "compliance": "November 4, 2026",
         "docket": "FNS-2025-0018",
         "directive": "Agricultural Act of 2014",
         "blocked": "the same seven-variety expansion was blocked by Congress in 2017",
@@ -187,7 +192,7 @@ POLICY = {
         "usda_page": "https://www.fna.usda.gov/snap/retailer/stocking-standards-rule",
         "source": "Updated Staple Food Stocking Standards for Retailers in the "
                   "Supplemental Nutrition Assistance Program, final rule, "
-                  "91 FR 25082 (8 May 2026)",
+                  "91 FR 25082 (May 8, 2026)",
     },
     # Every figure below is from the RIA filed in the docket as a supporting
     # document, NOT from the Federal Register notice — the notice carries the
@@ -230,7 +235,7 @@ POLICY = {
         "url": "https://www.regulations.gov/document/FNS-2025-0018-0236",
         "docket_url": "https://www.regulations.gov/docket/FNS-2025-0018",
         "source": "USDA regulatory impact analysis for the final rule, docket "
-                  "FNS-2025-0018 document 0236 (19 March 2026)",
+                  "FNS-2025-0018 document 0236 (March 19, 2026)",
     },
     "need_for_access": {
         "citation": "7 CFR 278.1",
@@ -249,7 +254,7 @@ POLICY = {
         {"who": "National Grocers Association", "represents": "independent supermarkets",
          "stance": "supports"},
         {"who": "NACS, NATSO and SIGMA", "represents": "convenience and fuel retailers", "stance": "opposes",
-         "note": "filed jointly on 24 November 2025; called compliance unworkable for "
+         "note": "filed jointly on November 24, 2025; called compliance unworkable for "
                  "small-format stores, singling out the grains and dairy categories"},
         {"who": "Food Research & Action Center", "represents": "anti-hunger advocacy",
          "stance": "opposes", "note": "on access grounds"},
@@ -277,7 +282,7 @@ POLICY = {
         "propublica_source": "Robert Faturechi, Pratheek Rebala and Brandon Roberts, "
                              "\"More Than a Dozen U.S. Officials Sold Stocks Before "
                              "Trump's Tariffs Sent the Market Plunging,\" ProPublica, "
-                             "22 May 2025",
+                             "May 22, 2025",
         "nyt_url": "https://www.nytimes.com/interactive/2022/09/13/us/politics/"
                    "congress-members-stock-trading-list.html",
         "nyt_members": 97,
@@ -285,7 +290,7 @@ POLICY = {
         "nyt_years": "2019-2021",
         "nyt_source": "\"These 97 Members of Congress Reported Trades in Companies "
                       "Influenced by Their Committees,\" The New York Times, "
-                      "13 September 2022",
+                      "September 13, 2022",
     },
     "precedent_2019": {
         "opposing_comments": 9000,
@@ -430,9 +435,13 @@ def main():
                 WHERE zip NOT IN (SELECT zip FROM cur WHERE {keep})""").fetchall()]
         stages[key] = {"zips_to_zero": len(zz),
                        "population": sum(_pop[z] for z in zz if z in _pop)}
+    # The scenario the piece actually models: convenience stores give up
+    # authorization, dollar stores and chain pharmacies do not. Everything
+    # published below is computed against this and nothing else.
+    KEEP = "grp <> 'conv'"
     zeroed = {r[0] for r in con.execute(
-        """SELECT DISTINCT zip FROM cur
-           WHERE zip NOT IN (SELECT zip FROM cur WHERE grp = 'other')""").fetchall()}
+        f"""SELECT DISTINCT zip FROM cur
+            WHERE zip NOT IN (SELECT zip FROM cur WHERE {KEEP})""").fetchall()}
     zc = {}
     for z, st, ct, n in con.execute(
             "SELECT zip, state, county, count(*) FROM cur GROUP BY 1,2,3").fetchall():
@@ -443,9 +452,9 @@ def main():
     nonmetro = sum(1 for z in zeroed if z in zc and zc[z].most_common(1)[0][0] > 3)
     states = [{"state": s, "lost": int(l), "total": int(tt),
                "pct": round(100 * l / tt, 1)}
-              for s, l, tt in con.execute("""
+              for s, l, tt in con.execute(f"""
         WITH z AS (SELECT DISTINCT zip, state FROM cur),
-             k AS (SELECT DISTINCT zip FROM cur WHERE grp = 'other')
+             k AS (SELECT DISTINCT zip FROM cur WHERE {KEEP})
         SELECT z.state, count(*) FILTER (WHERE k.zip IS NULL), count(*)
         FROM z LEFT JOIN k USING(zip) GROUP BY 1
         HAVING count(*) >= 100 ORDER BY 2 DESC""").fetchall()]
@@ -454,9 +463,9 @@ def main():
     # measures how rural a state is, and says it less clearly than this does.
     bands = [{"band": b, "zips": int(tt), "zeroed": int(z), "population": int(pp or 0),
               "pct": round(100 * z / tt, 1)}
-             for b, tt, z, pp in con.execute("""
+             for b, tt, z, pp in con.execute(f"""
         WITH z AS (SELECT DISTINCT zip FROM cur),
-             k AS (SELECT DISTINCT zip FROM cur WHERE grp = 'other'),
+             k AS (SELECT DISTINCT zip FROM cur WHERE {KEEP}),
              b AS (SELECT z.zip, p.pop, k.zip IS NULL AS zeroed,
                           CASE WHEN p.pop < 1000 THEN 'under 1,000'
                                WHEN p.pop < 2500 THEN '1,000 to 2,500'
@@ -475,7 +484,7 @@ def main():
     for lab, w in (("zeroed", "k.zip IS NULL"), ("kept", "k.zip IS NOT NULL")):
         r = con.execute(f"""
             WITH z AS (SELECT DISTINCT zip FROM cur),
-                 k AS (SELECT DISTINCT zip FROM cur WHERE grp = 'other')
+                 k AS (SELECT DISTINCT zip FROM cur WHERE {KEEP})
             SELECT count(*), median(p.pop) FROM z LEFT JOIN k USING(zip)
             JOIN zpop p ON p.zip = z.zip WHERE {w}""").fetchone()
         med[lab] = {"n": int(r[0]), "median_pop": int(r[1])}
