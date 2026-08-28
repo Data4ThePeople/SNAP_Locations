@@ -271,20 +271,18 @@ POLICY = {
                 "that rollout",
         "source": "company disclosures and trade press",
     },
-    # The closing cites congressional stock trading. Two separate sources doing
-    # two different jobs: ProPublica documents the conduct and is free to read,
-    # which matters for a piece that asks to be shared; the count of members
-    # belongs to the Times, and is attributed to the Times in the text rather
-    # than folded into the ProPublica link.
+    # The closing cites congressional stock trading. One source, deliberately:
+    # the Times investigation is defined by committee assignment rather than by
+    # party and states its bipartisan finding outright, which is what the text
+    # claims. A ProPublica piece was cited here too and was dropped — it is an
+    # investigation of one administration's appointees, so it neither supported
+    # "elected officials of both parties" nor kept the piece free of a partisan
+    # frame the rest of it does not have.
     "trading": {
-        "propublica_url": "https://www.propublica.org/article/"
-                          "us-officials-stock-sales-trump-tariffs",
-        "propublica_source": "Robert Faturechi, Pratheek Rebala and Brandon Roberts, "
-                             "\"More Than a Dozen U.S. Officials Sold Stocks Before "
-                             "Trump's Tariffs Sent the Market Plunging,\" ProPublica, "
-                             "May 22, 2025",
         "nyt_url": "https://www.nytimes.com/interactive/2022/09/13/us/politics/"
                    "congress-members-stock-trading-list.html",
+        # Not quoted in the text — the closing links the investigation rather
+        # than citing its numbers. Kept as the record of what it found.
         "nyt_members": 97,
         "nyt_trades": 3700,
         "nyt_years": "2019-2021",
@@ -377,15 +375,6 @@ def main():
           {"supports", "opposes"} <= stances)
     check("the dollar chains are recorded as silent",
           any(p["stance"] == "no public comment" for p in POLICY["positions"]))
-
-    # The closing calls 97 members "nearly a fifth of Congress". Congress is 535
-    # voting members, so that phrase is only true in a band — pin it, so an edit
-    # to either the number or the wording has to face the other.
-    _share = 100 * POLICY["trading"]["nyt_members"] / 535
-    print(f"\n   congressional trading: {POLICY['trading']['nyt_members']} members "
-          f"= {_share:.1f}% of 535 — 'nearly a fifth'")
-    check("97 members is fairly described as nearly a fifth of Congress",
-          16.0 <= _share <= 20.0, f"{_share:.1f}%")
 
     out = {
         "policy": POLICY,

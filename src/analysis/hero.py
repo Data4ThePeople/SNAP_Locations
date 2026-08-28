@@ -415,7 +415,7 @@ def main():
         render(OUT / "day-7.png", 7,
                [{"xy": rest, "color": MUTED, "size": 1.6, "alpha": 0.45},
                 {"xy": small, "color": HUE[7], "size": 3.4,
-                 "label": f"ZIP codes left with nothing  {ns:,}"}],
+                 "label": f"ZIP codes left with no SNAP retailer  {ns:,}"}],
                "If the convenience stores go")
 
 

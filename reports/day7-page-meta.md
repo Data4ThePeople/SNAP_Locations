@@ -14,7 +14,7 @@ numbers quoted in the alt text below.
 ## 1. Page title (H1)
 
 ```
-Sizing the risk of the imminent stocking rule changes
+Sizing the risk to SNAP of the imminent stocking rule changes
 ```
 
 ## 2. Page subtitle
@@ -33,7 +33,7 @@ An epilogue. A stocking standard twelve years in the making, the guidance that s
 **Hero alt text:**
 
 ```
-Dot map of the lower 48 states on a dark ground, one dot per ZIP code. A faint grey field shows the ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization, clustering into cities. Pink dots mark the ZIP codes that would have none, scattered across the interior West, the northern Plains and the rural East. Text on the map reads: The Stores That Stayed. Day 7. ZIP codes left with nothing 2,871. If the convenience stores go.
+Dot map of the lower 48 states on a dark ground, one dot per ZIP code. A faint grey field shows the ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization, clustering into cities. Pink dots mark the ZIP codes that would have none, scattered across the interior West, the northern Plains and the rural East. Text on the map reads: The Stores That Stayed. Day 7. ZIP codes left with no SNAP retailer 2,871. If the convenience stores go.
 ```
 
 Short version if the field is tight:
@@ -44,10 +44,13 @@ Dot map of the lower 48 showing, in pink, the 2,871 ZIP codes that would be left
 
 ## 4. Meta title
 
-53 characters — will not truncate.
+Deliberately not the H1. Its only job is to survive a search result, so it front-loads
+the term people search and stays clear of the ~60-character display cut.
+
+47 characters — will not truncate.
 
 ```
-Sizing the Risk of the Imminent Stocking Rule Changes
+The Imminent Stocking Rule and the Risk to SNAP
 ```
 
 ## 5. Meta description
@@ -70,7 +73,7 @@ SNAP stocking standards, SNAP retailers, food access, convenience stores, rural 
 {
   "@context": "https://schema.org",
   "@type": "Article",
-  "headline": "Sizing the risk of the imminent stocking rule changes",
+  "headline": "Sizing the risk to SNAP of the imminent stocking rule changes",
   "description": "A new SNAP stocking standard takes effect November 4. Model the scenario and 2,871 ZIP codes, home to 5.3 million people, would have no SNAP retailer at all.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
@@ -109,10 +112,10 @@ the shape, so a screen reader gets the same facts a sighted reader does.
 Three headline figures: 5.3 million people live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out. $407 is what USDA estimates it costs a small store to comply in the first year. November 4 is the 2026 date by which every SNAP retailer has to meet the new standard.
 ```
 
-### `images/01-worst-case-map.png` (1615×1060) — the places left with nothing
+### `images/01-worst-case-map.png` (1615×1060) — the places left with no SNAP retailer
 
 ```
-Dot map of the lower 48, one dot per ZIP code. Faint grey marks the 19,074 ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization. Pink marks the 2,782 that would have none, scattered thickly across the interior, the Plains and the rural East while cities stay grey. Title: The places that would be left with nothing. A note says this is a ceiling rather than a forecast, and that 2,871 ZIP codes are affected nationally.
+Dot map of the lower 48, one dot per ZIP code. Faint grey marks the 19,074 ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization. Pink marks the 2,782 that would have none, scattered thickly across the interior, the Plains and the rural East while cities stay grey. Title: The places that would be left with no SNAP retailer. A note says this is a ceiling rather than a forecast, and that 2,871 ZIP codes are affected nationally.
 ```
 
 ### `images/02-worst-case-bands.png` (1547×694) — by ZIP code population

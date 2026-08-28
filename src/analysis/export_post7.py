@@ -136,7 +136,7 @@ def main():
                     "color": figures.MUTED},
                    {"label": f"{_n_gone:,} would have none", "color": figures.S[4]}]}],
         width=6.6,
-        title="The places that would be left with nothing",
+        title="The places that would be left with no SNAP retailer",
         subtitle="one dot per ZIP code, lower 48",
         note=f"not a forecast — the ceiling, if every convenience store gave up its SNAP "
              f"authorization · lower 48 shown, {wc['stages']['conv']['zips_to_zero']:,} "
@@ -153,7 +153,7 @@ def main():
         subtitle="share of ZIP codes left with no SNAP retailer if convenience stores "
                  "drop from SNAP program, by population")
 
-    md = f"""# Sizing the risk of the imminent stocking rule changes
+    md = f"""# Sizing the risk to SNAP of the imminent stocking rule changes
 
 *An epilogue. A stocking standard twelve years in the making, the guidance that still has not
 arrived, and a map of who would bear the risk if it goes wrong.*
@@ -164,20 +164,16 @@ arrived, and a map of who would bear the risk if it goes wrong.*
 
 ---
 
-This is an epilogue. Seven days looking back over twenty years left us with hard evidence that America
-is not one amorphous concept — your experience of it depends very much on where you live. Yes, we knew
-that already. But we spent the week steeped in what it does to the most foundational thing people need
-each day: healthy food.
+This is an epilogue. Seven days over twenty years of data left us with one finding: your experience of
+America depends very much on where you live. Yes, we knew that already. But we spent the week steeped
+in what it does to the most foundational thing people need each day: healthy food.
 
-Now we look forward. The obvious part first: the path of least resistance is for this to get worse,
-especially in the trickle-down world we have lived in since the 1980s. But the point of this post
-isn't that past performance predicts future performance. It's to point at one specific rule change,
-months away, that could severely impair food access in nonmetro areas.
+Now we look forward. The path of least resistance is for this to get worse. But this post is about
+something narrower — one specific rule change, months away, that could severely impair food access in
+nonmetro areas.
 
 It is a risk, not a certainty. It's like Y2K. Maybe the rule lands and nothing happens. Or maybe
 SNAP-authorized retail gets cut by a third. The scary part is that we don't know.
-
-So let's start at the beginning.
 
 ## Stocking rule — background
 
@@ -273,35 +269,16 @@ The industry has noticed. On publication day the convenience store association s
 amendment from {i['senate_sponsor']} to force that delay failed {i['senate_vote']} on
 {i['senate_vote_date']}.
 
-So: the rule is written, the framework is real, and roughly {i['cstores_snap']:,} convenience stores
-are {P['days_to_implementation']} days from a compliance review against a standard whose operative
-reference material still describes the rule it replaced.
-
-Here is why that matters. Put yourself behind the counter of your local gas station. You are a
-retailer, and you care very much how fast you turn inventory — the longer stock sits, especially stock
-with an expiration date, the more cash you have tied up in it.
-
-Now put {n['total_items']} stocking units across {n['total_varieties']} varieties into a
-{i['cstore_sqft']:,}-square-foot box that takes deliveries once or twice a week, and require a
-perishable in {n['perishable_categories']} of the four categories. Some of that stock will move. Some
-will sit. The owner has {P['days_to_implementation'] // 7} weeks to decide whether the SNAP business is worth the shelf space and the
-spoilage — and to decide it without the guidance that would say which items clear the bar.
-
-The risk looks like it sits with the convenience store, which could realistically drop out if
-compliance proves too onerous. But the same arithmetic runs at the dollar store. The experts I spoke to
-think the risk there is low, and the published framework supports them: a dollar store can build a
-shelf-stable protein set out of canned tuna, canned chicken, peanut butter, dry beans and lentils
-without ever opening a cooler. The perishable requirement is the part that bites, and it bites hardest
-on the formats with the least refrigeration.
-
-So call the dollar store risk low rather than zero. It is low because of how the rule reads today. What
-nobody can price is how it will be enforced, by inspectors working from the same missing guidance.
+So roughly {i['cstores_snap']:,} convenience stores are {P['days_to_implementation']} days from a
+compliance review against a standard whose reference material still describes the rule it replaced.
 
 ## Model the risk
 
-So we mapped the worst case.
+Clear as mud, right? Look how many words it took us to answer a simple question — what's a food? And on
+the parts a small store actually has to get right, we still have no answer. As such, we figured it
+would be appropriate to just go ahead and model out the worst case scenario.
 
-It is not a forecast. It is a modeled scenario. As we have written, all models are wrong. Some are
+Please note: this is not a forecast. It is a modeled scenario. As we have written, all models are wrong. Some are
 useful. This one is useful because we can see WHO bears the most risk if such a scenario were to
 manifest.
 
@@ -309,8 +286,8 @@ Start with the format the evidence points at. Convenience stores are
 **{wc['stores_by_group']['conv']:,} of the {wc['stores_total']:,}** SNAP-authorized stores in the
 country — {100*wc['stores_by_group']['conv']/wc['stores_total']:.0f}% of them. They are the format the
 rule's own preamble singles out, the one whose trade association is asking Congress for a delay, and
-the one with the least room in a {i['cstore_sqft']:,}-square-foot box. So take them out, and see where
-the cuts hurt the most.
+the one with the least room in a {i['cstore_sqft']:,}-square-foot box — where the perishable
+requirement bites hardest. So take them out, and see where the cuts hurt the most.
 
 The map below shows this. There are {_n_gone:,} pink dots on this map, representing the {_n_gone:,}
 ZIP codes that would be left with no SNAP retailers if their convenience stores opted out of the SNAP
@@ -338,66 +315,50 @@ scenario, we are likely to end up with greater geographic inequality.
 No matter how much territory we cover, we keep coming back to one thing that is sorely missing —
 accountability.
 
-First, we have the issue that government is failing our American brothers and sisters living in more
-remote territories. Don't blame capitalism. Capitalism is a tool — no different from a hammer, or AI.
-In my view, we need to use tools such as these responsibly to help benefit both sides of America.
-Without any intervention capitalism leads to inequality. This is just the way of things. But I truly
-believe it doesn't have to. We just need government to set the rules of the game to unleash the
-positive benefits of capitalism for all. We've drifted so far from this to not only an abdication of
-this responsibility by government, but elected officials (from both parties!) [using their power to
-enrich themselves]({trading['propublica_url']}) from this broken system. Again, where's the
-accountability. Where is the patriotism.
+First, government is failing our American brothers and sisters living in more remote territories.
+Don't blame capitalism. Capitalism is a tool — no different from a hammer, or AI. Without intervention
+it leads to inequality, and that is just the way of things. But it doesn't have to be. Government sets
+the rules of the game, and it can set them to unleash the benefits of capitalism for all. We have
+drifted so far from that we now have not only an abdication of the responsibility, but elected
+officials [of both parties]({trading['nyt_url']}) using their power to enrich themselves from this
+broken system.
 
-But then there is a deeper learning here. I wonder how many elected officials are aware of the
-ambiguity of this stocking regulation, and aware of the potential risk that their most vulnerable
-constituents face if this doesn't get ironed out in a way that can keep our retailers from dropping out
-of SNAP. Ignorance is not an excuse for inaction. All this data is accessible at a moment's notice. I
-guess, as I wrote a few days ago, it just boils down to awareness. There are only so many moments in a
-day. If our lawmakers are focused on [what stock to trade next]({trading['nyt_url']}), that is time
-that is taken away from understanding and protecting Americans from hidden risks like this one I
-surfaced today. The Times counted **{trading['nyt_members']}** of them — nearly a fifth of Congress —
-reporting trades in companies influenced by the very committees they sit on.
+But there is another question here. I wonder how many elected officials know about the ambiguity in
+this stocking regulation, or the risk their most vulnerable constituents face if it doesn't get ironed
+out in a way that keeps retailers from dropping out of SNAP. Ignorance is not an excuse for inaction.
+All this data is accessible at a moment's notice. It boils down to awareness, and there are only so
+many moments in a day. If our lawmakers are focused on what stock to trade next, that is time taken
+away from protecting Americans from hidden risks like this one.
 
-None of this is solvable, and of course it is all just my own opinion and frustration with the lack of
-accountability that is spreading across America like a plague.
-
-So, what can we do? Little more, sadly. We will commit to tracking this USDA database as it gets
-updated and identifying the changes in SNAP retailers after this ruling hits. This is the least we can
-do, so we all have the facts on how this plays out. And then we will keep calling out lack of
-accountability when we see it. If this resonates with you, share it with a friend. The more people that
-expect more from those in power, the more likely we are to collectively drive the accountability
-Americans so sorely need.
+So what can we do? Of course this is my own opinion, and my own frustration with a lack of
+accountability that is spreading across America like a plague. But we will commit to tracking this
+USDA database as it updates, and identifying the changes in SNAP retailers after this ruling hits, so
+we all have the facts on how this plays out. And we will keep calling out lack of accountability when
+we see it. If this resonates with you, share it with a friend. The more people that expect more from
+those in power, the more likely we are to collectively drive the accountability Americans so sorely
+need.
 
 ## Limits
 
 **The {wc['stages']['conv']['population']/1e6:.1f} million is everyone who lives there, not everyone on SNAP.**
-It is the 2020 census population of every ZIP code whose only SNAP-authorized retailers are convenience
-stores, and this file cannot see which of those residents use the program. It is also a ceiling, not a
-count of people who would lose access: it assumes every one of those stores gives up its authorization,
-and it says nothing about the store one town over. The map draws the lower 48, which holds
-{_n_gone:,} of the {wc['stages']['conv']['zips_to_zero']:,} ZIP codes; the rest are in Alaska and Hawaii
-or have no usable coordinates.
+It is the 2020 census population of those ZIP codes; this file cannot see who uses the program. The map
+draws the lower 48, which holds {_n_gone:,} of the {wc['stages']['conv']['zips_to_zero']:,} ZIP codes —
+the rest are in Alaska and Hawaii or have no usable coordinates.
 
-**This data cannot see inside a store.** Whether any particular convenience store already clears the new
-standard, or could clear it for less than USDA's estimate, is not knowable from an authorization file.
-Measuring it needs shelf-level audit data — the kind collected by in-store surveys such as NEMS-S. That
-is why the map above is a ceiling rather than an estimate: it assumes every store in the exposed format
-fails, which no one expects.
+**This data cannot see inside a store.** Whether a given convenience store already clears the standard,
+or could for less than USDA's estimate, is not knowable from an authorization file; that needs
+shelf-level audit data such as NEMS-S. It is why this is a ceiling and not an estimate.
 
-**We describe effects, not motives.** USDA's stated purpose for the rule is nutrition. Nothing here claims
-it is intended to reduce program spending, and this data could not establish intent if it were. Note also
-that fewer authorized stores does not by itself reduce SNAP benefits, which are set by household size and
-income against the [Thrifty Food Plan]({tfp['url']}) price. Any spending effect would run indirectly,
-through households finding the program harder to use — which this data cannot observe either.
+**The worst case is arithmetic, not a forecast.** It says nothing about how likely a format is to leave.
+The "need for access" pathway at [{nfa['citation']}]({nfa['url']}) gives USDA wide discretion, and an
+effort to protect rural stores could hold the count near the agency's own projection of
+about {im['net_permanent_loss']:,}. That would be a good outcome and we would report it as one.
 
-**The worst case is arithmetic, not a forecast.** It says what the map looks like if a whole format gives
-up authorization, and nothing about how likely that is. The "need for access" pathway at
-[{nfa['citation']}]({nfa['url']}) gives USDA wide discretion, and a determined effort to protect rural
-stores could keep the count near USDA's own projection of about
-{im['net_permanent_loss']:,} stores. That would be a good
-outcome and we would report it as one.
-
-The compliance-cost and store-loss figures are USDA's own. We have not independently estimated either.
+**We describe effects, not motives.** USDA's stated purpose is nutrition, and nothing here claims
+otherwise. Note too that fewer stores does not by itself cut benefits, which are set against the
+[Thrifty Food Plan]({tfp['url']}) price; any effect would run through households finding the program
+harder to use, which this data cannot observe. The compliance-cost and store-loss figures are USDA's
+own — we have not independently estimated either.
 
 ---
 
@@ -411,7 +372,7 @@ The compliance-cost and store-loss figures are USDA's own. We have not independe
 published statements by FMI and the National Grocers Association, the joint comments of NACS, NATSO and
 SIGMA filed November 24, 2025, and NACS on
 [{n['published']}]({i['nacs_day_one_url']}) and [August 10, 2026]({i['nacs_august_url']}).
-{dg['source']}. {trading['propublica_source']}. {trading['nyt_source']}. Store-count and survival
+{dg['source']}. {trading['nyt_source']}. Store-count and survival
 figures from [SNAP Retailer Locator Historical
 Data](https://www.fna.usda.gov/snap/retailer-locator/data), 2005–2025, published by USDA's Food and
 Nutrition Administration — the Food and Nutrition Service until it was renamed on June 1, 2026 — using
