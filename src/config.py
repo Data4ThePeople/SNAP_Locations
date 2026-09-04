@@ -1,4 +1,5 @@
 """Shared paths and constants for the SNAP retailer pipeline."""
+import os
 from datetime import date
 from pathlib import Path
 
@@ -40,6 +41,23 @@ OR (longitude BETWEEN  -68.0 AND  -64.5 AND latitude BETWEEN  17.6 AND 18.6)
 OR (longitude BETWEEN  144.5 AND  146.2 AND latitude BETWEEN  13.2 AND 20.6)
 OR (longitude BETWEEN -171.2 AND -169.3 AND latitude BETWEEN -14.6 AND -13.9)
 )"""
+
+
+def env(name: str, default: str = "") -> str:
+    """Read a secret from the environment, falling back to the project .env.
+
+    The environment wins so CI can override without touching the file. No
+    python-dotenv dependency for what is a handful of KEY=value lines.
+    """
+    if os.environ.get(name):
+        return os.environ[name]
+    path = ROOT / ".env"
+    if path.exists():
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if line.startswith(f"{name}="):
+                return line.split("=", 1)[1].strip().strip("\"'")
+    return default
 
 
 def connect(read_only: bool = False):

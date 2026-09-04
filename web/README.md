@@ -20,13 +20,51 @@ which needs Chrome 80+, Safari 16.4+ or Firefox 113+.
 
 The one thing that cannot be inlined is the **basemap**: CARTO tiles come from
 the network. Offline, every dot and control still works — the map just draws on
-a blank background.
+a blank background. The build reads the CARTO key from `.env` and writes it into
+the bundle, so a standalone file carries its own key.
 
 `serve.py` is a plain file server that sends `no-store`; use it rather than
 `python -m http.server`, which lets the browser cache app.js so edits appear
 not to take effect. There is no build step and no backend. `index.html`
 loads a single pinned dependency (deck.gl UMD) from unpkg; the basemap is CARTO
-raster tiles, which need no API key.
+raster tiles.
+
+## Basemap API key
+
+CARTO began enforcing API keys on `basemaps.cartocdn.com` in August 2026. Without
+one, tiles come back with an **"API KEY REQUIRED"** watermark burned into the
+image — the map still draws, it just looks broken.
+
+Get a free key at <https://carto.com/basemaps/apikey/> (a short form; no CARTO
+account, no approval queue, 5M tile requests a month) and put it in the
+gitignored `.env` at the repo root:
+
+```
+CARTO_KEY=cb1_...
+```
+
+`app.js` reads `window.CARTO_KEY`, and nothing else, so the key never lands in a
+tracked file. Two things set that global from `.env`:
+
+- **`serve.py`** rewrites `index.html` in flight, injecting the key ahead of the
+  `app.js` tag. It prints whether it found one at startup.
+- **`build_standalone.py`** writes it into the same script block as the data, and
+  aborts if the key it read does not survive into the bundle.
+
+With no key anywhere the map still draws — watermarked, with a console warning
+from `app.js` and a `WARNING:` line from the build.
+
+A basemap key is public by nature: it travels inside `dist/snap-map.html`, which
+GitHub Pages serves to anyone. The form asks which domain you will use it on, but
+that restriction is **not enforced today** — the key returns tiles with no
+referer at all. Register the domain that actually serves the embed
+(`data4thepeople.github.io`, the iframe's own origin — not the Prismic page that
+frames it), and if the 5M/month is ever burned by someone else, request a new
+key, change the one line in `.env` and rebuild.
+
+CARTO is steering new work toward the **vector** basemaps and may stop refreshing
+raster cartography; the same key covers both, so a later move to MapLibre vector
+tiles is a rendering change, not a credentials one.
 
 ## How it works
 

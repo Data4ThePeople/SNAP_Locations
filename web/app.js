@@ -9,6 +9,13 @@
  * user highlights up to 3 and the rest fall back to a non-identity gray.
  */
 
+// CARTO began enforcing API keys on basemaps.cartocdn.com in Aug 2026; keyless
+// tiles come back with an "API KEY REQUIRED" watermark burned into the pixels.
+// The key lives in the gitignored .env, never here: serve.py injects it into
+// index.html and build_standalone.py writes it into the bundle. See web/README.
+// Empty is a working state — a watermarked map beats a broken one.
+const CARTO_KEY = window.CARTO_KEY || '';
+
 const THEME = {
   dark: {
     tiles: 'dark_all',
@@ -327,9 +334,15 @@ function flyTo(key) {
 
 function basemapLayer() {
   const style = THEME[state.theme].tiles;
+  const hi = devicePixelRatio > 1 ? '@2x' : '';
+  const key = CARTO_KEY ? `?key=${encodeURIComponent(CARTO_KEY)}` : '';
+  if (!CARTO_KEY && !basemapLayer.warned) {
+    basemapLayer.warned = true;
+    console.warn('No CARTO_KEY set — basemap tiles will carry an "API KEY REQUIRED" watermark. Free key: https://carto.com/basemaps/apikey/');
+  }
   return new deck.TileLayer({
     id: `base-${style}`,
-    data: `https://basemaps.cartocdn.com/rastertiles/${style}/{z}/{x}/{y}${devicePixelRatio > 1 ? '@2x' : ''}.png`,
+    data: `https://basemaps.cartocdn.com/rastertiles/${style}/{z}/{x}/{y}${hi}.png${key}`,
     minZoom: 0,
     maxZoom: 19,
     tileSize: 256,

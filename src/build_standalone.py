@@ -10,7 +10,8 @@ The dataset is gzipped before base64 because base64 alone would inflate it to
 
 One thing genuinely cannot be inlined: the CARTO basemap tiles are fetched from
 the network. Offline, the dots and every control still work — the map just draws
-on a blank background.
+on a blank background. The CARTO key is read from .env and written into the
+bundle beside the data; without one the tiles arrive watermarked.
 
     python src/build_standalone.py
 """
@@ -20,7 +21,7 @@ import json
 import sys
 import urllib.request
 
-from config import DATA, ROOT
+from config import DATA, ROOT, env
 
 WEB = ROOT / "web"
 DIST = ROOT / "dist"
@@ -62,8 +63,17 @@ def build() -> None:
         '<link rel="stylesheet" href="style.css">', f"<style>\n{css}\n</style>"
     )
 
+    # The key rides in the same script block as the data, ahead of app.js, so
+    # `window.CARTO_KEY` is already set when the app reads it. It lives in .env
+    # rather than in the tracked app.js, and only reaches a build from there.
+    carto = env("CARTO_KEY")
+    if not carto:
+        print("WARNING: no CARTO_KEY in .env — basemap tiles will be watermarked")
+
     payload = (
-        "<script>window.__SNAP__ = {"
+        "<script>"
+        f"window.CARTO_KEY = {guard(json.dumps(carto))};"
+        "window.__SNAP__ = {"
         f"meta: {guard(json.dumps(meta, separators=(',', ':')))},"
         f'points: "{packed}"'
         "};</script>"
@@ -84,7 +94,7 @@ def build() -> None:
     # A truncated or mis-assembled bundle is the likely failure, so check it.
     text = out.read_text(encoding="utf-8")
     for needed in ("window.__SNAP__", "deck.ScatterplotLayer", "renderPanelCounts",
-                   "DecompressionStream"):
+                   "DecompressionStream", "window.CARTO_KEY"):
         if needed not in text:
             raise SystemExit(f"ABORT: bundle is missing {needed!r}")
     # Only </script> can close a block, and guard() escapes every one inside the
@@ -98,8 +108,11 @@ def build() -> None:
     roundtrip = gzip.decompress(base64.b64decode(packed))
     if roundtrip != points:
         raise SystemExit("ABORT: embedded payload does not round-trip")
+    if carto and carto not in text:
+        raise SystemExit("ABORT: CARTO_KEY did not make it into the bundle")
     print(f"  verified: payload round-trips ({len(roundtrip):,} bytes), "
-          f"{text.count('</script>')} script blocks, no external data references")
+          f"{text.count('</script>')} script blocks, no external data references"
+          + (", basemap key embedded" if carto else ", NO basemap key"))
 
 
 if __name__ == "__main__":
