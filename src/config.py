@@ -4,6 +4,7 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+CENTRAL_ENV = Path.home() / ".claude" / "d4tp-process" / ".env"  # shared keys
 DATA = ROOT / "data"
 RAW = DATA / "raw"
 
@@ -51,12 +52,12 @@ def env(name: str, default: str = "") -> str:
     """
     if os.environ.get(name):
         return os.environ[name]
-    path = ROOT / ".env"
-    if path.exists():
-        for line in path.read_text().splitlines():
-            line = line.strip()
-            if line.startswith(f"{name}="):
-                return line.split("=", 1)[1].strip().strip("\"'")
+    for path in (ROOT / ".env", CENTRAL_ENV):
+        if path.exists():
+            for line in path.read_text().splitlines():
+                line = line.strip()
+                if line.startswith(f"{name}="):
+                    return line.split("=", 1)[1].strip().strip("\"'")
     return default
 
 

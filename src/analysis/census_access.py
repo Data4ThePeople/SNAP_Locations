@@ -36,6 +36,7 @@ import csv
 import io
 import json
 import os
+from pathlib import Path
 import urllib.request
 
 from config import ROOT
@@ -52,11 +53,11 @@ STATES = [f"{n:02d}" for n in range(1, 57)
 
 
 def _key():
-    env = ROOT / ".env"
-    if env.exists():
-        for line in env.read_text().splitlines():
-            if line.strip().startswith(("CENSUS_API_KEY", "CENSUS_KEY")):
-                return line.split("=", 1)[1].strip().strip("'\"")
+    for env in (ROOT / ".env", Path.home() / ".claude" / "d4tp-process" / ".env"):
+        if env.exists():
+            for line in env.read_text().splitlines():
+                if line.strip().startswith(("CENSUS_API_KEY", "CENSUS_KEY")):
+                    return line.split("=", 1)[1].strip().strip("'\"")
     return os.environ.get("CENSUS_API_KEY") or os.environ.get("CENSUS_KEY")
 
 

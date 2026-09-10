@@ -11,6 +11,7 @@ a full grocery store, using 2020 census population by ZCTA.
 """
 import json
 import os
+from pathlib import Path
 import pathlib
 import urllib.request
 
@@ -37,11 +38,13 @@ def zcta_population():
     if POP_CACHE.exists():
         return json.loads(POP_CACHE.read_text())
     key = ""
-    env = ROOT / ".env"
-    if env.exists():
-        for line in env.read_text().splitlines():
-            if line.strip().startswith("CENSUS_API_KEY="):
-                key = line.split("=", 1)[1].strip().strip('"').strip("'")
+    for env in (ROOT / ".env", Path.home() / ".claude" / "d4tp-process" / ".env"):
+        if key:
+            break
+        if env.exists():
+            for line in env.read_text().splitlines():
+                if line.strip().startswith("CENSUS_API_KEY="):
+                    key = line.split("=", 1)[1].strip().strip('"').strip("'")
     key = key or os.environ.get("CENSUS_API_KEY", "")
     if not key:
         print("  no CENSUS_API_KEY found — skipping the density test")

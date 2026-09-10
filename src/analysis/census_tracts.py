@@ -12,6 +12,7 @@ resolution for a 10-30 mile question and the wrong one for anything finer.
 import io
 import json
 import os
+from pathlib import Path
 import urllib.request
 import zipfile
 
@@ -26,11 +27,11 @@ FIPS = [f"{i:02d}" for i in range(1, 57)
 
 
 def _key():
-    env = ROOT / ".env"
-    if env.exists():
-        for line in env.read_text().splitlines():
-            if line.strip().startswith("CENSUS_API_KEY="):
-                return line.split("=", 1)[1].strip().strip('"').strip("'")
+    for env in (ROOT / ".env", Path.home() / ".claude" / "d4tp-process" / ".env"):
+        if env.exists():
+            for line in env.read_text().splitlines():
+                if line.strip().startswith("CENSUS_API_KEY="):
+                    return line.split("=", 1)[1].strip().strip('"').strip("'")
     return os.environ.get("CENSUS_API_KEY", "")
 
 

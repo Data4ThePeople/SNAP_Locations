@@ -27,13 +27,14 @@ def carto_key() -> str:
     """
     if os.environ.get("CARTO_KEY"):
         return os.environ["CARTO_KEY"]
-    path = os.path.join(os.path.dirname(ROOT), ".env")
-    if os.path.exists(path):
-        with open(path, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith("CARTO_KEY="):
-                    return line.split("=", 1)[1].strip().strip("\"'")
+    for path in (os.path.join(os.path.dirname(ROOT), ".env"),
+                 os.path.expanduser("~/.claude/d4tp-process/.env")):
+        if os.path.exists(path):
+            with open(path, encoding="utf-8") as f:
+                for line in f:
+                    line = line.strip()
+                    if line.startswith("CARTO_KEY="):
+                        return line.split("=", 1)[1].strip().strip("\"'")
     return ""
 
 
