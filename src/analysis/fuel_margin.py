@@ -44,6 +44,28 @@ Casey's ends 30 April, so FY2020 runs May 2019 to April 2020 and contains the
 March-April 2020 collapse. FY2020 is therefore excluded from the pre-COVID mean
 as contaminated, and FY2021 (May 2020 to April 2021) is the first post year.
 """
+# Contact address for the User-Agent: read at run time, never hardcoded in the repo.
+# Set D4TP_CONTACT_EMAIL in the environment or in ~/.claude/d4tp-process/.env.
+import os as _os
+
+
+def _d4tp_contact():
+    v = _os.environ.get("D4TP_CONTACT_EMAIL")
+    if v:
+        return v
+    try:
+        with open(_os.path.expanduser("~/.claude/d4tp-process/.env"), encoding="utf-8") as fh:
+            for line in fh:
+                if line.strip().startswith("D4TP_CONTACT_EMAIL="):
+                    return line.split("=", 1)[1].strip().strip("'\"")
+    except OSError:
+        pass
+    return ""
+
+
+D4TP_CONTACT = _d4tp_contact()
+
+
 import html
 import io
 import json
@@ -53,7 +75,7 @@ import urllib.request
 from config import RAW
 
 OUT = None  # set in main() to avoid importing ROOT at module load for tests
-UA = {"User-Agent": "Data4ThePeople SNAP research D4TP_CONTACT_EMAIL"}
+UA = {"User-Agent": f"Data4ThePeople SNAP research {D4TP_CONTACT}"}
 CACHE = RAW / "fuel_margin_cache.json"
 
 PRE = (2015, 2019)    # calendar pre-COVID window
