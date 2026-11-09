@@ -34,7 +34,10 @@ stocking standards tightened around 2016 to 2018, not only from exits.
 are not released (*Food Marketing Institute v. Argus Leader*, 2019).
 
 **Missing data.** `1930-01-01` is USDA's code for an unknown authorization date.
-4,542 stores have no coordinates. A blank end date means still authorized.
+4,542 stores have no coordinates. A blank end date means still authorized. A
+store counts as authorized on a date if its authorization date is on or before
+it and its end date is blank or on or after it, so a store whose end date is
+December 31 is in that day's count and leaves after it.
 
 **Revisions.** Each annual file replaces the last one. End dates can be filled
 in after the fact. We pin the 2005-2025 file.
@@ -147,19 +150,32 @@ before to November 5, so 2026 is compared with years measured the same way.
 replaced at the same address, as a share of stores authorized and mappable on
 December 31 of the year before. Ownership, brand and state are the historical
 file's values for the store. "2019–2025 average" is the simple mean of the
-seven yearly rates. The state chart shows states with 500 or more convenience
+seven unrounded yearly rates. Percentages are rounded to one decimal, halves
+up. "All states and territories" and other national counts include Alaska,
+Hawaii, Puerto Rico, Guam and the Virgin Islands. The state chart shows states with 500 or more convenience
 stores on December 31, 2025; the store-type chart shows types with 1,000 or
 more. New authorizations are stores present on November 5 that were not
 authorized on the December 31 before, mappable, with format Convenience Store.
 Returns under an old ID count in every year. In 2026 the count includes 1,671
 live-only convenience stores whose IDs are lower than the historical file's
-highest; without them the 2026 rate is 5.5% instead of 7.0%.
+highest; without them the 2026 rate is 5.5% instead of 7.0%. The count is of
+stores still authorized on November 5, not every store authorized in between.
 
-**Recording lag check.** The historical file shows fewer convenience end dates
-in October to December 2025 (2,195) than the 2022 to 2024 average for those
-months (3,352). If the 1,157 difference were exits that happened in 2025 but
-were recorded late, they would sit in the 2026 count, and the 2026 convenience
-rate would be 11.6% instead of 12.5%. The file cannot tell which.
+**Fewer exits replaced in 2026.** The address test removes a smaller share of
+convenience exits in 2026 (14.3%) than in 2019 to 2025 (25% to 37%). Street
+and ZIP agree for 99.6% of stores found in both sources, so formatting does not
+explain it. Before the address test, 14.6% of convenience stores left by
+November 5, 2026, against a 2019 to 2025 average of 9.0% (range 7.5% to
+10.9%). Post 8 reports the measure after the address test and discloses this
+one.
+
+**Recording lag check.** The historical file shows fewer convenience stores
+with an end date in October to December 2025 (2,157) than the 2022 to 2024
+average for those months (3,349). If the 1,192 difference were exits that
+happened in 2025 but were recorded late, they would sit in both the 2026 base
+and the 2026 exits. Taking them out of both, the 2026 convenience rate would be
+11.6% instead of 12.5%. The file cannot tell which. The check is rough: it is
+not filtered by the address test.
 
 **Limits of the comparison.** Earlier years use the historical file on both
 dates. 2026 uses the file on one date and the live feed on the other. A store
@@ -175,7 +191,13 @@ category. `data/brand_groups.csv` maps brands to parent companies, bounded by
 year, state and format. USDA records neither.
 
 **Known quirks.** Fuel banners (Shell, BP, Citgo) are the fuel supplier, not the
-operator, so they resolve to unknown. Voluntary alliances such as IGA resolve to
+operator, so a name that starts with one resolves to unknown. A banner later in
+the name ("Hwy 72 Exxon") does not trigger the rule; of about 13,350
+mappable convenience stores named that way, 12,476 are classed independent. The prefix pattern for the Lucky supermarket banner also catches
+1,164 mappable convenience stores named LUCKY FOOD MART, LUCKY 7 and similar,
+which are probably unrelated. They count as chain stores; removing them moves
+the chain convenience exit rate for 2026 from 3.9% to 3.7%. Small real chains
+below the name-count threshold (JR Food Store, 33 stores) can land in unknown. Voluntary alliances such as IGA resolve to
 independent. Generic names such as FOOD MART stay unknown.
 
 ## 2020 cartographic boundary file, states, 1:20m (US Census Bureau)

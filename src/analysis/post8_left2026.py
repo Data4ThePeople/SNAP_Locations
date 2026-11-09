@@ -20,6 +20,7 @@ Writes reports/data/post8.json and PNGs in reports/post8/images/.
 import json
 from collections import Counter
 from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
 
 from analysis import figures, usmap
 from analysis.left_2026 import active, base, exits
@@ -44,7 +45,11 @@ OWN = [("chain", "Chain"), ("independent", "Independent"), ("unknown", "Owner un
 
 
 def pct(n, d):
-    return round(100 * n / d, 1) if d else None
+    """Percent to one decimal, rounding halves up (6.35 -> 6.4), so a reader
+    redoing the division by hand gets the same figure."""
+    if not d:
+        return None
+    return float((Decimal(100 * n) / Decimal(d)).quantize(Decimal("0.1"), ROUND_HALF_UP))
 
 
 def main():
@@ -57,7 +62,8 @@ def main():
     for y in YEARS:
         a, b = date(y - 1, 12, 31), date(y, snap.month, snap.day)
         A = base(con, a)
-        G = [g for g in exits(con, a, b, live=(y == 2026)) if not g["replaced"]]
+        G_all = exits(con, a, b, live=(y == 2026))
+        G = [g for g in G_all if not g["replaced"]]
         # New convenience authorizations, a to b.
         if y == 2026:
             new = con.execute(f"""
@@ -69,7 +75,7 @@ def main():
                 SELECT count(*) FROM dim_store d JOIN {active(b)} USING (record_id)
                 WHERE d.mappable AND d.format = '{CONV}' AND record_id NOT IN {active(a)}""").fetchone()[0]
             new = (n, n)
-        years[y] = {"A": A, "G": G, "new": new}
+        years[y] = {"A": A, "G": G, "G_all": G_all, "new": new}
     con.close()
 
     def rate(y, keep):
@@ -77,18 +83,34 @@ def main():
         G = [r for r in years[y]["G"] if keep(r)]
         return {"base": len(A), "left": len(G), "pct": pct(len(G), len(A))}
 
+    def exact(s, y):
+        return 100 * s[y]["left"] / s[y]["base"]
+
     def series(keep):
         return {y: rate(y, keep) for y in YEARS}
 
     def earlier(s):
-        return round(sum(s[y]["pct"] for y in YEARS[:-1]) / (len(YEARS) - 1), 1)
+        # Mean of the unrounded yearly rates, then rounded once.
+        m = sum(exact(s, y) for y in YEARS[:-1]) / (len(YEARS) - 1)
+        return float(Decimal(m).quantize(Decimal("0.1"), ROUND_HALF_UP))
 
     out = {"snapshot_date": str(snap), "years": YEARS,
            "measure": "left SNAP Dec 31 of prior year to Nov 5, not replaced at same address"}
 
     conv = series(lambda r: r["format"] == CONV)
     other = series(lambda r: r["format"] != CONV)
-    out["trend"] = {"convenience": conv, "all_other": other,
+    # The same exits before the address test, and the share the test removed.
+    # Both are disclosed because the replaced share fell in 2026.
+    conv_all = {}
+    for y in YEARS:
+        G = [g for g in years[y]["G_all"] if g["format"] == CONV]
+        rep = sum(g["replaced"] for g in G)
+        conv_all[y] = {"left_any": len(G), "pct_any": pct(len(G), conv[y]["base"]),
+                       "replaced": rep, "replaced_share_pct": pct(rep, len(G))}
+    out["trend"] = {"convenience_before_address_test": conv_all,
+                    "conv_any_earlier_mean": float(Decimal(sum(100 * conv_all[y]["left_any"] / conv[y]["base"]
+                                                   for y in YEARS[:-1]) / 7).quantize(Decimal("0.1"), ROUND_HALF_UP)),
+                    "convenience": conv, "all_other": other,
                     "conv_earlier_mean": earlier(conv), "other_earlier_mean": earlier(other)}
 
     own = {}
@@ -138,7 +160,7 @@ def main():
     # are counted in 2026, because the base date reads them as still authorized.
     con = connect(read_only=True)
     q4 = dict(con.execute(f"""
-        SELECT year(end_date), count(*) FROM fact_spell f JOIN dim_store d USING (record_id)
+        SELECT year(end_date), count(DISTINCT record_id) FROM fact_spell f JOIN dim_store d USING (record_id)
         WHERE d.format = '{CONV}' AND NOT f.date_anomaly AND month(end_date) >= 10
           AND year(end_date) BETWEEN 2022 AND 2025 GROUP BY 1""").fetchall())
     con.close()
@@ -146,8 +168,9 @@ def main():
     short = prior - q4[2025]
     out["q4_check"] = {"conv_end_dates_oct_dec": {str(k): v for k, v in sorted(q4.items())},
                        "mean_2022_2024": prior, "shortfall_2025": short,
+                       "unit": "stores (distinct Record_ID) with a convenience end date Oct 1 to Dec 31",
                        "conv_pct_2026_if_shortfall_moved_to_2025":
-                           pct(conv[2026]["left"] - short, conv[2026]["base"])}
+                           pct(conv[2026]["left"] - short, conv[2026]["base"] - short)}
 
     OUT.write_text(json.dumps(out, indent=1, default=str))
     print(f"wrote {OUT}")
@@ -186,7 +209,7 @@ def charts(out, years, label):
         title="Convenience stores that left SNAP so far in 2026",
         subtitle=(f"authorized December 31, 2025, not on USDA's list {label}, 2026, "
                   "no new authorization at the same address"),
-        note=(f"Count is national; the map shows the lower 48 ({len(pts):,} of {c26['left']:,}). "
+        note=(f"Count includes Alaska, Hawaii and the territories; the map shows the lower 48 ({len(pts):,} of {c26['left']:,}). "
               "Source: USDA Food and Nutrition Administration, SNAP retailer historical data and live feed."),
     )
 
@@ -196,7 +219,7 @@ def charts(out, years, label):
         [{"name": "Convenience stores", "values": [tr["convenience"][y]["pct"] for y in YEARS], "slot": 2},
          {"name": "All other stores", "values": [tr["all_other"][y]["pct"] for y in YEARS], "slot": 1}],
         title="Share of SNAP stores that left between January 1 and " + label,
-        subtitle="% of stores authorized on December 31 of the year before",
+        subtitle="% of stores authorized on December 31 of the year before;\nexcludes exits replaced at the same address",
         annotate=[{"year": 2026, "text": "live list"}],
     )
 
@@ -224,10 +247,10 @@ def charts(out, years, label):
     # 5. States, top 15 by 2026 rate, plus the US.
     st = out["states"][:15]
     figures.dotrows_png(
-        IMG / "post8-states.png", ["United States"] + [STATES.get(s["state"], s["state"]) for s in st],
+        IMG / "post8-states.png", ["All states and territories"] + [STATES.get(s["state"], s["state"]) for s in st],
         [{"name": "2019–2025 average", "values": [tr["conv_earlier_mean"]] + [s["earlier_mean"] for s in st], "slot": 1},
          {"name": "2026", "values": [c26["pct"]] + [s["y2026"]["pct"] for s in st], "slot": 2}],
-        title=f"States where the most convenience stores left SNAP by {label}, 2026",
+        title=f"States with the highest share of convenience stores leaving SNAP by {label}, 2026",
         subtitle="% of convenience stores authorized on December 31 of the year before; states with 500 or more",
         divider_after=1, signed=False, x_zero=True,
     )
@@ -238,7 +261,9 @@ def charts(out, years, label):
         IMG / "post8-new.png", YEARS,
         [{"name": "New convenience stores", "values": [nw[y]["pct"] for y in YEARS], "slot": 1}],
         title=f"New convenience stores authorized between January 1 and {label}",
-        subtitle="% of convenience stores authorized on December 31 of the year before",
+        subtitle=(f"% of convenience stores authorized on December 31 of the year before; still authorized {label}.\n"
+                  f"2026 includes {nw[2026]['new'] - nw[2026]['new_excl_old_ids']:,} stores with older IDs "
+                  f"({nw[2026]['pct_excl_old_ids']}% without them)"),
         annotate=[{"year": 2026, "text": "live list"}],
     )
 

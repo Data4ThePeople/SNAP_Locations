@@ -88,7 +88,7 @@ def _titles(fig, ax, title, subtitle, gutter_pt=0):
                         textcoords="offset points", xytext=(-gutter_pt, dy),
                         ha="left", va="bottom", fontsize=8, family=MONO,
                         color=INK_SOFT, annotation_clip=False)
-            dy += 15
+            dy += 15 + 10 * subtitle.count("\n")
         if title:
             ax.annotate(title, (0, 1), xycoords="axes fraction",
                         textcoords="offset points", xytext=(-gutter_pt, dy),
@@ -97,7 +97,8 @@ def _titles(fig, ax, title, subtitle, gutter_pt=0):
         return
     if title:
         ax.set_title(title, loc="left", fontsize=10.5, family=MONO, color=INK,
-                     fontweight="bold", pad=20 if subtitle else 10)
+                     fontweight="bold",
+                     pad=(20 + 10 * subtitle.count("\n")) if subtitle else 10)
     if subtitle:
         # Axes coordinates, just above the plot, so it sits between the title and
         # the top gridline regardless of figure height.

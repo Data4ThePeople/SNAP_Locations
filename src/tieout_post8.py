@@ -13,6 +13,7 @@ import json
 import re
 import sys
 from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
 
 import pandas as pd
 
@@ -33,7 +34,13 @@ WORDS = [
     ("Map title: \"Convenience stores that left SNAP so far in 2026\"",
      "Exit test, Dec 31, 2025 to Nov 5, 2026", "supported"),
     ("Map subtitle: \"no new authorization at the same address\"", "Address test in DATASETS.md", "supported"),
-    ("Map note: \"Count is national; the map shows the lower 48\"", "Shown count recomputed above", "supported"),
+    ("Map note: \"Count includes Alaska, Hawaii and the territories; the map shows the lower 48\"",
+     "Shown count recomputed above", "supported"),
+    ("Trend subtitle: \"excludes exits replaced at the same address\"", "Exit test in DATASETS.md", "supported"),
+    ("State chart title: \"highest share\"; first row \"All states and territories\"",
+     "Ranked by 2026 rate; base includes territories", "supported"),
+    ("New-store subtitle: \"still authorized November 5\"; \"2026 includes 1,671 stores with older IDs (5.5% without them)\"",
+     "DATASETS.md post 8 breakdowns; recomputed above", "supported"),
     ("Map key: \"still in SNAP\" (convenience stores on the Nov 5 list)",
      "Ground layer: live_store convenience rows on the map", "supported"),
     ("Ownership rows: Chain, Independent, Owner unknown",
@@ -56,8 +63,12 @@ def norm(s):
     return re.sub(r"[^A-Z0-9]+", " ", str(s).upper()).strip() if isinstance(s, str) else ""
 
 
+def r1(x):
+    return float(Decimal(x).quantize(Decimal("0.1"), ROUND_HALF_UP))
+
+
 def pct(n, d):
-    return round(100 * n / d, 1) if d else None
+    return r1(Decimal(100 * n) / Decimal(d)) if d else None
 
 
 def main():
@@ -105,7 +116,7 @@ def main():
         keys = set(zip(N["addr"], N["zip5"]))
         left = ~A.index.isin(B_ids)
         rep = pd.Series([x != "" and (x, z) in keys for x, z in zip(A["addr"], A["zip5"])], index=A.index)
-        f = pd.DataFrame({"gone": left & ~rep, "format": A.index.map(ds["format"]),
+        f = pd.DataFrame({"gone": left & ~rep, "left_any": left, "rep_left": left & rep, "format": A.index.map(ds["format"]),
                           "own": A.index.map(ds["ownership"]), "brand": A.index.map(ds["brand"]),
                           "state": A.index.map(st)}, index=A.index)
         frames[y] = f
@@ -132,7 +143,12 @@ def main():
         return {"base": len(f), "left": int(f["gone"].sum()), "pct": pct(int(f["gone"].sum()), len(f))}
 
     def earlier(mask):
-        return round(sum(rate(y, mask)["pct"] for y in range(2019, 2026)) / 7, 1)
+        # Mean of unrounded yearly rates.
+        vals = []
+        for y in range(2019, 2026):
+            f = frames[y][mask(frames[y])]
+            vals.append(100 * f["gone"].sum() / len(f))
+        return r1(sum(vals) / 7)
 
     conv = lambda f: f["format"].eq(CONV)
     other = lambda f: ~f["format"].eq(CONV)
@@ -147,6 +163,17 @@ def main():
         (built["new_convenience"]["2026"]["new_excl_old_ids"], built["new_convenience"]["2026"]["pct_excl_old_ids"]),
         (newconv[2026][1], pct(newconv[2026][1], rate(2026, conv)["base"])))
     tie("Convenience 2019–2025 average", t["conv_earlier_mean"], earlier(conv))
+    any_vals = []
+    for y in range(2019, 2027):
+        f = frames[y][conv(frames[y])]
+        la, rp = int(f["left_any"].sum()), int(f["rep_left"].sum())
+        b = t["convenience_before_address_test"][str(y)]
+        tie(f"Convenience {y} before address test: left, %, replaced, replaced share",
+            (b["left_any"], b["pct_any"], b["replaced"], b["replaced_share_pct"]),
+            (la, pct(la, len(f)), rp, pct(rp, la)))
+        if y < 2026:
+            any_vals.append(100 * la / len(f))
+    tie("Convenience before address test, 2019–2025 average", t["conv_any_earlier_mean"], r1(sum(any_vals) / 7))
     tie("All other 2019–2025 average", t["other_earlier_mean"], earlier(other))
 
     for k, v in built["ownership"].items():
@@ -192,9 +219,15 @@ def main():
         int((lon.between(x0, x1) & lat.between(y0, y1)).sum()))
 
     cv = h[h["rid"].map(ds["format"]).eq(CONV) & h["end"].dt.month.ge(10)]
-    q4 = cv[cv["end"].dt.year.between(2022, 2025)].groupby(cv["end"].dt.year).size()
+    cv = cv[cv["end"].dt.year.between(2022, 2025)]
+    q4 = cv.groupby(cv["end"].dt.year)["rid"].nunique()
     q = built["q4_check"]
-    tie("Q4 convenience end dates 2022–2025", q["conv_end_dates_oct_dec"], {str(k): int(v) for k, v in q4.items()})
+    tie("Q4 convenience stores with end dates, 2022–2025", q["conv_end_dates_oct_dec"],
+        {str(k): int(v) for k, v in q4.items()})
+    short = round(sum(int(q4[y]) for y in (2022, 2023, 2024)) / 3) - int(q4[2025])
+    c26 = rate(2026, conv)
+    tie("Q4 shortfall and adjusted 2026 rate", (q["shortfall_2025"], q["conv_pct_2026_if_shortfall_moved_to_2025"]),
+        (short, pct(c26["left"] - short, c26["base"] - short)))
 
     fmt = lambda v: f"{v:,}" if isinstance(v, int) else str(v)
     lines = ["# Tie-out, post 8", "",
