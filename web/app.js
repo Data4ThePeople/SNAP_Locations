@@ -35,7 +35,7 @@ const hex = (c) => '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
 const fmtNum = (n) => n.toLocaleString('en-US');
 
 const state = {
-  yearIndex: 19,
+  yearIndex: 0,         // set to the newest snapshot once meta loads
   theme: 'dark',
   colorMode: 'ownership',
   highlight: [],       // format indices, max 3, kept in meta.formats order
@@ -114,6 +114,19 @@ async function load() {
 
   filterValue = new Float32Array(N);
   colors = new Uint8Array(N * 3);
+
+  // The slider's range and starting point come from the payload, so adding a
+  // snapshot never needs an HTML edit. It opens on the newest one.
+  state.yearIndex = meta.years.length - 1;
+  const slider = document.getElementById('year');
+  slider.max = String(meta.years.length - 1);
+  slider.value = String(state.yearIndex);
+  const liveNote = document.getElementById('liveNote');
+  if (liveNote && meta.live) {
+    liveNote.querySelector('[data-live="label"]').textContent = meta.live.label;
+    liveNote.querySelector('[data-live="only"]').textContent = fmtNum(meta.live.only_in_live);
+    liveNote.hidden = false;
+  }
 
   state.formatOn = new Uint8Array(meta.formats.length).fill(1);
   state.brandOn = new Uint8Array(meta.brands.length + 1).fill(1);
@@ -417,7 +430,8 @@ function showTooltip({ index, x, y }) {
 function renderCount() {
   const year = meta.years[state.yearIndex];
   const total = meta.per_year_totals[year];
-  document.getElementById('yearOut').textContent = year;
+  document.getElementById('yearOut').textContent =
+    meta.labels ? meta.labels[state.yearIndex] : year;
   document.getElementById('count').innerHTML =
     `Showing <strong>${fmtNum(state.visible)}</strong> of ${fmtNum(total)} stores`;
 }

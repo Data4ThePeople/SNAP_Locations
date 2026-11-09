@@ -64,6 +64,31 @@ def main():
         bit = np.uint32(1 << (yr - years[0]))
         check(f"{yr}", int(((year_mask & bit) != 0).sum()), meta["per_year_totals"][str(yr)])
 
+    if meta.get("live"):
+        # Checked against the raw snapshot file, not live_store, so a fault in
+        # load_live.py cannot vouch for itself.
+        import csv, gzip
+        from fetch_live import LIVE_DIR
+        print(f"\n2b. Live snapshot ({meta['live']['label']}) against the raw feed file")
+        path = LIVE_DIR / f"snap-live-{meta['live']['date']}.csv.gz"
+        with gzip.open(path, "rt", encoding="utf-8") as fh:
+            raw = list(csv.DictReader(fh))
+        con = connect(read_only=True)
+        hist_ids = {r[0] for r in con.execute("SELECT record_id FROM dim_store").fetchall()}
+        unmappable_hist = {r[0] for r in con.execute(
+            "SELECT record_id FROM dim_store WHERE NOT mappable").fetchall()}
+        con.close()
+        kept = [r for r in raw
+                if r["Store_Type"] != "Restaurant Meals Program"
+                and not (r["Store_Type"] == "Farmers and Markets" and int(r["Record_ID"]) not in hist_ids)
+                and int(r["Record_ID"]) not in unmappable_hist]
+        live_bit = np.uint32(1 << (len(years) - 1))
+        check("live bit count = raw feed minus RMP, live-only markets, unmappable",
+              int(((year_mask & live_bit) != 0).sum()), len(kept))
+        check("live-only stores", sum(int(r["Record_ID"]) not in hist_ids for r in kept),
+              meta["live"]["only_in_live"])
+        check("labels, one per slider step", len(meta["labels"]), len(years))
+
     print("\n3. Unbranded buckets (the two synthetic filter entries)")
     own = {o: i for i, o in enumerate(meta["ownership"])}
     check("independent unbranded", int(((brand_id == 0) & (ownership_id == own["independent"])).sum()),

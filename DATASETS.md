@@ -1,0 +1,162 @@
+# Datasets
+
+The map and the 2026 exit count use two USDA products, joined on Record_ID. The
+historical file covers every Dec 31 from 2006 to 2025. The live feed adds one
+more date, November 5, 2026. Two curated files in `data/` add brand and
+ownership, and a Census boundary file draws the static map.
+
+## SNAP Retailer Locator Historical Data, 2005-2025 (USDA Food and Nutrition Administration)
+
+**What it is.** One row per authorization spell: a store's Record_ID, name,
+address, coordinates, USDA store type, authorization date and end date. A store
+whose authorization lapses and resumes has more than one row.
+
+**Where it comes from.** `snap-retailer-locator-data2005-2025.zip` from
+`fna.usda.gov/sites/default/files/resource-files/`, one CSV inside, no login.
+Cached in `data/raw/` (not in git). FNS was renamed FNA on June 1, 2026 and its
+URLs are moving, so `src/fetch.py` does not re-download once the CSV exists.
+
+**Version and vintage.** Data through December 31, 2025. USDA publishes a new
+file about once a year. As of November 8, 2026, no 2026 file was listed.
+
+**Coverage.** All 50 states, DC and the territories. Only stores authorized at
+some point in the 20-year window are included, so a snapshot before 2006 would
+be missing stores that opened and closed earlier; `snapshot()` refuses those
+dates. 703,441 rows resolve to 661,456 stores. Every value is an administrative
+record, not an estimate. Restaurant Meals Program sites and about 3,700
+farmers-market entities that appear in the live feed are not in this file.
+
+**Changes over time.** USDA's store types are not stable. Small Grocery Store
+falls from 14,255 (2010) to 7,539 (2021), partly from reclassification when
+stocking standards tightened around 2016 to 2018, not only from exits.
+
+**Suppressed, censored or masked values.** None. Redemption dollars per store
+are not released (*Food Marketing Institute v. Argus Leader*, 2019).
+
+**Missing data.** `1930-01-01` is USDA's code for an unknown authorization date.
+4,542 stores have no coordinates. A blank end date means still authorized.
+
+**Revisions.** Each annual file replaces the last one. End dates can be filled
+in after the fact. We pin the 2005-2025 file.
+
+**Units and rounding.** Dates to the day. Coordinates in decimal degrees.
+
+**Known quirks.** 40 stores are geocoded outside the US (38 Guam stores in
+Jerusalem and the Philippines, a "China, Texas" Dollar General in Tibet) and 6
+fall in the wrong state. `mappable` excludes all three groups: 656,868 of
+661,456 stores. One address can carry many records at once (the West Side
+Market in Cleveland has 144), so we never deduplicate by address. An exit in
+this file is a lost authorization, not necessarily a store that closed.
+
+**Uncertainty.** USDA publishes none. Geocodes are USDA's.
+
+**License and attribution.** US government work, public domain. Credit: USDA
+Food and Nutrition Administration.
+
+## SNAP retailer locator live feed (USDA Food and Nutrition Administration)
+
+**What it is.** The list behind USDA's online retailer locator: one row per
+store authorized on the day the feed was last refreshed. It has Record_ID, name,
+address, coordinates and one of 8 store types. It has no authorization or end
+dates, so it shows only who is in SNAP on that one day.
+
+**Where it comes from.** ArcGIS feature service
+`services1.arcgis.com/RLQu0rK7h4kbsBq5/arcgis/rest/services/snap_retailer_location_data/FeatureServer/0`,
+public, no key. `src/fetch_live.py` pages through it and saves
+`data/raw/live/snap-live-<refresh date>.csv.gz`, which is tracked in git.
+
+**Version and vintage.** USDA overwrites the feed in place and keeps no archive,
+so the saved file is the only copy of that day's list. The snapshot in use was
+refreshed November 5, 2026 at 21:00 UTC, one day after the stocking standards
+compliance date: 248,175 rows. The fetch is refused if the refresh time changes
+while paging, if the row count differs from the feed's own count, or if any
+Record_ID repeats.
+
+**Coverage.** Same geography as the historical file. Of 248,175 rows:
+224,032 have a Record_ID in the historical file; 8,565 are Restaurant Meals
+Program sites; 3,709 are farmers-market entities with no historical Record_ID;
+11,869 are other stores new to SNAP since December 31, 2025, or otherwise
+absent from the historical file. The map leaves out the Restaurant Meals sites
+and those 3,709 market entities, because the historical file has never carried
+them and adding them for one date would look like growth.
+
+**Changes over time.** One snapshot so far.
+
+**Suppressed, censored or masked values.** None.
+
+**Missing data.** No row in the November 5 snapshot lacks coordinates.
+
+**Revisions.** The whole list is replaced at each refresh.
+
+**Units and rounding.** Decimal-degree coordinates. Store type in 8 classes:
+Convenience Store, Grocery Store, Supermarket, Super Store, Specialty Store,
+Other, Farmers and Markets, Restaurant Meals Program.
+
+**Known quirks.**
+- The 8 types are coarser than the historical file's 17. "Grocery Store" hides
+  small, medium and large. "Specialty Store" hides meat, bakery, seafood and
+  produce. "Other" holds combination stores, dollar stores, delivery routes and
+  co-ops.
+- For a store in both sources, the live type disagrees with its historical type
+  0.82% of the time (1,833 of 224,032). The map keeps the historical type.
+- 2,273 stores kept on the map have no historical Record_ID even though their
+  ID is lower than the file's highest one. They may be older authorizations the
+  historical file never carried. They are counted as live-only.
+- 1,075 stores in the feed have a Record_ID whose every historical spell has an
+  end date. They are back in SNAP under the same ID.
+
+**Uncertainty.** USDA publishes none. The feed is a list on one date, so a
+store that left and returned between two snapshots does not show.
+
+**License and attribution.** US government work, public domain. Credit: USDA
+Food and Nutrition Administration.
+
+## How the two sources are combined
+
+**Map snapshot for November 5, 2026.** A store with a historical Record_ID keeps
+that file's format, ownership, brand and coordinates. A live-only store gets its
+format from its live type: Convenience Store, Supermarket and Super Store map
+directly; Other maps to Combination Grocery/Other; Grocery Store becomes
+"Grocery (size not given)"; Specialty Store becomes "Specialty (type not
+given)". As in the historical file, a store whose name matches a dollar chain
+becomes Dollar Store whatever its type. Ownership and brand come
+from `data/brands.csv`, as for every other store. An unresolved name counts as
+independent if 4 or fewer stores carry it, counting historical and live-only
+stores together. Historical labels are never recomputed, so no published number
+moves. A live-only store is mappable if it has coordinates inside the US
+windows and is not outside its own state's envelope, the test `load.py` applies.
+
+**Stores that left SNAP in 2026.** A store left if it was authorized and
+mappable on December 31, 2025 and its Record_ID is nowhere in the November 5
+feed, under any type. If a store that was not authorized on December 31 shows
+up in the feed at the same street line and 5-digit ZIP (upper-cased, each run
+of punctuation or spaces collapsed to one space, ends trimmed, Restaurant Meals
+sites ignored), the exit counts as
+"replaced at the same address" and is not shown on the static map. The same
+test runs on the historical file for 2019 to 2025, from December 31 of the year
+before to November 5, so 2026 is compared with years measured the same way.
+
+**Limits of the comparison.** Earlier years use the historical file on both
+dates. 2026 uses the file on one date and the live feed on the other. A store
+that left between December 31 and November 5 in an earlier year shows up in the
+file with an end date. In 2026 it shows up only by being absent from the feed.
+The address test can find a match at a multi-tenant address that is not a
+replacement, which makes "not replaced" counts lower, not higher.
+
+## Curated brand and parent-company files (Data 4 The People)
+
+**What it is.** `data/brands.csv` maps normalized store names to a brand and a
+category. `data/brand_groups.csv` maps brands to parent companies, bounded by
+year, state and format. USDA records neither.
+
+**Known quirks.** Fuel banners (Shell, BP, Citgo) are the fuel supplier, not the
+operator, so they resolve to unknown. Voluntary alliances such as IGA resolve to
+independent. Generic names such as FOOD MART stay unknown.
+
+## 2020 cartographic boundary file, states, 1:20m (US Census Bureau)
+
+**What it is.** State outlines, drawn under the dots on the static map.
+`cb_2020_us_state_20m.zip` from `www2.census.gov/geo/tiger/GENZ2020/shp/`,
+cached in `data/raw/`. Lower 48 only; Alaska, Hawaii and the territories are
+cut by bounding box, and any count beside the map says how many points it
+shows. Public domain.

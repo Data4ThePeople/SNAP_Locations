@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SNAP Retailers, 2006–2025</title>
+<title>SNAP Retailers, 2006–2026</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://unpkg.com/deck.gl@9.0.36/dist.min.js"></script>
 </head>
@@ -24,14 +24,14 @@
     <div class="bar-row">
       <div class="brand">
         <h1>SNAP Retailers</h1>
-        <p class="sub">Authorized retailers, 2006–2025</p>
+        <p class="sub">Authorized retailers, 2006–2026</p>
       </div>
       <div class="yearwrap">
         <button id="play" class="btn-icon" title="Animate through years"
                 aria-label="Animate through years">▶</button>
-        <input type="range" id="year" min="0" max="19" value="19" step="1"
+        <input type="range" id="year" min="0" max="20" value="20" step="1"
                aria-label="Year">
-        <output id="yearOut">2025</output>
+        <output id="yearOut">Nov 5, 2026</output>
         <span id="count" class="count">—</span>
       </div>
     </div>
@@ -132,7 +132,17 @@
         year. <span id="nShort">—</span> stores (<span id="pctShort">—</span>) opened and
         closed between Dec 31sts and never appear. Stores without coordinates are excluded.
       </p>
-      <p class="note">Source: USDA SNAP Retailer Locator Historical Data, 2005–2025.</p>
+      <p class="note" id="liveNote" hidden>
+        The last step, <strong data-live="label">—</strong>, is USDA's live retailer
+        list as it stood that day, not a Dec 31 count. Stores already in the
+        historical file keep their format there. The <span data-live="only">—</span>
+        stores that are new since then carry USDA's broader live types, so some
+        groceries and specialty stores show as "size not given" or "type not
+        given". Restaurant Meals Program sites and farmers-market entries that the
+        historical file has never carried are left out.
+      </p>
+      <p class="note">Source: USDA SNAP Retailer Locator Historical Data, 2005–2025,
+        and USDA's live SNAP retailer locator feed.</p>
     </details>
   </footer>
 

@@ -1,23 +1,31 @@
-"""Export the map payload: one row per store, with a 20-bit year mask.
+"""Export the map payload: one row per store, with a 21-bit snapshot mask.
 
-Rather than shipping 20 per-year datasets, each store is written once carrying a
-bitmask where bit i means "authorized on Dec 31 of 2006+i". The year slider then
+Rather than shipping per-year datasets, each store is written once carrying a
+bitmask where bit i means "authorized on snapshot date i". Bits 0-19 are Dec 31
+of 2006-2025, from the historical file. Bit 20 is the newest live-feed snapshot
+(src/fetch_live.py, src/load_live.py), labeled with its own date. The slider then
 becomes a bit test, so every filter runs client-side with no server.
 
-Nothing is written unless the mask reproduces snapshot() counts for all 20 years.
+Nothing is written unless the mask reproduces snapshot() counts for all 20
+historical years and the live_store count for the live snapshot.
 """
 import csv
 import json
 from datetime import date
 
 import numpy as np
+import pandas as pd
 
 from config import DATA, ROOT, connect
 from snapshot import snapshot
 
 GROUPS_CSV = DATA / "brand_groups.csv"
 
-YEARS = list(range(2006, 2026))
+HIST_YEARS = list(range(2006, 2026))
+# The live snapshot sits in the 2026 slot. Its label carries the real date, so
+# the slider never presents it as a year-end.
+LIVE_YEAR = 2026
+YEARS = HIST_YEARS + [LIVE_YEAR]
 OUT_DIR = ROOT / "web" / "data"
 
 # Ownership is a fixed 3-value domain; the map's color encoding depends on the
@@ -38,14 +46,22 @@ SELECT
         CASE WHEN f.auth_date <= make_date(y, 12, 31)
               AND (f.end_date IS NULL OR f.end_date >= make_date(y, 12, 31))
              THEN 1 << (y - {YEARS[0]}) ELSE 0 END
-        FOR y IN generate_series({YEARS[0]}, {YEARS[-1]})
+        FOR y IN generate_series({HIST_YEARS[0]}, {HIST_YEARS[-1]})
     ], (a, b) -> a | b) AS INTEGER)) AS year_mask
 FROM dim_store d
 JOIN fact_spell f USING (record_id)
 WHERE NOT f.date_anomaly AND d.mappable
 GROUP BY ALL
-HAVING year_mask <> 0
 ORDER BY d.record_id
+"""
+
+# Stores authorized on the live snapshot date that the map can place, after the
+# two live-only groups the historical file never carried (see load_live.py).
+LIVE_SQL = """
+SELECT record_id, lon AS longitude, lat AS latitude, format, ownership, brand,
+       store_name, state, in_hist
+FROM live_store
+WHERE excluded IS NULL AND mappable
 """
 
 
@@ -86,26 +102,50 @@ def export() -> None:
     con = connect(read_only=True)
     print("Building year masks...")
     df = con.execute(MASK_SQL).df()
-    print(f"  {len(df):,} stores with at least one active year-end")
+    live = con.execute(LIVE_SQL).df()
+    snap_date = con.execute("SELECT any_value(snapshot_date) FROM live_store").fetchone()[0]
+    live_label = f"{snap_date:%b} {snap_date.day}, {snap_date.year}"
+    live_bit = 1 << (len(YEARS) - 1)
+
+    # Historical stores on the live date: set the bit on their existing row.
+    on_live = df["record_id"].isin(live.loc[live["in_hist"], "record_id"])
+    df.loc[on_live, "year_mask"] = df.loc[on_live, "year_mask"] | live_bit
+    missing = set(live.loc[live["in_hist"], "record_id"]) - set(df["record_id"])
+    if missing:
+        raise SystemExit(f"ABORT: {len(missing)} live stores with a historical "
+                         "Record_ID have no mappable historical row.")
+    # Live-only stores: new rows carrying only the live bit.
+    extra = live.loc[~live["in_hist"]].drop(columns="in_hist").copy()
+    extra["year_mask"] = live_bit
+    df = (pd.concat([df, extra[df.columns]], ignore_index=True)
+            .query("year_mask != 0").reset_index(drop=True))
+    print(f"  {len(df):,} stores with at least one active snapshot "
+          f"({len(extra):,} only in the {live_label} live feed)")
 
     # --- assertions: the mask must reproduce the pipeline's own snapshots ----
-    print("\nVerifying masks against snapshot() for all 20 years:")
+    print(f"\nVerifying masks against snapshot() for all {len(HIST_YEARS)} years:")
     masks = df["year_mask"].to_numpy(dtype=np.uint32)
     per_year = {}
-    for i, yr in enumerate(YEARS):
+    for i, yr in enumerate(HIST_YEARS):
         from_mask = int(((masks >> i) & 1).sum())
         snap = snapshot(date(yr, 12, 31), con=con)
         direct = int(snap["mappable"].sum())
         per_year[yr] = from_mask
         flag = "OK" if from_mask == direct else "MISMATCH"
-        if yr % 5 == 1 or yr in (YEARS[0], YEARS[-1]):
+        if yr % 5 == 1 or yr in (HIST_YEARS[0], HIST_YEARS[-1]):
             print(f"  {yr}  mask {from_mask:>9,}   snapshot {direct:>9,}   {flag}")
         if from_mask != direct:
             raise SystemExit(
                 f"ABORT: year {yr} mask count {from_mask:,} != snapshot {direct:,}. "
                 "Nothing written."
             )
-    print("  all 20 years match")
+    print(f"  all {len(HIST_YEARS)} years match")
+    from_mask = int(((masks >> (len(YEARS) - 1)) & 1).sum())
+    flag = "OK" if from_mask == len(live) else "MISMATCH"
+    print(f"  {live_label}  mask {from_mask:>9,}   live_store {len(live):>9,}   {flag}")
+    if from_mask != len(live):
+        raise SystemExit("ABORT: live snapshot mask does not match live_store. Nothing written.")
+    per_year[LIVE_YEAR] = from_mask
 
     # --- categorical domains -------------------------------------------------
     formats = sorted(df["format"].dropna().unique().tolist())
@@ -218,6 +258,11 @@ def export() -> None:
         "excluded_shortlived_count": never,
         "excluded_shortlived_pct": round(100 * never / mappable, 1),
         "years": YEARS,
+        # Display label per slider step: the year for Dec 31 snapshots, the full
+        # date for the live one.
+        "labels": [str(y) for y in HIST_YEARS] + [live_label],
+        "live": {"date": str(snap_date), "label": live_label,
+                 "only_in_live": len(extra)},
         "formats": formats,
         "format_by_year": format_by_year.tolist(),
         "ownership": OWNERSHIP,
@@ -231,10 +276,12 @@ def export() -> None:
             "unknown_by_year": unb_by_year["unknown"],
         },
         "notes": {
-            "semantics": "A store is included for year Y if authorized on Dec 31 of Y.",
+            "semantics": "A store is included for year Y if authorized on Dec 31 of Y. "
+                         f"The last step is the live feed on {live_label}.",
             "excluded_shortlived": "Stores that opened and closed between Dec 31sts never appear.",
             "excluded_geocode": "Stores without coordinates are excluded.",
-            "source": "USDA SNAP Retailer Locator Historical Data 2005-2025",
+            "source": "USDA SNAP Retailer Locator Historical Data 2005-2025; "
+                      f"USDA SNAP retailer locator live feed, {live_label}",
         },
     }
     meta_path = OUT_DIR / "meta.json"

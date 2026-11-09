@@ -1,30 +1,53 @@
 # SNAP Retailer Locations
 
 Maps SNAP-authorized retailers nationally, classified by format and ownership,
-for any date from 2006 to 2025.
+for any Dec 31 from 2006 to 2025, plus November 5, 2026 from USDA's live
+retailer feed.
+
+Interactive map: https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html
 
 ```bash
 pip install -r requirements.txt
 python src/pipeline.py          # fetch -> load -> classify -> verify (~2 min)
 python src/snapshot.py 2025-12-31
 python src/snapshot.py 2012-06-30 --by=format
+
+python src/fetch_live.py        # save today's live feed, if USDA has refreshed it
+python src/load_live.py         # classify it into live_store
+python src/export_map.py        # 21 map steps; aborts if any count disagrees
+python src/build_standalone.py  # dist/snap-map.html
+python -m analysis.left_2026    # from src/: stores that left SNAP in 2026, plus the map PNG
+python src/tieout_live.py       # recompute from the raw files, write TIEOUT.md
 ```
 
-## Source
+## Sources
 
-One static file: USDA's [SNAP Retailer Locator Historical
-Data](https://www.fns.usda.gov/snap/retailer/historical-data), 703,441 rows
-covering 2005–2025.
+Full notes on both, including their limits, are in [`DATASETS.md`](DATASETS.md).
 
-The live ArcGIS locator is deliberately **not** used. It collapses the taxonomy
-into 8 coarse types — fusing large/medium/small grocery into one bucket — while
-this file carries the full 17-type taxonomy plus authorization dates. Using one
-source means the current map and every historical year share one taxonomy
-instead of reconciling two.
+1. USDA's [SNAP Retailer Locator Historical
+   Data](https://www.fns.usda.gov/snap/retailer/historical-data), 703,441 rows
+   covering 2005–2025. It carries 17 store types and authorization dates, and
+   it drives every Dec 31 snapshot.
+2. USDA's live retailer locator feed, saved on the day USDA refreshed it, in
+   `data/raw/live/`. USDA overwrites the feed and keeps no archive, so the saved
+   file is tracked in git. It adds one map step, November 5, 2026, the day after
+   the new stocking standards took effect. It has only 8 store types and no
+   dates. Stores already in the historical file keep that file's type. New ones
+   show as "size not given" or "type not given" where the live type is too
+   coarse. The 8,565 Restaurant Meals Program sites and 3,709 farmers-market
+   entities that only the live feed carries are left off the map.
 
-The tradeoff: ~12,000 entities exist only in the live feed and are absent here —
-all 8,423 Restaurant Meals Program locations (restaurants accepting SNAP) and
-roughly 3,600 farmers-market entities.
+## Stores that left SNAP in 2026
+
+Of 117,055 convenience stores authorized on December 31, 2025, 14,888 (12.7%)
+were not on USDA's live list on November 5, 2026, leaving out exits where a
+different authorization appeared at the same address. Measured the same way
+from December 31 to November 5, the share in 2019 through 2025 ran from 5.0% to
+8.2%. The 2026 figure compares the historical file with the live feed, while
+earlier years use the historical file on both dates; `DATASETS.md` explains
+the difference. These are lost authorizations, not necessarily closed stores.
+The map is `reports/assets/left-snap-2026.png`, and every number is tied out in
+[`TIEOUT.md`](TIEOUT.md).
 
 FNS was renamed FNA on 2026-06-01 and `fns.usda.gov` URLs are migrating, so the
 zip is cached locally rather than re-fetched.
@@ -118,6 +141,11 @@ src/load.py       CSV -> dim_store + fact_spell, with data-quality flags
 src/brands.py     name normalization + crosswalk matching
 src/classify.py   derive format, ownership, brand
 src/snapshot.py   as_of(date) -> active stores; entry point for every map version
+src/fetch_live.py save USDA's live feed to data/raw/live/, refused on any inconsistency
+src/load_live.py  live feed -> live_store, classified to match dim_store
+src/export_map.py map payload: 20 year-ends plus the live snapshot
+src/analysis/left_2026.py  2026 exits, earlier-year comparison, static map
+src/tieout_live.py         recompute every 2026 number from the raw files
 src/verify.py     27 regression checks against figures measured from the source
 data/brands.csv   hand-curated crosswalk (source, not output — edit this to improve coverage)
 ```
