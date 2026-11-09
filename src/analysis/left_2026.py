@@ -30,6 +30,9 @@ BASELINE_YEARS = range(2019, 2026)
 
 NORM = "trim(regexp_replace(upper({}), '[^A-Z0-9]+', ' ', 'g'))"
 HIST_ADDR = NORM.format("coalesce(street_number,'') || ' ' || coalesce(street_name,'')")
+# The historical file stores ZIP as a number, so 02657 arrives as 2657 (48,748
+# stores, mostly New England and New Jersey). The live feed keeps all 5 digits.
+HIST_ZIP = "lpad(left(trim(d.zip_code), 5), 5, '0')"
 
 
 def active(d):
@@ -45,7 +48,7 @@ def run():
     con.execute(f"""
         CREATE TEMP TABLE base AS
         SELECT d.record_id, d.format, d.longitude, d.latitude,
-               {HIST_ADDR} AS addr, left(d.zip_code, 5) AS zip5
+               {HIST_ADDR} AS addr, {HIST_ZIP} AS zip5
         FROM dim_store d JOIN {active(BASE)} USING (record_id)
         WHERE d.mappable;
         -- New authorizations on the live date: not active on the base date, and
@@ -71,9 +74,9 @@ def run():
     for y in BASELINE_YEARS:
         a, b = date(y - 1, 12, 31), date(y, snap.month, snap.day)
         r = con.execute(f"""
-            WITH A AS (SELECT d.record_id, d.format, {HIST_ADDR} addr, left(d.zip_code,5) zip5
+            WITH A AS (SELECT d.record_id, d.format, {HIST_ADDR} addr, {HIST_ZIP} zip5
                        FROM dim_store d JOIN {active(a)} USING (record_id) WHERE d.mappable),
-                 B AS (SELECT d.record_id, {HIST_ADDR} addr, left(d.zip_code,5) zip5
+                 B AS (SELECT d.record_id, {HIST_ADDR} addr, {HIST_ZIP} zip5
                        FROM dim_store d JOIN {active(b)} USING (record_id)),
                  N AS (SELECT * FROM B WHERE record_id NOT IN (SELECT record_id FROM A)),
                  G AS (SELECT A.*, EXISTS (SELECT 1 FROM N WHERE N.addr = A.addr
@@ -129,10 +132,11 @@ def run():
         ]}],
         width=8.0,
         title="Stores that left SNAP so far in 2026",
-        subtitle=f"authorized December 31, 2025, not on USDA's list {label}; lower 48",
-        note=(f"Leaves out {tot['replaced']:,} exits where a different authorization appeared at the same "
-              f"address. {tot['left_not_replaced']:,} nationally, "
-              f"{len(p48):,} shown. Source: USDA SNAP retailer data."),
+        subtitle=(f"authorized December 31, 2025, not on USDA's list {label}, "
+                  "no new authorization at the same address"),
+        note=(f"Counts are national; the map shows the lower 48 ({len(p48):,} of {tot['left_not_replaced']:,}). "
+              f"Leaves out {tot['replaced']:,} exits where a different\nauthorization appeared at the same "
+              "address. Source: USDA Food and Nutrition Administration, SNAP retailer historical data and live feed."),
     )
     print(f"wrote {OUT_PNG}")
     print(f"  convenience: {conv['base']:,} on Dec 31, {conv['left']:,} left, "

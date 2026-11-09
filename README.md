@@ -39,7 +39,7 @@ Full notes on both, including their limits, are in [`DATASETS.md`](DATASETS.md).
 
 ## Stores that left SNAP in 2026
 
-Of 117,055 convenience stores authorized on December 31, 2025, 14,888 (12.7%)
+Of 117,055 convenience stores authorized on December 31, 2025, 14,684 (12.5%)
 were not on USDA's live list on November 5, 2026, leaving out exits where a
 different authorization appeared at the same address. Measured the same way
 from December 31 to November 5, the share in 2019 through 2025 ran from 5.0% to
@@ -124,8 +124,9 @@ category, not a chain-supermarket one.
   construction.
 - **Geocoding is not clean.** Three flags gate what is mappable:
   `geocode_missing` (4,542 with no coordinates), `geocode_offshore` (40 placed
-  outside the US entirely — 38 Guam stores in Jerusalem and the Philippines, a
-  "China, Texas" Dollar General in Tibet), and `state_mismatch` (6 inside the US
+  outside the US entirely — 37 Guam stores in Israel, the Philippines, Mexico
+  and Europe, a California Big Lots in Caracas, and a "China, Texas" Dollar
+  General in Tibet), and `state_mismatch` (6 inside the US
   but in the wrong state, like a Dime Box, Texas grocery in Pennsylvania). Use
   the `mappable` column — 656,868 of 661,456 stores.
 - **Do not deduplicate by address.** 145,993 addresses carry multiple records.

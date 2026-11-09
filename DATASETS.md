@@ -41,9 +41,13 @@ in after the fact. We pin the 2005-2025 file.
 
 **Units and rounding.** Dates to the day. Coordinates in decimal degrees.
 
-**Known quirks.** 40 stores are geocoded outside the US (38 Guam stores in
-Jerusalem and the Philippines, a "China, Texas" Dollar General in Tibet) and 6
-fall in the wrong state. `mappable` excludes all three groups: 656,868 of
+**Known quirks.** 40 stores are geocoded outside the US (37 Guam stores placed
+in Israel, the Philippines, Mexico and Europe, a California Big Lots in
+Caracas, and a "China, Texas" Dollar General in Tibet) and 6 fall in the wrong
+state. ZIP codes are stored as numbers, so leading zeros are dropped: 48,413
+stores have 4-digit ZIPs and 335 have 3-digit ZIPs, mostly in New England, New
+Jersey and the Virgin Islands. We pad them back to 5 digits before comparing
+with the live feed. `mappable` excludes all three groups: 656,868 of
 661,456 stores. One address can carry many records at once (the West Side
 Market in Cleveland has 144), so we never deduplicate by address. An exit in
 this file is a lost authorization, not necessarily a store that closed.
@@ -113,12 +117,15 @@ Food and Nutrition Administration.
 
 ## How the two sources are combined
 
-**Map snapshot for November 5, 2026.** A store with a historical Record_ID keeps
+**Map snapshot for November 5, 2026.** This is also the "still in SNAP" layer
+under the static map of exits. A store with a historical Record_ID keeps
 that file's format, ownership, brand and coordinates. A live-only store gets its
 format from its live type: Convenience Store, Supermarket and Super Store map
 directly; Other maps to Combination Grocery/Other; Grocery Store becomes
 "Grocery (size not given)"; Specialty Store becomes "Specialty (type not
-given)". As in the historical file, a store whose name matches a dollar chain
+given)". The map note calls these stores "not in the historical file" rather
+than "new", because 2,273 of them carry IDs lower than the file's highest. As
+in the historical file, a store whose name matches a dollar chain
 becomes Dollar Store whatever its type. Ownership and brand come
 from `data/brands.csv`, as for every other store. An unresolved name counts as
 independent if 4 or fewer stores carry it, counting historical and live-only
@@ -131,7 +138,7 @@ mappable on December 31, 2025 and its Record_ID is nowhere in the November 5
 feed, under any type. If a store that was not authorized on December 31 shows
 up in the feed at the same street line and 5-digit ZIP (upper-cased, each run
 of punctuation or spaces collapsed to one space, ends trimmed, Restaurant Meals
-sites ignored), the exit counts as
+sites ignored, historical ZIPs padded to 5 digits), the exit counts as
 "replaced at the same address" and is not shown on the static map. The same
 test runs on the historical file for 2019 to 2025, from December 31 of the year
 before to November 5, so 2026 is compared with years measured the same way.

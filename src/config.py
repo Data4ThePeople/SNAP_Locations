@@ -31,8 +31,8 @@ DATA_CUTOFF = date(2025, 12, 31)
 SENTINEL_AUTH_DATE = date(1930, 1, 1)
 
 # Boxes covering everywhere SNAP or NAP actually operates. A point outside all
-# of them is a geocoding failure, not a location: the file puts 38 Guam stores
-# in Jerusalem, France and the Philippines, a Dollar General in "China, Texas"
+# of them is a geocoding failure, not a location: the file puts 37 Guam stores
+# in Israel, the Philippines, Mexico and Europe, a Dollar General in "China, Texas"
 # in Tibet, and a Big Lots in Santa Margarita, California in Venezuela.
 IN_US_SQL = """(
    (longitude BETWEEN -125.1 AND -66.8  AND latitude BETWEEN  24.3 AND 49.5)

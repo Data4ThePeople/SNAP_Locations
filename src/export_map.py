@@ -248,15 +248,28 @@ def export() -> None:
     # line was 38 stores out and the "never appear" figure was stale by a third.
     # Publishing them here means the copy is generated from the same pass that
     # builds the payload and cannot disagree with it.
+    # Counted over historical stores only: the live-only rows in df are not
+    # among the mappable dim_store stores, so subtracting len(df) would mix the
+    # two groups. A store that never appears either left SNAP before the first
+    # snapshot (Dec 31, 2006) or opened and closed between two Dec 31sts.
     mappable = int(con.execute(
         "SELECT count(*) FROM dim_store WHERE mappable").fetchone()[0])
-    never = mappable - len(df)
+    con.register("_shown", df[["record_id"]])
+    never_before, never_between = con.execute(f"""
+        WITH never AS (SELECT record_id FROM dim_store WHERE mappable
+                       AND record_id NOT IN (SELECT record_id FROM _shown))
+        SELECT count(*) FILTER (WHERE last_end < DATE '{HIST_YEARS[0]}-12-31'),
+               count(*) FILTER (WHERE last_end IS NULL OR last_end >= DATE '{HIST_YEARS[0]}-12-31')
+        FROM never JOIN (SELECT record_id, max(end_date) last_end FROM fact_spell
+                         GROUP BY 1) USING (record_id)""").fetchone()
+    never = never_between
 
     meta = {
         "count": len(df),
         "mappable": mappable,
         "excluded_shortlived_count": never,
         "excluded_shortlived_pct": round(100 * never / mappable, 1),
+        "excluded_before_first": never_before,
         "years": YEARS,
         # Display label per slider step: the year for Dec 31 snapshots, the full
         # date for the live one.

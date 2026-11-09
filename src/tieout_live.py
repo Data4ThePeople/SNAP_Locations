@@ -26,17 +26,22 @@ ROWS = []
 WORDS = [
     ("Static map title: \"Stores that left SNAP so far in 2026\"",
      "Exit test in DATASETS.md, Dec 31, 2025 to Nov 5, 2026", "supported"),
-    ("Static map subtitle: \"authorized December 31, 2025, not on USDA's list November 5, 2026\"",
-     "Historical file end date; live feed dataLastEditDate 2026-11-05 21:00 UTC", "supported"),
-    ("Static map key: \"still in SNAP\"", "Ground layer is live_store rows kept on the map", "supported"),
+    ("Static map subtitle: \"authorized December 31, 2025, not on USDA's list November 5, 2026, no new authorization at the same address\"",
+     "Historical file end date; live feed dataLastEditDate 2026-11-05 21:00 UTC; address test in DATASETS.md", "supported"),
+    ("Static map key: \"still in SNAP\"", "Ground layer is the Nov 5, 2026 map step, defined in DATASETS.md", "supported"),
+    ("Static map note: \"Counts are national; the map shows the lower 48\"", "Shown count recomputed above", "supported"),
     ("Static map note: \"exits where a different authorization appeared at the same address\"",
      "Address test in DATASETS.md; recomputed above", "supported"),
-    ("Static map note: \"Source: USDA SNAP retailer data\"", "DATASETS.md, both USDA sections", "supported"),
+    ("Static map note: source credits USDA Food and Nutrition Administration, historical data and live feed",
+     "DATASETS.md credit lines", "supported"),
+    ("Map About note: \"N stores (P%) opened and closed between two Dec 31sts and never appear\"",
+     "Recomputed above from raw spells", "supported"),
+    ("Map About note: \"Stores without usable coordinates are excluded\"", "DATASETS.md missing and misplaced geocodes", "supported"),
     ("Map slider label: \"Nov 5, 2026\"", "Live feed refresh date", "supported"),
     ("Map About note: last step is USDA's live list that day, not a Dec 31 count",
      "DATASETS.md, live feed: no authorization dates, one-day list", "supported"),
     ("Map About note: matched stores keep their historical format", "load_live.py; DATASETS.md", "supported"),
-    ("Map About note: new stores carry USDA's broader live types, \"size not given\", \"type not given\"",
+    ("Map About note: stores not in the historical file carry USDA's broader live types, \"size not given\", \"type not given\"",
      "Live feed's 8 types; DATASETS.md mapping", "supported"),
     ("Map About note: Restaurant Meals sites and farmers-market entries the historical file never carried are left out",
      "Counts above (8,565 and 3,709); DATASETS.md", "supported"),
@@ -63,7 +68,8 @@ def main():
     h["auth"] = pd.to_datetime(h["Authorization Date"].str.strip(), format="%m/%d/%Y", errors="coerce")
     h["end"] = pd.to_datetime(h["End Date"].str.strip().replace("", None), format="%m/%d/%Y", errors="coerce")
     h["addr"] = (h["Street Number"].fillna("") + " " + h["Street Name"].fillna("")).map(norm)
-    h["zip5"] = h["Zip Code"].fillna("").str.strip().str[:5]
+    # The historical file drops leading zeros from ZIPs; the live feed does not.
+    h["zip5"] = h["Zip Code"].fillna("").str.strip().str[:5].str.zfill(5)
 
     with gzip.open(LIVE_DIR / f"snap-live-{snap}.csv.gz", "rt", encoding="utf-8") as fh:
         lv = pd.read_csv(fh, dtype=str)
@@ -97,6 +103,16 @@ def main():
     tie("Live-only stores on the map", meta["live"]["only_in_live"],
         int((~on_map["rid"].isin(hist_ids)).sum()), "map About note")
     tie("Slider label", "Nov 5, 2026", meta["labels"][-1], "map year label")
+    # Mappable historical stores on no Dec 31 2006-2025 and not in the feed.
+    on_any = set()
+    for y in range(2006, 2026):
+        on_any |= active(f"{y}-12-31")
+    never = mappable - on_any - set(on_map["rid"])
+    last_end = h.groupby("rid")["end"].max()
+    before = {r for r in never if pd.notna(last_end.get(r)) and last_end[r] < pd.Timestamp("2006-12-31")}
+    tie("Stores that opened and closed between Dec 31sts", meta["excluded_shortlived_count"],
+        len(never) - len(before), "map About note")
+    tie("Stores that left before Dec 31, 2006", meta["excluded_before_first"], len(before), "meta only")
     # Live-only: the live type, except a dollar-chain name becomes Dollar Store.
     from brands import normalize, resolve
     lo_conv = on_map[~on_map["rid"].isin(hist_ids) & on_map["Store_Type"].eq("Convenience Store")]

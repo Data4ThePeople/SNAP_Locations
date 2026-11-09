@@ -97,8 +97,8 @@ def main():
     check("auth_date_unknown spells", q("SELECT count(*) FROM fact_spell WHERE auth_date_unknown"), 6_666)
     check("date_anomaly spells", q("SELECT count(*) FROM fact_spell WHERE date_anomaly"), 45)
     check("stores missing coordinates", q("SELECT count(*) FROM dim_store WHERE geocode_missing"), 4_542)
-    # Coordinates that land outside every US/territory box: 38 Guam stores
-    # geocoded to Jerusalem/France/the Philippines, a "China, Texas" Dollar
+    # Coordinates that land outside every US/territory box: 37 Guam stores
+    # geocoded to Israel/the Philippines/Mexico/Europe, a "China, Texas" Dollar
     # General placed in Tibet, and a California Big Lots in Venezuela.
     check("stores with off-world coordinates",
           q("SELECT count(*) FROM dim_store WHERE geocode_offshore"), 40)

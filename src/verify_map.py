@@ -45,7 +45,7 @@ def main():
 
     lon, lat = position[0::2], position[1::2]
     # Every point must land somewhere SNAP or NAP operates. The source geocodes
-    # 38 Guam stores into Jerusalem and the Philippines, a "China, Texas" Dollar
+    # 37 Guam stores into Israel, the Philippines, Mexico and Europe, a "China, Texas" Dollar
     # General into Tibet, and a California Big Lots into Venezuela.
     boxes = [(-125.1, -66.8, 24.3, 49.5), (-179.9, -129.0, 51.0, 71.5),
              (-160.5, -154.6, 18.8, 22.4), (-68.0, -64.5, 17.6, 18.6),
