@@ -143,6 +143,24 @@ sites ignored, historical ZIPs padded to 5 digits), the exit counts as
 test runs on the historical file for 2019 to 2025, from December 31 of the year
 before to November 5, so 2026 is compared with years measured the same way.
 
+**Post 8 breakdowns.** Every rate in post 8 uses the exit test above: exits not
+replaced at the same address, as a share of stores authorized and mappable on
+December 31 of the year before. Ownership, brand and state are the historical
+file's values for the store. "2019–2025 average" is the simple mean of the
+seven yearly rates. The state chart shows states with 500 or more convenience
+stores on December 31, 2025; the store-type chart shows types with 1,000 or
+more. New authorizations are stores present on November 5 that were not
+authorized on the December 31 before, mappable, with format Convenience Store.
+Returns under an old ID count in every year. In 2026 the count includes 1,671
+live-only convenience stores whose IDs are lower than the historical file's
+highest; without them the 2026 rate is 5.5% instead of 7.0%.
+
+**Recording lag check.** The historical file shows fewer convenience end dates
+in October to December 2025 (2,195) than the 2022 to 2024 average for those
+months (3,352). If the 1,157 difference were exits that happened in 2025 but
+were recorded late, they would sit in the 2026 count, and the 2026 convenience
+rate would be 11.6% instead of 12.5%. The file cannot tell which.
+
 **Limits of the comparison.** Earlier years use the historical file on both
 dates. 2026 uses the file on one date and the live feed on the other. A store
 that left between December 31 and November 5 in an earlier year shows up in the

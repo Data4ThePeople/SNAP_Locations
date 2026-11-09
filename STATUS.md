@@ -5,7 +5,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 
 ## Current
 
-Post: none yet (stocking-rule update to the map; posts 0 to 7 in `reports/` were published before this file existed)
+Post: post 8, stores that left SNAP in 2026 and what the stocking rule has not touched yet (slug set at 2a; posts 0 to 7 in `reports/` were published before this file existed)
 Step: 1
 Since: 2026-11-09
 
@@ -32,3 +32,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-09 Built the November 5, 2026 map step from the live feed (`fetch_live.py`, `load_live.py`, `export_map.py`) and the static map of 2026 exits (`analysis/left_2026.py`). Wrote `DATASETS.md`; own tie-out 24 of 24 in `TIEOUT.md`. Rebuilt `dist/snap-map.html` held back from git until Eric approves, because Pages serves it live.
 - 2026-11-09 Independent tie-out found: (1) historical ZIPs lose leading zeros, so the 2026 same-address test missed 442 replacements in New England, NJ and VI; fixed by padding, convenience exits not replaced 14,888 -> 14,684 (12.5%); (2) the map's "opened and closed between Dec 31sts" count mixed live-only stores in (33,786); now 14,520 (2.2%), and 31,135 more left before Dec 31, 2006; (3) the out-of-US geocode list was misdescribed (37 Guam, 1 Caracas, 1 Tibet); (4) wording on the static map and map note tightened. Own tie-out now 26 of 26.
 - 2026-11-09 Eric approved pushing the rebuilt `dist/snap-map.html` live. Updated `reports/visualization-page-meta.md` for the November 5, 2026 step: years to 2006–2026, store count 673,325 (661,456 historical plus 11,869 live-only), never-shown count corrected from 45,704 (7.0%) to 14,520 (2.2%) plus 31,135 before Dec 31, 2006, live feed added as a source, 20 formats, bundle size 8.61MB.
+- 2026-11-09 Eric opened post 8: a map of 2026 exits, charts drilling into convenience stores, a stocking-rule update, and the point that the rule's effect is likely not in the numbers yet. Built `src/analysis/post8_left2026.py` (7 charts in `reports/post8/images/`, data in `reports/data/post8.json`), research brief `reports/research/stocking-rule-2026-11.md`, own tie-out `src/tieout_post8.py` 72 of 72. Exit test moved into `left_2026.exits()`; output unchanged.

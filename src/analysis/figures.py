@@ -249,7 +249,7 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
 
 
 def dotrows_png(path, row_labels, series, xsuffix="%", width=7.2, title="",
-                subtitle="", divider_after=None):
+                subtitle="", divider_after=None, signed=True, x_zero=False):
     """Categorical dot rows: one row per label, one dot per series.
 
     Built for the RUCC gradient after readers took the line version for a time
@@ -308,8 +308,13 @@ def dotrows_png(path, row_labels, series, xsuffix="%", width=7.2, title="",
     for lb in ax.get_yticklabels():
         lb.set_color(INK_MID)
         lb.set_fontsize(8.5)
+    # `signed` is for values that are changes; levels (a rate, a share) pass
+    # signed=False so 12% does not read as "up 12 points". x_zero anchors a
+    # level axis at zero so the gap between dots is not exaggerated.
     ax.xaxis.set_major_formatter(FuncFormatter(
-        lambda v, _: f"{'+' if v > 0 else ''}{v:g}{xsuffix}"))
+        lambda v, _: f"{'+' if signed and v > 0 else ''}{v:g}{xsuffix}"))
+    if x_zero:
+        ax.set_xlim(left=0)
 
     # The dots carry identity in colour alone, so the legend lives inside the
     # image. It stacks above the plot with the title block, all offset left by

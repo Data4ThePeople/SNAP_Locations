@@ -1,0 +1,260 @@
+"""Post 8: stores that left SNAP in 2026, with convenience stores drilled into.
+
+Every rate here is the same measure: of the stores authorized and mappable on
+Dec 31 of the year before, the share whose authorization was gone by Nov 5 and
+whose address did not get a new authorization (the test in
+left_2026.exits). 2026 reads Nov 5 from USDA's live feed; 2019 to 2025 read it
+from the historical file. "Earlier years" means the simple mean of the seven
+yearly rates, 2019 to 2025.
+
+New authorizations are stores present on Nov 5 that were not authorized on the
+Dec 31 before (returns under an old ID count, as they do in every year). In
+2026, 2,273 live-only stores carry IDs below the historical file's highest, so
+some may be older authorizations the file never carried; the JSON records the
+count with and without them.
+
+Writes reports/data/post8.json and PNGs in reports/post8/images/.
+
+    python -m analysis.post8_left2026      (from src/)
+"""
+import json
+from collections import Counter
+from datetime import date
+
+from analysis import figures, usmap
+from analysis.left_2026 import active, base, exits
+from config import ROOT, connect
+
+OUT = ROOT / "reports" / "data" / "post8.json"
+IMG = ROOT / "reports" / "post8" / "images"
+YEARS = list(range(2019, 2027))
+CONV = "Convenience Store"
+STATES = dict(zip(
+    "AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY "
+    "NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY PR VI GU".split(),
+    ["Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+     "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+     "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+     "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+     "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+     "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
+     "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "Puerto Rico",
+     "Virgin Islands", "Guam"]))
+OWN = [("chain", "Chain"), ("independent", "Independent"), ("unknown", "Owner unknown")]
+
+
+def pct(n, d):
+    return round(100 * n / d, 1) if d else None
+
+
+def main():
+    con = connect(read_only=True)
+    snap = con.execute("SELECT any_value(snapshot_date) FROM live_store").fetchone()[0]
+    label = f"{snap:%B} {snap.day}"
+    max_hist_id = con.execute("SELECT max(record_id) FROM dim_store").fetchone()[0]
+
+    years = {}
+    for y in YEARS:
+        a, b = date(y - 1, 12, 31), date(y, snap.month, snap.day)
+        A = base(con, a)
+        G = [g for g in exits(con, a, b, live=(y == 2026)) if not g["replaced"]]
+        # New convenience authorizations, a to b.
+        if y == 2026:
+            new = con.execute(f"""
+                SELECT count(*), count(*) FILTER (WHERE in_hist OR record_id > {max_hist_id})
+                FROM live_store WHERE excluded IS NULL AND mappable AND format = '{CONV}'
+                  AND record_id NOT IN {active(a)}""").fetchone()
+        else:
+            n = con.execute(f"""
+                SELECT count(*) FROM dim_store d JOIN {active(b)} USING (record_id)
+                WHERE d.mappable AND d.format = '{CONV}' AND record_id NOT IN {active(a)}""").fetchone()[0]
+            new = (n, n)
+        years[y] = {"A": A, "G": G, "new": new}
+    con.close()
+
+    def rate(y, keep):
+        A = [r for r in years[y]["A"] if keep(r)]
+        G = [r for r in years[y]["G"] if keep(r)]
+        return {"base": len(A), "left": len(G), "pct": pct(len(G), len(A))}
+
+    def series(keep):
+        return {y: rate(y, keep) for y in YEARS}
+
+    def earlier(s):
+        return round(sum(s[y]["pct"] for y in YEARS[:-1]) / (len(YEARS) - 1), 1)
+
+    out = {"snapshot_date": str(snap), "years": YEARS,
+           "measure": "left SNAP Dec 31 of prior year to Nov 5, not replaced at same address"}
+
+    conv = series(lambda r: r["format"] == CONV)
+    other = series(lambda r: r["format"] != CONV)
+    out["trend"] = {"convenience": conv, "all_other": other,
+                    "conv_earlier_mean": earlier(conv), "other_earlier_mean": earlier(other)}
+
+    own = {}
+    for k, _ in OWN:
+        s = series(lambda r, k=k: r["format"] == CONV and r["ownership"] == k)
+        own[k] = {"by_year": s, "earlier_mean": earlier(s), "y2026": s[2026]}
+    out["ownership"] = own
+
+    b26 = Counter(r["brand"] for r in years[2026]["A"] if r["format"] == CONV and r["brand"])
+    chains = [b for b, n in b26.most_common() if n >= 1000]
+    out["chains"] = []
+    for b in chains:
+        s = series(lambda r, b=b: r["format"] == CONV and r["brand"] == b)
+        out["chains"].append({"brand": b, "y2025": s[2025], "y2026": s[2026], "earlier_mean": earlier(s)})
+
+    st26 = Counter(r["state"] for r in years[2026]["A"] if r["format"] == CONV)
+    states = []
+    for st, n in st26.items():
+        if n < 500:
+            continue
+        s = series(lambda r, st=st: r["format"] == CONV and r["state"] == st)
+        states.append({"state": st, "y2026": s[2026], "earlier_mean": earlier(s)})
+    states.sort(key=lambda d: (-d["y2026"]["left"] / d["y2026"]["base"], d["state"]))
+    out["states"] = states
+    out["states_min_base"] = 500
+
+    fm = Counter(r["format"] for r in years[2026]["A"])
+    formats = []
+    for f, n in fm.items():
+        if n < 1000:
+            continue
+        s = series(lambda r, f=f: r["format"] == f)
+        formats.append({"format": f, "y2026": s[2026], "earlier_mean": earlier(s)})
+    formats.sort(key=lambda d: (-d["y2026"]["left"] / d["y2026"]["base"], d["format"]))
+    out["formats"] = formats
+
+    new = {}
+    for y in YEARS:
+        allnew, strict = years[y]["new"]
+        nb = conv[y]["base"]
+        new[y] = {"new": allnew, "new_excl_old_ids": strict, "base": nb,
+                  "pct": pct(allnew, nb), "pct_excl_old_ids": pct(strict, nb)}
+    out["new_convenience"] = new
+
+    # Recording-lag check: convenience end dates in Oct-Dec of each year. A
+    # short fourth quarter in 2025 would mean some exits that happened in 2025
+    # are counted in 2026, because the base date reads them as still authorized.
+    con = connect(read_only=True)
+    q4 = dict(con.execute(f"""
+        SELECT year(end_date), count(*) FROM fact_spell f JOIN dim_store d USING (record_id)
+        WHERE d.format = '{CONV}' AND NOT f.date_anomaly AND month(end_date) >= 10
+          AND year(end_date) BETWEEN 2022 AND 2025 GROUP BY 1""").fetchall())
+    con.close()
+    prior = round(sum(q4[y] for y in (2022, 2023, 2024)) / 3)
+    short = prior - q4[2025]
+    out["q4_check"] = {"conv_end_dates_oct_dec": {str(k): v for k, v in sorted(q4.items())},
+                       "mean_2022_2024": prior, "shortfall_2025": short,
+                       "conv_pct_2026_if_shortfall_moved_to_2025":
+                           pct(conv[2026]["left"] - short, conv[2026]["base"])}
+
+    OUT.write_text(json.dumps(out, indent=1, default=str))
+    print(f"wrote {OUT}")
+    charts(out, years, label)
+    return out
+
+
+def charts(out, years, label):
+    IMG.mkdir(parents=True, exist_ok=True)
+    S = figures.S
+    tr = out["trend"]
+    c26, o26 = tr["convenience"][2026], tr["all_other"][2026]
+
+    # 1. Map: convenience stores only.
+    x0, y0, x1, y1 = usmap.LO48
+    in48 = lambda lo, la: x0 <= lo <= x1 and y0 <= la <= y1
+    from config import connect
+    con = connect(read_only=True)
+    ground = [r for r in con.execute(f"""SELECT lon, lat FROM live_store WHERE excluded IS NULL
+                AND mappable AND format = '{CONV}'""").fetchall() if in48(*r)]
+    con.close()
+    pts = [(g["longitude"], g["latitude"]) for g in years[2026]["G"]
+           if g["format"] == CONV and in48(g["longitude"], g["latitude"])]
+    out["map_conv_shown_lower48"] = len(pts)
+    xy = lambda rows: usmap.albers([r[0] for r in rows], [r[1] for r in rows])
+    figures.map_pair_png(
+        IMG / "post8-map-convenience.png",
+        [{"title": "", "layers": [
+            {"xy": xy(ground), "color": figures.MUTED, "size": 0.2, "alpha": 0.35},
+            {"xy": xy(pts), "color": S[1], "size": 1.0, "alpha": 0.85},
+        ], "keys": [
+            {"label": f"{c26['left']:,} left SNAP", "color": S[1]},
+            {"label": "still in SNAP", "color": figures.MUTED},
+        ]}],
+        width=8.0,
+        title="Convenience stores that left SNAP so far in 2026",
+        subtitle=(f"authorized December 31, 2025, not on USDA's list {label}, 2026, "
+                  "no new authorization at the same address"),
+        note=(f"Count is national; the map shows the lower 48 ({len(pts):,} of {c26['left']:,}). "
+              "Source: USDA Food and Nutrition Administration, SNAP retailer historical data and live feed."),
+    )
+
+    # 2. Trend, convenience vs every other format.
+    figures.line_png(
+        IMG / "post8-trend.png", YEARS,
+        [{"name": "Convenience stores", "values": [tr["convenience"][y]["pct"] for y in YEARS], "slot": 2},
+         {"name": "All other stores", "values": [tr["all_other"][y]["pct"] for y in YEARS], "slot": 1}],
+        title="Share of SNAP stores that left between January 1 and " + label,
+        subtitle="% of stores authorized on December 31 of the year before",
+        annotate=[{"year": 2026, "text": "live list"}],
+    )
+
+    # 3. Ownership.
+    figures.dotrows_png(
+        IMG / "post8-ownership.png", [n for _, n in OWN],
+        [{"name": "2019–2025 average", "values": [out["ownership"][k]["earlier_mean"] for k, _ in OWN], "slot": 1},
+         {"name": "2026", "values": [out["ownership"][k]["y2026"]["pct"] for k, _ in OWN], "slot": 2}],
+        title=f"Convenience stores that left SNAP by {label}, by owner",
+        subtitle="% of each group authorized on December 31 of the year before",
+        signed=False, x_zero=True,
+    )
+
+    # 4. Largest chains.
+    ch = out["chains"]
+    figures.dotrows_png(
+        IMG / "post8-chains.png", [c["brand"] for c in ch],
+        [{"name": "2025", "values": [c["y2025"]["pct"] for c in ch], "slot": 1},
+         {"name": "2026", "values": [c["y2026"]["pct"] for c in ch], "slot": 2}],
+        title=f"Largest convenience chains: stores that left SNAP by {label}",
+        subtitle="% of each chain's stores authorized on December 31 of the year before",
+        signed=False, x_zero=True,
+    )
+
+    # 5. States, top 15 by 2026 rate, plus the US.
+    st = out["states"][:15]
+    figures.dotrows_png(
+        IMG / "post8-states.png", ["United States"] + [STATES.get(s["state"], s["state"]) for s in st],
+        [{"name": "2019–2025 average", "values": [tr["conv_earlier_mean"]] + [s["earlier_mean"] for s in st], "slot": 1},
+         {"name": "2026", "values": [c26["pct"]] + [s["y2026"]["pct"] for s in st], "slot": 2}],
+        title=f"States where the most convenience stores left SNAP by {label}, 2026",
+        subtitle="% of convenience stores authorized on December 31 of the year before; states with 500 or more",
+        divider_after=1, signed=False, x_zero=True,
+    )
+
+    # 6. New convenience authorizations.
+    nw = out["new_convenience"]
+    figures.line_png(
+        IMG / "post8-new.png", YEARS,
+        [{"name": "New convenience stores", "values": [nw[y]["pct"] for y in YEARS], "slot": 1}],
+        title=f"New convenience stores authorized between January 1 and {label}",
+        subtitle="% of convenience stores authorized on December 31 of the year before",
+        annotate=[{"year": 2026, "text": "live list"}],
+    )
+
+    # 7. Formats.
+    fm = out["formats"]
+    figures.dotrows_png(
+        IMG / "post8-formats.png", [f["format"] for f in fm],
+        [{"name": "2019–2025 average", "values": [f["earlier_mean"] for f in fm], "slot": 1},
+         {"name": "2026", "values": [f["y2026"]["pct"] for f in fm], "slot": 2}],
+        title=f"Stores that left SNAP by {label}, by store type",
+        subtitle="% of each type authorized on December 31 of the year before; types with 1,000 or more",
+        signed=False, x_zero=True,
+    )
+    OUT.write_text(json.dumps(out, indent=1, default=str))
+    print(f"wrote charts to {IMG}")
+
+
+if __name__ == "__main__":
+    main()

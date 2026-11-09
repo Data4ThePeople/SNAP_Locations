@@ -40,31 +40,60 @@ def active(d):
             f"AND (end_date IS NULL OR end_date >= DATE '{d}'))")
 
 
+def exits(con, a, b, live=False):
+    """One row per store authorized and mappable on date `a` that is gone by
+    date `b`, with a `replaced` flag from the same-address test.
+
+    `live=True` reads date `b` from the live feed (live_store) instead of the
+    historical file. Both arms use the same base, the same address and ZIP
+    normalization, and the same rule that a newcomer is any store present on
+    `b` that was not in the base. Returns a list of dicts with record_id,
+    format, ownership, brand, state, longitude, latitude and replaced.
+    """
+    if live:
+        B = "SELECT record_id FROM live_store"
+        N = (f"SELECT {NORM.format('street')} AS addr, zip5 FROM live_store "
+             "WHERE record_id NOT IN (SELECT record_id FROM A) "
+             "AND store_type_live <> 'Restaurant Meals Program'")
+    else:
+        B = f"SELECT record_id FROM {active(b)}"
+        N = (f"SELECT {HIST_ADDR} AS addr, {HIST_ZIP} AS zip5 "
+             f"FROM dim_store d JOIN {active(b)} USING (record_id) "
+             "WHERE record_id NOT IN (SELECT record_id FROM A)")
+    cur = con.execute(f"""
+        WITH A AS (SELECT d.record_id, d.format, d.ownership, d.brand, d.state,
+                          d.longitude, d.latitude, {HIST_ADDR} AS addr, {HIST_ZIP} AS zip5
+                   FROM dim_store d JOIN {active(a)} USING (record_id) WHERE d.mappable),
+             N AS ({N})
+        SELECT A.record_id, A.format, A.ownership, A.brand, A.state, A.longitude, A.latitude,
+               EXISTS (SELECT 1 FROM N WHERE N.addr = A.addr AND N.zip5 = A.zip5
+                       AND A.addr <> '') AS replaced
+        FROM A WHERE record_id NOT IN ({B})""")
+    cols = [c[0] for c in cur.description]
+    return [dict(zip(cols, r)) for r in cur.fetchall()]
+
+
+def base(con, a):
+    """Stores authorized and mappable on date `a`: record_id, format, ownership, brand, state."""
+    cur = con.execute(f"""SELECT d.record_id, d.format, d.ownership, d.brand, d.state
+                          FROM dim_store d JOIN {active(a)} USING (record_id) WHERE d.mappable""")
+    cols = [c[0] for c in cur.description]
+    return [dict(zip(cols, r)) for r in cur.fetchall()]
+
+
 def run():
     con = connect(read_only=True)
     snap = con.execute("SELECT any_value(snapshot_date) FROM live_store").fetchone()[0]
     label = f"{snap:%B} {snap.day}, {snap.year}"
 
-    con.execute(f"""
-        CREATE TEMP TABLE base AS
-        SELECT d.record_id, d.format, d.longitude, d.latitude,
-               {HIST_ADDR} AS addr, {HIST_ZIP} AS zip5
-        FROM dim_store d JOIN {active(BASE)} USING (record_id)
-        WHERE d.mappable;
-        -- New authorizations on the live date: not active on the base date, and
-        -- not a Restaurant Meals Program site, which is not a store.
-        CREATE TEMP TABLE newcomers AS
-        SELECT {NORM.format('street')} AS addr, zip5 FROM live_store
-        WHERE record_id NOT IN (SELECT record_id FROM base)
-          AND store_type_live <> 'Restaurant Meals Program';
-        CREATE TEMP TABLE gone AS
-        SELECT b.*, EXISTS (SELECT 1 FROM newcomers n WHERE n.addr = b.addr
-                            AND n.zip5 = b.zip5 AND trim(b.addr) <> '') AS replaced
-        FROM base b WHERE record_id NOT IN (SELECT record_id FROM live_store);
-    """)
-    by_format = [dict(zip(("format", "base", "left", "replaced"), r)) for r in con.execute("""
-        SELECT b.format, count(*), count(g.record_id), count(*) FILTER (WHERE g.replaced)
-        FROM base b LEFT JOIN gone g USING (record_id) GROUP BY 1 ORDER BY 2 DESC""").fetchall()]
+    from collections import Counter
+    b0 = base(con, BASE)
+    gone = exits(con, BASE, snap, live=True)
+    nb = Counter(r["format"] for r in b0)
+    nl = Counter(r["format"] for r in gone)
+    nr = Counter(r["format"] for r in gone if r["replaced"])
+    by_format = [{"format": f, "base": n, "left": nl[f], "replaced": nr[f]}
+                 for f, n in sorted(nb.items(), key=lambda t: -t[1])]
     for r in by_format:
         r["left_not_replaced"] = r["left"] - r["replaced"]
         r["pct_left_not_replaced"] = round(100 * r["left_not_replaced"] / r["base"], 1)
@@ -73,29 +102,20 @@ def run():
     baseline = []
     for y in BASELINE_YEARS:
         a, b = date(y - 1, 12, 31), date(y, snap.month, snap.day)
-        r = con.execute(f"""
-            WITH A AS (SELECT d.record_id, d.format, {HIST_ADDR} addr, {HIST_ZIP} zip5
-                       FROM dim_store d JOIN {active(a)} USING (record_id) WHERE d.mappable),
-                 B AS (SELECT d.record_id, {HIST_ADDR} addr, {HIST_ZIP} zip5
-                       FROM dim_store d JOIN {active(b)} USING (record_id)),
-                 N AS (SELECT * FROM B WHERE record_id NOT IN (SELECT record_id FROM A)),
-                 G AS (SELECT A.*, EXISTS (SELECT 1 FROM N WHERE N.addr = A.addr
-                       AND N.zip5 = A.zip5 AND trim(A.addr) <> '') replaced
-                       FROM A WHERE record_id NOT IN (SELECT record_id FROM B))
-            SELECT (SELECT count(*) FROM A WHERE format = 'Convenience Store'),
-                   count(*) FILTER (WHERE format = 'Convenience Store'),
-                   count(*) FILTER (WHERE format = 'Convenience Store' AND replaced),
-                   (SELECT count(*) FROM A), count(*), count(*) FILTER (WHERE replaced)
-            FROM G""").fetchone()
+        A = base(con, a)
+        G = exits(con, a, b)
+        cv = [g for g in G if g["format"] == "Convenience Store"]
         baseline.append({"year": y, "from": str(a), "to": str(b),
-                         "conv_base": r[0], "conv_left": r[1], "conv_replaced": r[2],
-                         "all_base": r[3], "all_left": r[4], "all_replaced": r[5]})
+                         "conv_base": sum(r["format"] == "Convenience Store" for r in A),
+                         "conv_left": len(cv), "conv_replaced": sum(g["replaced"] for g in cv),
+                         "all_base": len(A), "all_left": len(G),
+                         "all_replaced": sum(g["replaced"] for g in G)})
     for row in baseline:
         row["conv_left_not_replaced"] = row["conv_left"] - row["conv_replaced"]
         row["conv_pct"] = round(100 * row["conv_left_not_replaced"] / row["conv_base"], 1)
 
-    pts = con.execute("""SELECT longitude, latitude, format = 'Convenience Store'
-                         FROM gone WHERE NOT replaced""").fetchall()
+    pts = [(g["longitude"], g["latitude"], g["format"] == "Convenience Store")
+           for g in gone if not g["replaced"]]
     ground = con.execute("""SELECT lon, lat FROM live_store
                             WHERE excluded IS NULL AND mappable""").fetchall()
     con.close()
