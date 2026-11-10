@@ -81,3 +81,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Step 2f confirmed by Eric (post live). Step 2g: EMAIL.md drafted from the post text (one chart, 01-exits-by-year); hero email JPG 85KB. Waiting on approve or reject.
 - 2026-11-10 2g: at Eric's request the email ends on his two conclusion paragraphs (verbatim from the post) in place of the Hayes County paragraph.
 - 2026-11-10 2g: Eric accepted email edits 23 and 24 (conclusion reworded to stand on its own in the email; map pointed to the full report).
+- 2026-11-10 2g: at Eric's request, the email's last two paragraphs are now Claude's short transition carrying the conclusion's message (many changes at once; big changes to stores and enrollment; the map for your community; Arizona and Medicaid) instead of the conclusion verbatim.
