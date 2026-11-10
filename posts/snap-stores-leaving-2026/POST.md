@@ -5,7 +5,7 @@ slug: snap-stores-leaving-2026
 date:
 section: Data 4 Thought
 hero: images/snap-stores-leaving-2026-hero-1680x1080.png
-hero_alt: Dark map of the lower 48 states. Faint gray dots mark every store still authorized to accept SNAP. Orange dots mark the 9,290 independent convenience stores that left SNAP between January 1 and November 5, 2026. The orange clusters are thickest in large metro areas, including New York, Houston, Los Angeles, Chicago and South Florida. Text on the left reads: SNAP stores, 2026, left SNAP 9,290, Independent convenience stores that left SNAP by November 5.
+hero_alt: Dark map of the lower 48 states. Faint gray dots mark every store still authorized to accept SNAP. Orange dots mark the 9,290 independent convenience stores that left SNAP between January 1 and November 5, 2026. The orange clusters are thickest in large metro areas, including New York, Houston, Los Angeles, Chicago and South Florida. Text on the left reads: SNAP stores, 2026, left SNAP 9,290, Independent convenience stores, January 1 to November 5.
 meta_title:
 description:
 keywords:

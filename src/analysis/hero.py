@@ -118,7 +118,7 @@ def split(con, where, then, now):
     return out
 
 
-def render(path, day, layers, caption, kicker=None, big=None):
+def render(path, day, layers, caption, kicker=None, big=None, scale=1.0, panel_alpha=0.80):
     """`layers` = [{xy, color, size, alpha}] drawn in order, first at the back."""
     fig = plt.figure(figsize=(W_PX / DPI, H_PX / DPI), dpi=DPI, facecolor=PAPER)
     ax = fig.add_axes([0, 0, 1, 1])
@@ -167,20 +167,20 @@ def render(path, day, layers, caption, kicker=None, big=None):
              (big or (f"DAY {day}" if day else "THE MAP"), 24, HUE.get(day, S[0]), 2.0)]
     for L in [q for q in layers if q.get("label")]:
         block.append(("\u25cf  " + L["label"], 14, L["color"], 1.55))
-    for i, line in enumerate(textwrap.wrap(caption, 24)):
+    for i, line in enumerate(textwrap.wrap(caption, round(24 / scale))):
         block.append((line, 15, INK, 1.9 if i == 0 else 1.35))
     block.append(("lower 48 shown  ·  national counts  ·  SNAP authorizations",
                   11, INK_SOFT, 2.2))
 
     LX = 0.135
-    height = sum(sz * lead * PT for _, sz, _, lead in block)
+    height = sum(sz * scale * lead * PT for _, sz, _, lead in block)
     top = 0.500 + height / 2          # vertically centred on the frame
 
     drawn, y = [], top
     for text, size, color, lead in block:
-        y -= size * lead * PT
+        y -= size * scale * lead * PT
         drawn.append(ax.text(LX, y, text, transform=ax.transAxes,
-                             family="DejaVu Sans Mono", fontsize=size, color=color,
+                             family="DejaVu Sans Mono", fontsize=size * scale, color=color,
                              va="bottom", zorder=9,
                              fontweight="bold" if size == 24 else "normal"))
 
@@ -196,7 +196,7 @@ def render(path, day, layers, caption, kicker=None, big=None):
     pad_x, pad_y = 0.026, 0.028
     ax.add_patch(plt.Rectangle((x0 - pad_x, y0 - pad_y),
                                (x1 - x0) + pad_x * 2, (y1 - y0) + pad_y * 2,
-                               transform=ax.transAxes, facecolor=PAPER, alpha=0.80,
+                               transform=ax.transAxes, facecolor=PAPER, alpha=panel_alpha,
                                edgecolor="none", zorder=8))
     if x1 + pad_x > 0.82:
         print(f"    note: text block reaches x={x1 + pad_x:.2f}, outside the "
@@ -432,8 +432,11 @@ def main():
                [{"xy": xy(z["still"]), "color": MUTED, "size": 0.35, "alpha": 0.40},
                 {"xy": xy(z["left"]), "color": HUE[8], "size": 1.6, "alpha": 0.9, "z": 3,
                  "label": f"left SNAP  {int(z['n_left']):,}"}],
-               "Independent convenience stores that left SNAP by November 5",
-               kicker="SNAP STORES", big="2026")
+               "Independent convenience stores, January 1 to November 5",
+               kicker="SNAP STORES", big="2026",
+               # Smaller type and a lighter panel than the series frames, so
+               # the box covers less of the map (Eric, 2026-11-10).
+               scale=0.70, panel_alpha=0.55)
 
 
 if __name__ == "__main__":
