@@ -102,11 +102,28 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Net change 2024: Dec 31, Nov 5, net | (252100, 255227, 3127) | (252100, 255227, 3127) | match |
 | Net change 2025: Dec 31, Nov 5, net | (254811, 250511, -4300) | (254811, 250511, -4300) | match |
 | Net change 2026: Dec 31, Nov 5, net | (249083, 235892, -13191) | (249083, 235892, -13191) | match |
-| Waterfall Independent convenience: Dec 31, Nov 5, net | (51003, 45133, -5870) | (51003, 45133, -5870) | match |
-| Waterfall Other convenience: Dec 31, Nov 5, net | (66052, 62942, -3110) | (66052, 62942, -3110) | match |
-| Waterfall Grocery, any size: Dec 31, Nov 5, net | (23496, 20909, -2587) | (23496, 20909, -2587) | match |
-| Waterfall All other stores: Dec 31, Nov 5, net | (108532, 106908, -1624) | (108532, 106908, -1624) | match |
-| Waterfall order (most negative first) | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores'] | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores'] | match |
+| Exits 2019: left, left before address test, base | (15224, 19696, 245088) | (15224, 19696, 245088) | match |
+| Exits 2020: left, left before address test, base | (8872, 12660, 239745) | (8872, 12660, 239745) | match |
+| Exits 2021: left, left before address test, base | (11089, 15656, 244283) | (11089, 15656, 244283) | match |
+| Exits 2022: left, left before address test, base | (10056, 14578, 247327) | (10056, 14578, 247327) | match |
+| Exits 2023: left, left before address test, base | (11215, 15849, 250757) | (11215, 15849, 250757) | match |
+| Exits 2024: left, left before address test, base | (10826, 16081, 252100) | (10826, 16081, 252100) | match |
+| Exits 2025: left, left before address test, base | (14493, 19069, 254811) | (14493, 19069, 254811) | match |
+| Exits 2026: left, left before address test, base | (21923, 26129, 249083) | (21923, 26129, 249083) | match |
+| Exit waterfall start and end | (11682, 21923) | (11682, 21923) | match |
+| Exit waterfall Independent convenience: average, 2026, change | (4576, 9290, 4714) | (4576, 9290, 4714) | match |
+| Exit waterfall Other convenience: average, 2026, change | (2567, 5394, 2827) | (2567, 5394, 2827) | match |
+| Exit waterfall Grocery, any size: average, 2026, change | (1460, 3610, 2150) | (1460, 3610, 2150) | match |
+| Exit waterfall All other stores: average, 2026, change | (3079, 3629, 550) | (3079, 3629, 550) | match |
+| Entries 2019: all, at exit address, ratio, ratio before address test | (16656, 4469, 1.25, 1.18) | (16656, 4469, 1.25, 1.18) | match |
+| Entries 2020: all, at exit address, ratio, ratio before address test | (17600, 3777, 0.64, 0.72) | (17600, 3777, 0.64, 0.72) | match |
+| Entries 2021: all, at exit address, ratio, ratio before address test | (19006, 4562, 0.77, 0.82) | (19006, 4562, 0.77, 0.82) | match |
+| Entries 2022: all, at exit address, ratio, ratio before address test | (18740, 4517, 0.71, 0.78) | (18740, 4517, 0.71, 0.78) | match |
+| Entries 2023: all, at exit address, ratio, ratio before address test | (18640, 4609, 0.8, 0.85) | (18640, 4609, 0.8, 0.85) | match |
+| Entries 2024: all, at exit address, ratio, ratio before address test | (19208, 5257, 0.78, 0.84) | (19208, 5257, 0.78, 0.84) | match |
+| Entries 2025: all, at exit address, ratio, ratio before address test | (14769, 4556, 1.42, 1.29) | (14769, 4556, 1.42, 1.29) | match |
+| Entries 2026: all, at exit address, ratio, ratio before address test | (12938, 4160, 2.5, 2.02) | (12938, 4160, 2.5, 2.02) | match |
+| Entries 2026: older-ID live-only, ratio without them | (2273, 3.15) | (2273, 3.15) | match |
 | Rate independent_convenience 2019 | {'base': 52195, 'left': 6026, 'pct': 11.5} | {'base': 52195, 'left': 6026, 'pct': 11.5} | match |
 | Rate independent_convenience 2020 | {'base': 49138, 'left': 3707, 'pct': 7.5} | {'base': 49138, 'left': 3707, 'pct': 7.5} | match |
 | Rate independent_convenience 2021 | {'base': 50051, 'left': 5091, 'pct': 10.2} | {'base': 50051, 'left': 5091, 'pct': 10.2} | match |

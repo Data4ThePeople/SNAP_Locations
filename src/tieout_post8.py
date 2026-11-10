@@ -15,6 +15,7 @@ import sys
 from datetime import date
 from decimal import ROUND_HALF_UP, Decimal
 
+import numpy as np
 import pandas as pd
 
 from config import CSV_PATH, ROOT, connect
@@ -284,17 +285,58 @@ def main():
         if str(fm).startswith("Grocery"): return "Grocery, any size"
         return "All other stores"
     A26 = sorted(U(date(2025, 12, 31)))
-    ga = pd.Series([grp(st[r], cty[r], ds.at[r, "format"], ds.at[r, "ownership"]) for r in A26]).value_counts()
-    lk = lv_keep.set_index("rid")
-    gb = pd.Series([grp(st[r], cty[r], ds.at[r, "format"], ds.at[r, "ownership"]) if r in hist_ids else
-                    grp(lk.at[r, "State"], str(lk.at[r, "County"] or "").strip().upper(),
-                        lmap.at[r, "format"], lmap.at[r, "ownership"]) for r in lk.index]).value_counts()
-    for s in bj["waterfall"]["steps"]:
+    # Exits by year and group; waterfall from the 2019-2025 average.
+    from decimal import Decimal as _D, ROUND_HALF_UP as _H
+    G4 = ["Independent convenience", "Other convenience", "Grocery, any size", "All other stores"]
+    def g4(f):
+        return [grp(None, None, fm, ow) for fm, ow in zip(f["format"], f["own"])]
+    byg = {}
+    for y in range(2019, 2027):
+        f = frames[y]
+        e = bj["exits"][str(y)]
+        tie(f"Exits {y}: left, left before address test, base",
+            (e["left"], e["left_any"], e["base"]), (int(f["gone"].sum()), int(f["left_any"].sum()), len(f)))
+        byg[y] = pd.Series(g4(f[f["gone"]])).value_counts()
+    wh = lambda x: int(_D(x).quantize(_D("1"), _H))
+    avg = {g: wh(sum(int(byg[y].get(g, 0)) for y in range(2019, 2026)) / 7) for g in G4}
+    wf = bj["waterfall"]
+    tie("Exit waterfall start and end", (wf["start"], wf["end"]), (sum(avg.values()), int(frames[2026]["gone"].sum())))
+    for s in wf["steps"]:
         g = s["group"]
-        tie(f"Waterfall {g}: Dec 31, Nov 5, net", (s["dec31"], s["nov5"], s["net"]),
-            (int(ga.get(g, 0)), int(gb.get(g, 0)), int(gb.get(g, 0) - ga.get(g, 0))))
-    tie("Waterfall order (most negative first)", [s["group"] for s in bj["waterfall"]["steps"]],
-        list((gb - ga).sort_values().index))
+        tie(f"Exit waterfall {g}: average, 2026, change", (s["avg_2019_2025"], s["y2026"], s["change"]),
+            (avg[g], int(byg[2026].get(g, 0)), int(byg[2026].get(g, 0)) - avg[g]))
+    # Entries and the exit-to-entry ratio.
+    lv_addr = lv.set_index("rid")
+    max_id = max(hist_ids)
+    for y in range(2019, 2027):
+        a, b = date(y - 1, 12, 31), date(y, snap.month, snap.day)
+        Aall = active(a)
+        A = hc.loc[sorted(Aall & mappable)]
+        if y == 2026:
+            Bids = set(lv["rid"])
+            N = lv_keep[~lv_keep["rid"].isin(Aall)]
+            Naddr = list(zip(N["addr"], N["zip5"]))
+            old = (~N["rid"].isin(hist_ids) & (N["rid"] <= max_id)).values
+        else:
+            Bids = active(b)
+            nid = sorted((Bids - Aall) & mappable)
+            N = hc.loc[nid]
+            Naddr = list(zip(N["addr"], N["zip5"]))
+            old = np.zeros(len(N), bool)
+        X = A[~A.index.isin(Bids)]
+        xk = set(zip(X["addr"], X["zip5"]))
+        rep = np.array([ad != "" and (ad, z) in xk for ad, z in Naddr])
+        e = bj["entries"][str(y)]
+        left, left_any = int(frames[y]["gone"].sum()), int(frames[y]["left_any"].sum())
+        new_addr = len(N) - int(rep.sum())
+        r2 = lambda x: float(_D(x).quantize(_D("0.01"), _H))
+        tie(f"Entries {y}: all, at exit address, ratio, ratio before address test",
+            (e["all"], e["at_exit_address"], e["ratio"], e["ratio_any"]),
+            (len(N), int(rep.sum()), r2(left / new_addr), r2(left_any / len(N))))
+        if y == 2026:
+            tie("Entries 2026: older-ID live-only, ratio without them",
+                (e["old_id_live_only"], e["ratio_excl_old_ids"]),
+                (int(old.sum()), r2(left / (new_addr - int((old & ~rep).sum())))))
     SM = "Grocery (Small)"
     for key, m in (("independent_convenience", lambda f: f["format"].eq(CONV) & f["own"].eq("independent")),
                    ("chain_convenience", lambda f: f["format"].eq(CONV) & f["own"].eq("chain")),
@@ -318,7 +360,7 @@ def main():
     def county_counts(lon, lat):
         pi, gi = tree.query(_points(np.asarray(lon, float), np.asarray(lat, float)), predicate="within")
         return pd.Series(gi).drop_duplicates().size and pd.Series(pi).groupby(gi).nunique()
-    import numpy as np
+
     ca = county_counts(hc.loc[A26, "Longitude"].astype(float), hc.loc[A26, "Latitude"].astype(float))
     cbn = county_counts(lv_keep["Longitude"].astype(float), lv_keep["Latitude"].astype(float))
     geo = [recs[i]["GEOID"] for i in keepc]

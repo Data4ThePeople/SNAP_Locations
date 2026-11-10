@@ -967,7 +967,7 @@ def chapter_card_png(path, day, headline, topic, stat_value, stat_label, placeme
 
 
 def colbars_png(path, labels, values, width=6.6, height=3.0, title="", subtitle="",
-                highlight=None):
+                highlight=None, fmt=None, axis_fmt=None):
     """Vertical bars for a signed count by period (net change per year).
 
     Bars above zero use slot 1, below zero slot 2; `highlight` (a label) keeps
@@ -985,15 +985,17 @@ def colbars_png(path, labels, values, width=6.6, height=3.0, title="", subtitle=
         if highlight is not None and lab != highlight:
             c = MUTED
         ax.bar(i, v, width=0.62, color=c, zorder=3)
-        ax.text(i, v + (0.02 * span if v >= 0 else -0.02 * span), f"{v:+,}",
+        ax.text(i, v + (0.02 * span if v >= 0 else -0.02 * span), (fmt or (lambda x: f"{x:+,}"))(v),
                 ha="center", va="bottom" if v >= 0 else "top", fontsize=7.5,
                 family=MONO, color=INK)
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, fontfamily=MONO)
     ax.tick_params(axis="x", length=0)
-    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:+,.0f}" if v else "0"))
+    ax.yaxis.set_major_formatter(FuncFormatter(axis_fmt or (lambda v, _: f"{v:+,.0f}" if v else "0")))
     lo, hi = min(min(values), 0), max(max(values), 0)
-    ax.set_ylim(lo - 0.12 * span, hi + 0.12 * span)
+    ax.set_ylim(lo - 0.12 * span if lo < 0 else 0, hi + 0.12 * span)
+    if lo >= 0:
+        ax.spines["left"].set_bounds(0, hi + 0.12 * span)
     _titles(fig, ax, title, subtitle)
     fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
     plt.close(fig)
@@ -1001,8 +1003,11 @@ def colbars_png(path, labels, values, width=6.6, height=3.0, title="", subtitle=
 
 
 def waterfall_png(path, start, steps, end, width=7.2, height=3.6, title="", subtitle="",
-                  note=""):
+                  note="", zero_axis=False):
     """Start total, signed steps, end total, as floating bars.
+
+    `zero_axis=True` (for a waterfall of counts that start near zero) keeps the
+    axis at zero instead of cutting it.
 
     `start` and `end` are (label, value); `steps` is [(label, value)] in the
     order drawn. Totals are MUTED (no identity); decreases slot 2, increases
@@ -1024,8 +1029,8 @@ def waterfall_png(path, start, steps, end, width=7.2, height=3.6, title="", subt
         tops.append(hi); lows.append(lo)
         run += v
     bars.append((len(labels) - 1, 0, end[1], MUTED, f"{end[1]:,}"))
-    ymin = min(lows) - 0.25 * (max(tops) - min(lows))
-    ymax = max(tops) + 0.10 * (max(tops) - min(lows))
+    ymin = 0 if zero_axis else min(lows) - 0.25 * (max(tops) - min(lows))
+    ymax = max(tops) + (0.14 * max(tops) if zero_axis else 0.10 * (max(tops) - min(lows)))
     for i, lo, hi, c, txt in bars:
         b = max(lo, ymin)
         ax.bar(i, hi - b, bottom=b, width=0.62, color=c, zorder=3)

@@ -206,15 +206,30 @@ by November 5, and no store that was not authorized on that December 31 shows
 up at the same street address and ZIP by then. Every exit count, rate, map and
 ranking in post 8 uses this test, in every year 2019 to 2026.
 
-**Net change and the waterfall (post 8).** Stores in SNAP on a date are the
-map's universe: on a historical date, stores authorized and mappable in the
-historical file; on November 5, 2026, the live feed's map layer (no Restaurant
-Meals sites, no farmers-market entities the historical file never carried,
-mappable). Net change is the November 5 count minus the December 31 count, so
-it nets new authorizations against exits. The waterfall splits the 2026 net
-change into four store-type groups that do not overlap: independent
-convenience stores; other convenience stores (chain or owner unknown); grocery
-stores of any size (live-only grocery stores carry no size); everything else.
+**Exits by year and the waterfall (post 8).** Exit counts use the test above,
+all store types. The waterfall starts at the 2019 to 2025 average count of
+exits and adds each store-type group's 2026 change from its own 2019 to 2025
+average, ending at the 2026 count. Each group's average is rounded to a whole
+store first, so the bars add up; the start is the sum of those rounded
+averages. The groups do not overlap: independent convenience stores; other
+convenience stores (chain or owner unknown); grocery stores of any size;
+everything else.
+
+**Exits for every new store (post 8).** New authorizations are stores in the
+universe on November 5 that were not authorized on the December 31 before
+(historical years: authorized and mappable on November 5 in the historical
+file; 2026: the live feed's map layer, so no Restaurant Meals sites and no
+farmers-market entities the historical file never carried). A new store at the
+street address and ZIP of a store that left is the other half of a
+replacement, so it is left out, just as that exit is. The ratio is exits
+divided by the remaining new stores, to two decimals, halves up. Counting every
+exit and every new store instead gives 2.02 in 2026 against 0.72 to 1.29 in
+2019 to 2025; that version equals the net change in the store count
+(December 31, 2025 to November 5, 2026: 249,083 to 235,892). In 2026, 2,273
+live-only stores carry IDs below the historical file's highest and may be older
+authorizations; 1,829 of them count as new stores in the ratio. Without them,
+the 2026 ratio is 3.15 instead of 2.50. New stores are counted only if still
+authorized on November 5, in every year.
 
 **Places (post 8).** Exits of convenience stores and small groceries in 2026,
 counted by the historical file's county field, with New York City's five

@@ -37,6 +37,7 @@ import urllib.request
 import zipfile
 from collections import Counter
 from datetime import date
+from decimal import ROUND_HALF_UP, Decimal
 from io import BytesIO
 
 import numpy as np
@@ -44,7 +45,7 @@ import shapefile
 from matplotlib.path import Path
 
 from analysis import figures, usmap
-from analysis.left_2026 import active, base, exits
+from analysis.left_2026 import HIST_ADDR, HIST_ZIP, NORM, active, base, exits
 from analysis.post8_left2026 import STATES, pct
 from config import ROOT, connect
 
@@ -141,6 +142,34 @@ def assign(cty, lon, lat):
     return out
 
 
+def entries(con, a, b, live):
+    """New authorizations: stores in the universe on `b` that were not
+    authorized on `a`. Returns (all, at the address of an exit, live-only with
+    an ID at or below the historical file's highest). "At the address of an
+    exit" uses the same street + ZIP test as the exit side, against every store
+    authorized and mappable on `a` that is gone by `b`."""
+    gone = "SELECT record_id FROM live_store" if live else f"SELECT record_id FROM {active(b)}"
+    X = (f"SELECT {HIST_ADDR} AS addr, {HIST_ZIP} AS zip5 FROM dim_store d JOIN {active(a)} USING (record_id) "
+         f"WHERE d.mappable AND record_id NOT IN ({gone})")
+    if live:
+        mx = con.execute("SELECT max(record_id) FROM dim_store").fetchone()[0]
+        N = (f"SELECT record_id, {NORM.format('street')} AS addr, zip5, "
+             f"(NOT in_hist AND record_id <= {mx}) AS old_id FROM live_store "
+             f"WHERE excluded IS NULL AND mappable AND record_id NOT IN {active(a)}")
+    else:
+        N = (f"SELECT record_id, {HIST_ADDR} AS addr, {HIST_ZIP} AS zip5, FALSE AS old_id "
+             f"FROM dim_store d JOIN {active(b)} USING (record_id) "
+             f"WHERE d.mappable AND record_id NOT IN {active(a)}")
+    n, rep, old, old_rep = con.execute(f"""
+        WITH X AS ({X}), N AS ({N}),
+             M AS (SELECT *, addr <> '' AND EXISTS (SELECT 1 FROM X WHERE X.addr = N.addr AND X.zip5 = N.zip5) AS r
+                   FROM N)
+        SELECT count(*), count(*) FILTER (WHERE r), count(*) FILTER (WHERE old_id),
+               count(*) FILTER (WHERE old_id AND r) FROM M""").fetchone()
+    return {"all": n, "at_exit_address": rep, "new_address": n - rep,
+            "old_id_live_only": old, "old_id_new_address": old - old_rep}
+
+
 def main():
     con = connect(read_only=True)
     snap = con.execute("SELECT any_value(snapshot_date) FROM live_store").fetchone()[0]
@@ -158,11 +187,6 @@ def main():
             A26, B26 = a, b
     out["net"] = net
 
-    # Beat 2b: waterfall of the 2026 net change by group.
-    ca, cb = Counter(map(group, A26)), Counter(map(group, B26))
-    steps = sorted(({"group": g, "dec31": ca[g], "nov5": cb[g], "net": cb[g] - ca[g]} for g in GROUPS),
-                   key=lambda s: s["net"])
-    out["waterfall"] = {"start": len(A26), "end": len(B26), "steps": steps}
 
     # Beat 3 and 4: exit rates by year (not replaced at the same address).
     nyc_ids = {r[0] for r in con.execute(
@@ -175,16 +199,38 @@ def main():
         "us_small_outside_nyc": lambda r: r["format"] in (CONV, SMALL) and r["record_id"] not in nyc_ids,
     }
     rates = {k: {} for k in sel}
+    ex, ent = {}, {}
     for y in YEARS:
-        A = base(con, date(y - 1, 12, 31))
-        G = [g for g in exits(con, date(y - 1, 12, 31), date(y, snap.month, snap.day), live=(y == 2026))
-             if not g["replaced"]]
+        a, b = date(y - 1, 12, 31), date(y, snap.month, snap.day)
+        A = base(con, a)
+        G_all = exits(con, a, b, live=(y == 2026))
+        G = [g for g in G_all if not g["replaced"]]
+        ex[y] = {"left": len(G), "left_any": len(G_all), "base": len(A), "pct": pct(len(G), len(A)),
+                 "by_group": dict(Counter(map(group, G)))}
+        e = entries(con, a, b, live=(y == 2026))
+        e["ratio"] = float(Decimal(len(G) / e["new_address"]).quantize(Decimal("0.01"), ROUND_HALF_UP))
+        e["ratio_any"] = float(Decimal(len(G_all) / e["all"]).quantize(Decimal("0.01"), ROUND_HALF_UP))
+        ent[y] = e
         for k, keep in sel.items():
             n, m = sum(map(keep, A)), sum(map(keep, G))
             rates[k][y] = {"base": n, "left": m, "pct": pct(m, n)}
         if y == 2026:
             G26 = G
     out["rates"] = rates
+    out["exits"] = ex
+    out["entries"] = ent
+    e26 = ent[2026]
+    e26["ratio_excl_old_ids"] = float(Decimal(ex[2026]["left"] / (e26["new_address"] - e26["old_id_new_address"]))
+                                      .quantize(Decimal("0.01"), ROUND_HALF_UP))
+    # Waterfall: from the 2019-2025 average count of exits to 2026, by group.
+    # Each group's average is rounded to a whole store first, so the bars add up.
+    whole = lambda x: int(Decimal(x).quantize(Decimal("1"), ROUND_HALF_UP))
+    avg = {g: whole(sum(ex[y]["by_group"].get(g, 0) for y in YEARS[:-1]) / 7) for g in GROUPS}
+    steps = sorted(({"group": g, "avg_2019_2025": avg[g], "y2026": ex[2026]["by_group"].get(g, 0),
+                     "change": ex[2026]["by_group"].get(g, 0) - avg[g]} for g in GROUPS),
+                   key=lambda s: -s["change"])
+    out["waterfall"] = {"start": sum(avg.values()), "end": ex[2026]["left"], "steps": steps,
+                        "note": "start is the sum of the group averages, each rounded to a whole store"}
     # Places with the most 2026 exits of convenience stores and small groceries.
     cmap = {r[0]: (r[1], (r[2] or "").strip().upper()) for r in
             con.execute("SELECT record_id, state, county FROM dim_store").fetchall()}
@@ -239,20 +285,28 @@ def main():
     IMG.mkdir(parents=True, exist_ok=True)
     S = figures.S
     figures.colbars_png(
-        IMG / "post8-net.png", [str(y) for y in YEARS], [net[y]["net"] for y in YEARS],
-        title=f"Net change in SNAP stores, December 31 to {label}",
-        subtitle=(f"stores authorized on {label} minus stores authorized on December 31 of the year before;\n"
-                  "2026 counts the live list on November 5"),
-        highlight="2026",
+        IMG / "post8-exits.png", [str(y) for y in YEARS], [ex[y]["left"] for y in YEARS],
+        title=f"SNAP stores that left between January 1 and {label}",
+        subtitle=("stores authorized on December 31 of the year before, gone by {0},\n"
+                  "no new authorization at the same address; 2026 uses the live list").format(label),
+        highlight="2026", fmt=lambda v: f"{v:,}", axis_fmt=lambda v, _: f"{v:,.0f}",
     )
     wf = out["waterfall"]
     figures.waterfall_png(
-        IMG / "post8-waterfall.png", ("Dec 31\n2025", wf["start"]),
-        [(s["group"].replace(" ", "\n", 1), s["net"]) for s in wf["steps"]],
-        (f"{snap:%b} {snap.day}\n{snap.year}", wf["end"]),
-        title=f"Where the net drop in SNAP stores came from, 2026",
-        subtitle="stores authorized; net of new authorizations; the axis does not start at zero",
+        IMG / "post8-waterfall.png", ("2019–2025\naverage", wf["start"]),
+        [(s["group"].replace(" ", "\n", 1), s["change"]) for s in wf["steps"]],
+        ("2026", wf["end"]),
+        title=f"Where the extra exits came from: SNAP stores that left by {label}",
+        subtitle="stores that left, no new authorization at the same address; change from the 2019–2025 average",
         note="Source: USDA, SNAP retailer historical data and live feed.",
+        zero_axis=True,
+    )
+    figures.colbars_png(
+        IMG / "post8-ratio.png", [str(y) for y in YEARS], [ent[y]["ratio"] for y in YEARS],
+        title=f"SNAP stores that left for every new store, January 1 to {label}",
+        subtitle=("stores that left (no new authorization at the same address) divided by new\n"
+                  "authorizations still active on {0} at an address that had not just lost a store").format(label),
+        highlight="2026", fmt=lambda v: f"{v:.2f}", axis_fmt=lambda v, _: f"{v:.1f}",
     )
     ind = rates["independent_convenience"]
     ch = rates["chain_convenience"]
