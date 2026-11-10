@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
-Step: 2b
+Step: 2c
 Since: 2026-11-10
 
 ## Steps
@@ -15,7 +15,7 @@ Since: 2026-11-10
 |---|---|---|---|
 | 1  | Exploration and analysis | 2026-11-10 | Reopened for the November 5, 2026 live-feed layer and a static map of 2026 exits |
 | 2a | Draft with brackets resolved | 2026-11-10 | Claude drafted at Eric's request |
-| 2b | Eric's edit, Claude's look-over | | |
+| 2b | Eric's edit, Claude's look-over | 2026-11-10 | Edits 1 to 16 |
 | 2c | Slice markup | | |
 | 2d | Hero 1680x1080 + alt text | | |
 | 2e | SEO | | |
@@ -67,3 +67,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2b look-over. Resolved Eric's brackets with data: H1 net change -5.3% (249,083 to 235,892, already in post8_beats.json); the 59 counties with zero or one SNAP store on Nov 5 were home to 77,601 people (Census Vintage 2025 county estimates, new in DATASETS.md, `post8_beats.counties_zero_or_one_nov5`); Scott's Grocery closure not confirmed (Facebook posts May 2026, MapQuest says closed). Own tie-out 230 of 230. Look-over list sent; nothing applied.
 - 2026-11-10 2b: Eric accepted look-over items 1-11 and 13-15, with the title on the 8.8% exit share instead of the 5.3% net drop ("8.8% of authorized SNAP stores have left the program in 2026"); item 12 (net-drop sentence) dropped. Eric's own 2b edits committed with them.
 - 2026-11-10 Eric checked Scott's Grocery (Hayes Center, NE): still open, recent Facebook posts. Accepted edit 16: the post says it is open but no longer on USDA's SNAP list.
+- 2026-11-10 Step 2b confirmed by Eric. Step 2c started: slice markup.

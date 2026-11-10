@@ -1,0 +1,1196 @@
+{
+  "page_title": "8.8% of authorized SNAP stores have left the program in 2026",
+  "page_subtitle": "Between January 1 and November 5, 2026, almost 22,000 stores left SNAP, 88% more than the 2019 to 2025 average. Nearly all of it happened before the new stocking standard took effect.",
+  "make_this_main_post": false,
+  "slices": [
+    {
+      "slice_type": "drop_cap",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "drop_cap_text": [
+          {
+            "type": "paragraph",
+            "text": "On August 28, we asked what would happen to SNAP stores when the new stocking rule took effect. Maybe nothing. Maybe SNAP-authorized retail would be cut by a third. We said we would track USDA's retailer list after the rule landed and report what changed.",
+            "spans": [
+              {
+                "start": 17,
+                "end": 40,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/stocking-rule",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The rule took effect on November 4. Here is what it requires:",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Seven varieties of food in each of four staple groups: dairy, grains, protein, and fruits or vegetables.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Three stocking units of each variety, for at least 84 items, up from 36.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Perishable foods in at least three of the four groups.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Existing stores are checked mainly when they come up for reauthorization, which generally happens every five years. But USDA can check any store at any time.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "USDA estimated that about 5,000 stores could be denied under the new standard, and that about 500 of them would not come back.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our interactive map.",
+            "spans": [
+              {
+                "start": 252,
+                "end": 267,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "This post shows what has transpired throughout 2026. To be clear, there is no single answer for what has caused the unusually large drop in stores authorized to accept SNAP this year. Rather, it seems to be many drivers coming together at once, and they affect Americans who rely on food assistance.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "But before we get to the why, let's start with the what (a.k.a. the data).",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "highlited_page_blurb",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "title": "A note on how we count",
+        "content": [
+          {
+            "type": "paragraph",
+            "text": "A store left SNAP if it was authorized on December 31 of the year before and was gone from USDA's list by November 5, with no new authorization at the same address. A store that changed owners and got a new record number is not counted. We compare every year from 2019 to 2026 over the same window, January 1 to November 5.",
+            "spans": [
+              {
+                "start": 8,
+                "end": 17,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "The exits",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "In 2026, 21,923 stores left SNAP by November 5. That is 8.8% of the stores authorized at the start of the year. In 2020 through 2024, between 8,872 and 11,215 stores left over the same months. The number started climbing in 2025, to 14,493.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "SNAP stores that left between January 1 and November 5, by year",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Source: USDA Food and Nutrition Administration, SNAP retailer historical data and live retailer list.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 101,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The 2019 to 2025 average is 11,682 exits. The next chart shows where the 2026 rise above that average came from, by type of store. Independent convenience stores added the most, 4,714 exits above their own average. Chain and other convenience stores added 2,827, and grocery stores added 2,150. Every other type of store combined added 550.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Where the extra exits came from, by store type",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Each bar is a store type's 2026 exits minus its own 2019 to 2025 average. Source: USDA.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 87,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Independent convenience stores",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "An independent store here is one whose name appears on four or fewer SNAP stores. In 2026, 9,290 independent convenience stores left SNAP. That is a staggering 18.2% of those authorized on December 31, 2025. In 2019 through 2025, that share ranged from 7.7% to 11.5%. Chain convenience stores rose too, but from a much lower level: 3.9% in 2026, against 1.0% to 3.2% before. The chart below shows both.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Share of convenience stores that left SNAP, independent and chain",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Stores whose owner could not be identified are not shown. Source: USDA.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 71,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The map shows where those 9,290 stores were. They are spread across the country, and many are in large metro areas.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Map of independent convenience stores that left SNAP in 2026",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Source: USDA.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 13,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "New York City",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "No place lost more convenience stores and small groceries from SNAP than New York City. The chart below ranks the places with the most exits of those two store types. New York City had 1,368. Harris County, Texas, was next, with 518.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Places with the most convenience stores and small groceries leaving SNAP, 2026",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "New York City's five boroughs are counted as one place, which favors it against single counties. Source: USDA.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 110,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "New York City holds 3.7% of the country's SNAP convenience stores and small groceries. It accounts for 8.2% of the ones that left in 2026, and 14.2% of all small groceries that left. As the next chart shows, 29.6% of the city's SNAP convenience stores and small groceries left by November 5. Between 2019 and 2025, that share ranged from 11.5% to 17.3%. In the rest of the country it was 12.7% in 2026.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Share of convenience stores and small groceries that left SNAP, New York City and the rest of the US",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Source: USDA.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 13,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The map shows the 1,368 stores across the five boroughs. Many are in the Bronx, northern Manhattan and central Brooklyn.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Map of New York City convenience stores and small groceries that left SNAP in 2026",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Source: USDA; Census Bureau county boundaries.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 46,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Places left with one store, or none",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "Hayes County, Nebraska had one SNAP store at the start of 2026: Scott's Grocery in Hayes Center. A store at that address had been in SNAP under three record numbers since 1977. It was on USDA's list on December 31, 2025. It was not on the list on November 5. The store is still open, according to its Facebook page, but it no longer appears on USDA's list of stores that accept SNAP.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Hayes County is one of ten counties where the count of SNAP stores fell to one or none, or was cut in half:",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "No store left: Hayes County, Nebraska (1 to 0) and Harding County, New Mexico (1 to 0). A farmers market in Harding County is still authorized.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 14,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Down to one store: Oliver County, North Dakota (3 to 1); Echols County, Georgia (2 to 1); Essex County, Vermont (2 to 1); Foard County, Texas (2 to 1).",
+            "spans": [
+              {
+                "start": 0,
+                "end": 18,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Cut in half: Bowman County, North Dakota; Gilpin County, Colorado; Motley County, Texas; and Warren County, Indiana, each from 4 stores to 2.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 12,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Across the country, 22 counties now have no SNAP store, up from 21 on December 31. Thirty-seven have exactly one, up from 35. All together these 59 counties are home to about 78,000 people.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Fewer stores coming in",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "Exits are only half of the picture. New stores join SNAP every year, and in a normal year they more than make up for the ones that leave. The chart below divides the stores that left by the new stores that joined over the same months. In 2020 through 2024, between 0.64 and 0.80 stores left for every new one. In 2025, it was 1.42. In 2026, it was 2.50.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "SNAP stores that left for every new store, by year",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "New stores at the address of a store that left are not counted, because that exit is not counted either. Source: USDA.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 118,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The 2026 ratio rose on both sides. Exits went up, and new stores went down, from about 14,000 a year in 2020 through 2024 to 8,778 in 2026.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "Why are so many stores leaving?",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The data shows which stores left and where. It cannot show why. Several things changed for SNAP stores at about the same time, and any of them could be part of it:",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "State limits on buying soda and candy with SNAP. Ten states had these limits in effect at some point in 2026. In those states, 15.1% of convenience stores left SNAP by November 5, compared with 11.7% in the other states and DC. In 2019 to 2025, the average was about 6% in both. A peer-reviewed study of the same USDA list, by Chrisinger and White in Health Affairs Scholar (October 2026), found about 1.4% fewer convenience stores in SNAP in states with the limits than would have been expected. That is a real difference, but smaller than the rise we see, and the rise happened in states without limits too.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 48,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Fewer people on SNAP. The July 2025 budget law changed who qualifies for SNAP. USDA's numbers show 36.1 million people on SNAP in July 2026, down 13.2% from July 2025. Enrollment fell 16.1% in states where one party, Republican, controls the governor's office and both chambers of the legislature, 14.9% in states where control is divided, and 10.1% in states where Democrats control all three, not counting New York City. A few large drops move these averages. Texas and Florida fell about 20%. Arizona, a divided state, fell 50.8%, much of it tied to problems processing cases under the new rules, according to the state. This was the largest drop of any state, and will be the focus of a separate post in the near future, as it may signal what to expect when more complex Medicaid eligibility requirements take effect at the end of 2026. In New York City, where stores left at the highest rate, enrollment fell 8.7%, less than the national drop. Fewer SNAP shoppers would mean less SNAP business for stores, and USDA's own analysis says stores with the lowest SNAP sales may be the most likely to drop out.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 21,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Stores leaving ahead of the stocking rule. The rule was published on May 8, and USDA's guidance came in September. Some stores may have decided not to restock and left early. The data cannot test this.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 42,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "USDA enforcement. USDA could have removed more stores for rule violations. We did not test this.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 17,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "The chart below shows the number of people on SNAP each month since January 2020.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "People on SNAP each month, January 2020 to July 2026",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Source: USDA, SNAP Data Tables, data as of October 9, 2026. Pandemic school-meal benefits (P-EBT) are not counted.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 114,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "The next chart shows the change in enrollment from July 2025 to July 2026, by which party controls state government.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "blog_body_content_image",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "image": {
+          "alt": "Change in people on SNAP, July 2025 to July 2026",
+          "copyright": null
+        },
+        "source_text": [
+          {
+            "type": "paragraph",
+            "text": "Source: USDA, SNAP Data Tables, data as of October 9, 2026; New York State Office of Temporary and Disability Assistance for New York City; Ballotpedia for party control.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 170,
+                "type": "em"
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "We cannot know which of these changes matter most. Ideally, we would make one change to a complex system at a time, and then wait to gauge its impact and see if it has any unintended consequences. Instead, we ended up throwing many changes at SNAP all at once, and now we are left to sort through the wreckage without being able to pinpoint what caused it.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "But we can say this. Whatever the causes, 2026 brought major changes to both the stores in SNAP and the number of people receiving the benefit. There is a lot of talk about how to make life more affordable for Americans right now, especially our most vulnerable Americans. If you are working on this, start here with SNAP, and use the map to see what happened in your community. This also could help you understand what could be coming soon in Medicaid.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "divider_dots",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {}
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
+            "text": "How we did this",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "paragraph",
+            "text": "Data. USDA's SNAP retailer historical file, which lists every authorization through December 31, 2025, and USDA's live retailer list, saved on November 5, 2026. The live list is replaced every time USDA updates it, so our saved copy is the only record of that day. Enrollment figures come from USDA's SNAP Data Tables, data as of October 9, 2026, and, for New York City, New York State's SNAP caseload data. Party control of state government comes from Ballotpedia. County populations are Census Bureau estimates for July 1, 2025.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 5,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "What counts as an exit. A store authorized on December 31 of the year before that is gone from the list by November 5, with no new authorization at the same street address and ZIP code. Earlier years use the historical file on both dates. 2026 uses the historical file on December 31 and the live list on November 5.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 23,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "New stores. Stores on the list on November 5 that were not authorized on the December 31 before, not counting new stores at the address of a store that left.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 11,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Independent and chain. We match store names to chains. A name on four or fewer SNAP stores counts as independent.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 22,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Counties. Stores are placed in counties by their map coordinates, using Census Bureau county boundaries.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 9,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Limits.",
+            "spans": [
+              {
+                "start": 0,
+                "end": 7,
+                "type": "strong"
+              }
+            ],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "An exit is a lost SNAP authorization. It does not tell us whether a store closed, chose to leave, or was removed.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "2026 is measured with a different source on November 5 than earlier years. The largest chains changed little, which suggests the switch is not creating exits on its own, but we cannot rule out that USDA leaves some authorized stores off its public list.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "Some exits USDA recorded late in 2025 may show up in our 2026 count. For convenience stores, adjusting for that would lower the 2026 exit rate from 12.5% to about 11.6%, still above every year from 2019 to 2025.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "list-item",
+            "text": "About 1,800 stores newly on the 2026 list carry older record numbers and may not be new. Without them, the 2026 ratio of exits to new stores would be 3.15, not 2.50.",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Code, data notes and checks: Data4ThePeople/SNAP_Locations.",
+            "spans": [
+              {
+                "start": 29,
+                "end": 58,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://github.com/Data4ThePeople/SNAP_Locations",
+                  "target": "_blank"
+                }
+              }
+            ],
+            "direction": "ltr"
+          }
+        ]
+      }
+    }
+  ],
+  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"8.8% of authorized SNAP stores have left the program in 2026\",\n  \"description\": \"\",\n  \"articleSection\": \"Data 4 Thought\",\n  \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n  \"inLanguage\": \"en-US\",\n  \"isAccessibleForFree\": true,\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Eric Pachman\",\n    \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Data 4 The People\",\n    \"url\": \"https://data4thepeople.com\"\n  },\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": \"https://www.data4thepeople.com/p/snap-stores-leaving-2026\"\n  }\n}"
+}
