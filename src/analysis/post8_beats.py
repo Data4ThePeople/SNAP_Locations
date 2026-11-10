@@ -229,6 +229,12 @@ def main():
     steps = sorted(({"group": g, "avg_2019_2025": avg[g], "y2026": ex[2026]["by_group"].get(g, 0),
                      "change": ex[2026]["by_group"].get(g, 0) - avg[g]} for g in GROUPS),
                    key=lambda s: -s["change"])
+    # 2026 exits against the 2019-2025 mean of yearly totals (unrounded),
+    # as a whole percent above, halves up.
+    m = sum(ex[y]["left"] for y in YEARS[:-1]) / 7
+    out["exits_2026_vs_average"] = {
+        "mean_2019_2025": round(m, 2), "y2026": ex[2026]["left"],
+        "pct_above": int(Decimal(100 * (ex[2026]["left"] - m) / m).quantize(Decimal("1"), ROUND_HALF_UP))}
     out["waterfall"] = {"start": sum(avg.values()), "end": ex[2026]["left"], "steps": steps,
                         "note": "start is the sum of the group averages, each rounded to a whole store"}
     # Places with the most 2026 exits of convenience stores and small groceries.

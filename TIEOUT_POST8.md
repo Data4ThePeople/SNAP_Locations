@@ -110,6 +110,7 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Exits 2024: left, left before address test, base | (10826, 16081, 252100) | (10826, 16081, 252100) | match |
 | Exits 2025: left, left before address test, base | (14493, 19069, 254811) | (14493, 19069, 254811) | match |
 | Exits 2026: left, left before address test, base | (21923, 26129, 249083) | (21923, 26129, 249083) | match |
+| 2026 exits vs 2019-2025 average: % above (subtitle "88% more") | 88 | 88 | match |
 | Exit waterfall start and end | (11682, 21923) | (11682, 21923) | match |
 | Exit waterfall Independent convenience: average, 2026, change | (4576, 9290, 4714) | (4576, 9290, 4714) | match |
 | Exit waterfall Other convenience: average, 2026, change | (2567, 5394, 2827) | (2567, 5394, 2827) | match |

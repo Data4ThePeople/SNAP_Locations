@@ -298,6 +298,10 @@ def main():
             (e["left"], e["left_any"], e["base"]), (int(f["gone"].sum()), int(f["left_any"].sum()), len(f)))
         byg[y] = pd.Series(g4(f[f["gone"]])).value_counts()
     wh = lambda x: int(_D(x).quantize(_D("1"), _H))
+    mean_ex = sum(int(frames[y]["gone"].sum()) for y in range(2019, 2026)) / 7
+    left26 = int(frames[2026]["gone"].sum())
+    tie("2026 exits vs 2019-2025 average: % above (subtitle \"88% more\")",
+        bj["exits_2026_vs_average"]["pct_above"], wh(100 * (left26 - mean_ex) / mean_ex))
     avg = {g: wh(sum(int(byg[y].get(g, 0)) for y in range(2019, 2026)) / 7) for g in G4}
     wf = bj["waterfall"]
     tie("Exit waterfall start and end", (wf["start"], wf["end"]), (sum(avg.values()), int(frames[2026]["gone"].sum())))
