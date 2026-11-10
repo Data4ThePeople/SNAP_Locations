@@ -90,7 +90,7 @@ The map shows the 1,368 stores across the five boroughs. Many are in the Bronx, 
 
 ::: spacer 5px
 
-Hayes County, Nebraska had one SNAP store at the start of 2026: Scott's Grocery in Hayes Center. A store at that address had been in SNAP under three record numbers since 1977. It was on USDA's list on December 31, 2025. It was not on the list on November 5.
+Hayes County, Nebraska had one SNAP store at the start of 2026: Scott's Grocery in Hayes Center. A store at that address had been in SNAP under three record numbers since 1977. It was on USDA's list on December 31, 2025. It was not on the list on November 5. The store is still open, according to its Facebook page, but it no longer appears on USDA's list of stores that accept SNAP.
 
 Hayes County is one of ten counties where the count of SNAP stores fell to one or none, or was cut in half:
 
