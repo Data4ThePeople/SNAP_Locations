@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
-Step: 2a
+Step: 2b
 Since: 2026-11-10
 
 ## Steps
@@ -14,7 +14,7 @@ Since: 2026-11-10
 | Step | What | Confirmed | Notes |
 |---|---|---|---|
 | 1  | Exploration and analysis | 2026-11-10 | Reopened for the November 5, 2026 live-feed layer and a static map of 2026 exits |
-| 2a | Draft with brackets resolved | | |
+| 2a | Draft with brackets resolved | 2026-11-10 | Claude drafted at Eric's request |
 | 2b | Eric's edit, Claude's look-over | | |
 | 2c | Slice markup | | |
 | 2d | Hero 1680x1080 + alt text | | |
@@ -49,3 +49,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2a: Claude's first draft in `posts/snap-stores-leaving-2026/POST.md` with charts 01 to 09 in `images/`; reading level grade 6.5. Waiting on Eric's edit.
 - 2026-11-10 Checked SNAP enrollment against USDA's own data (Eric downloaded the SNAP Data Tables, FY19 to FY26, P-EBT excluded, as of Oct 9, 2026) and NY OTDA's district caseloads (data.ny.gov dq6j-8u8z). New `src/analysis/post8_enrollment.py` and `post8-enrollment.png` (people on SNAP by month, Jan 2020 to Jul 2026; chart skips the 2019 shutdown months). July 2025 to July 2026: US -13.2% (36.1 million), limit states -20.1%, other states and DC -11.3%, New York State -9.3%, NYC -8.7%, rest of NY -10.2%. OTDA's 58 districts sum to USDA's New York figure exactly. DATASETS.md and the research brief updated; own tie-out 219 of 219. Not yet in the draft; proposed edit sent to Eric.
 - 2026-11-10 Eric accepted edits 1 to 3: enrollment bullet now cites USDA (replaces Tufts), enrollment chart added as `images/10-enrollment.png`, enrollment sources added to How we did this.
+- 2026-11-10 Step 2a confirmed by Eric. Step 2b started: Eric edits POST.md, then Claude looks it over.
