@@ -215,15 +215,28 @@ def main():
         xticks=[(y, str(y)) for y in range(2020, 2027)])
     print(f"wrote {IMG / 'post8-enrollment.png'}")
 
-    yoy = lambda k: out[k]["jul2025"]["pct"]
-    tri = lambda p: out["trifecta_2026"][p]["jul2025"]["pct"]
+    def people(n):
+        """Fewer people, rounded for a chart label: 2.5 million, 155,000."""
+        if n >= 1_000_000:
+            return f"{Decimal(n / 1e6).quantize(Decimal('0.1'), ROUND_HALF_UP)} million"
+        return f"{int(Decimal(n / 1000).quantize(Decimal('1'), ROUND_HALF_UP)):,},000"
+
+    def bar(label, ch, slot):
+        lost = ch["jul2025"]["from"] - ch["jul2025"]["to"]
+        out["chart_people_lost"][label] = lost
+        return {"label": label, "value": ch["jul2025"]["pct"], "slot": slot,
+                "value_text": f"{ch['jul2025']['pct']}%, {people(lost)} fewer"}
+
+    out["chart_people_lost"] = {}
+    T = out["trifecta_2026"]
+    rows = [bar("Republican trifecta states", T["Republican"], 1),
+            bar("United States", out["us"], 0),
+            bar("Divided states", T["Divided"], 1),
+            bar("Democratic trifecta states*", T["Democratic"], 1),
+            bar("New York City", out["nyc_otda"], 1)]
+    OUT.write_text(json.dumps(out, indent=1))
     figures.hbar_png(
-        IMG / "post8-enrollment-change.png",
-        [{"label": "Republican trifecta states", "value": tri("Republican"), "slot": 1},
-         {"label": "United States", "value": yoy("us"), "slot": 0},
-         {"label": "Divided states", "value": tri("Divided"), "slot": 1},
-         {"label": "Democratic trifecta states*", "value": tri("Democratic"), "slot": 1},
-         {"label": "New York City", "value": yoy("nyc_otda"), "slot": 1}],
+        IMG / "post8-enrollment-change.png", rows,
         suffix="%", direction="left",
         title="Change in people on SNAP, July 2025 to July 2026",
         subtitle="By party control of state government in 2026. *Not counting New York City.\n"

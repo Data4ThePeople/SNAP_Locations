@@ -207,7 +207,8 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
 
 def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
              subtitle="", direction="right"):
-    """`rows` = [{label, value, slot?, note?}], drawn top-to-bottom as given.
+    """`rows` = [{label, value, slot?, note?, value_text?}], drawn top-to-bottom
+    as given. `value_text` replaces the printed value (to add a count beside it).
 
     direction="left" anchors the bars to a right-hand baseline and grows them
     leftward, with labels on the right. Pass the values signed (negative for a
@@ -233,7 +234,7 @@ def hbar_png(path, rows, suffix="", width=6.6, note_key=None, title="",
         ax.barh(y, v, height=0.56, color=c, zorder=3)
         ax.text(-sgn * 0.014 * hi, y, r["label"], ha="left" if left else "right",
                 va="center", fontsize=8.5, family=MONO, color=INK_MID)
-        txt = f"{r['value']:,.1f}{suffix}".replace(".0" + suffix, suffix)
+        txt = r.get("value_text") or f"{r['value']:,.1f}{suffix}".replace(".0" + suffix, suffix)
         ax.text(v + sgn * 0.012 * hi, y, txt, ha="right" if left else "left",
                 va="center", fontsize=8.5, family=MONO, color=INK)
         if note_key and r.get(note_key):

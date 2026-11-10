@@ -233,6 +233,11 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment trifecta_2025_check Divided (12 states): Jul 2025 to Jul 2026 % change | -14.4 | -14.4 | match |
 | Enrollment trifecta_2025_check Divided_excl_AZ: Jul 2025 to Jul 2026 % change | -10.5 | -10.5 | match |
 | Enrollment trifecta_2025_check Republican_excl_TX_FL: Jul 2025 to Jul 2026 % change | -12.9 | -12.9 | match |
+| Enrollment chart: Republican trifecta states, people fewer Jul 2025 to Jul 2026 | 2,545,699 | 2,545,699 | match |
+| Enrollment chart: United States, people fewer Jul 2025 to Jul 2026 | 5,511,740 | 5,511,740 | match |
+| Enrollment chart: Divided states, people fewer Jul 2025 to Jul 2026 | 1,228,514 | 1,228,514 | match |
+| Enrollment chart: Democratic trifecta states*, people fewer Jul 2025 to Jul 2026 | 1,564,460 | 1,564,460 | match |
+| Enrollment chart: New York City, people fewer Jul 2025 to Jul 2026 | 155,393 | 155,393 | match |
 | Enrollment: US persons July 2026 | 36,087,667 | 36,087,667 | match |
 | Enrollment: NYC persons August 2026 | 1,613,318 | 1,613,318 | match |
 | Enrollment: 2020-2026 peak month | 2024-10 | 2024-10 | match |

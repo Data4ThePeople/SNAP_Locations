@@ -480,6 +480,16 @@ def main():
             a, b = ser.loc[(2025, 7)], ser.loc[(2026, 7)]
             tie(f"Enrollment {key} {lab}: Jul 2025 to Jul 2026 % change",
                 ej[key][lab]["jul2025"]["pct"], r1(100 * (b - a) / a))
+    t26 = tri[tri["year"] == 2026].set_index("state")["trifecta"].map(
+        {"R": "Republican", "D": "Democratic"}).fillna("Divided")
+    lost = lambda ser: int(ser.loc[(2025, 7)] - ser.loc[(2026, 7)])
+    for lab, ser in (("Republican trifecta states", piv[list(t26[t26 == "Republican"].index)].sum(axis=1)),
+                     ("United States", piv["US Summary"]),
+                     ("Divided states", piv[list(t26[t26 == "Divided"].index)].sum(axis=1)),
+                     ("Democratic trifecta states*", piv[list(t26[t26 == "Democratic"].index)].sum(axis=1)
+                      - nyc_s.reindex(piv.index)),
+                     ("New York City", nyc_s)):
+        tie(f"Enrollment chart: {lab}, people fewer Jul 2025 to Jul 2026", ej["chart_people_lost"][lab], lost(ser))
     tie("Enrollment: US persons July 2026", ej["us"]["jul2025"]["to"], int(piv["US Summary"].loc[(2026, 7)]))
     tie("Enrollment: NYC persons August 2026", ej["nyc_latest"]["persons"], int(nyc_s.loc[(2026, 8)]))
     us20 = piv["US Summary"].loc[(2020, 1):(2026, 7)]
