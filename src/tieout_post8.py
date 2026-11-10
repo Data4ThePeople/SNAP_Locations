@@ -434,12 +434,7 @@ def main():
                    and c not in {"NERO", "MARO", "SERO", "MWRO", "SWRO", "MPRO", "WRO"}
                    and c in set(P["name"]) and P[P["name"] == c]["p"].max() > 10000]
     tie("Enrollment: states plus DC found in USDA files", 51, len(states_cols))
-    limit_st = {"Indiana", "Idaho", "Oklahoma", "Louisiana", "Texas", "Florida", "Utah",
-                "Iowa", "Nebraska", "West Virginia"}
-    grp = {"us": piv["US Summary"],
-           "limit_states": piv[[c for c in states_cols if c in limit_st]].sum(axis=1),
-           "other_states": piv[[c for c in states_cols if c not in limit_st]].sum(axis=1),
-           "ny_state_usda": piv["New York"]}
+    grp = {"us": piv["US Summary"], "ny_state_usda": piv["New York"]}
     az = piv["Arizona"]
     tie("Enrollment: Arizona Jul 2025 to Jul 2026 % change (checked against CBPP, nearly 51%)",
         ej["states_jul2025_jul2026"]["AZ"], r1(100 * (az.loc[(2026, 7)] - az.loc[(2025, 7)]) / az.loc[(2025, 7)]))
@@ -453,15 +448,11 @@ def main():
             a, b = int(ser.loc[(yy, mm)]), int(ser.loc[(2026, 7)])
             tie(f"Enrollment {g} {k}: persons at start", ej[g][k]["from"], a)
             tie(f"Enrollment {g} {k} to Jul 2026: % change", ej[g][k]["pct"], r1(100 * (b - a) / a))
-    oth_az = piv[[c for c in states_cols if c not in limit_st and c != "Arizona"]].sum(axis=1)
-    tie("Enrollment: other states and DC without Arizona, Jul 2025 to Jul 2026 % change",
-        ej["other_states_excl_az"]["jul2025"]["pct"],
-        r1(100 * (oth_az.loc[(2026, 7)] - oth_az.loc[(2025, 7)]) / oth_az.loc[(2025, 7)]))
-    lim = grp["limit_states"]
-    txfl = sum(piv[c].loc[(2025, 7)] - piv[c].loc[(2026, 7)] for c in ("Texas", "Florida"))
-    tie("Enrollment: Texas and Florida share of limit-state loss (%)",
-        ej["tx_fl_share_of_limit_loss_jul2025_jul2026"],
-        int(Decimal(100 * txfl / (lim.loc[(2025, 7)] - lim.loc[(2026, 7)])).quantize(Decimal("1"), ROUND_HALF_UP)))
+    for st_name, code in (("Texas", "TX"), ("Florida", "FL")):
+        ser = piv[st_name]
+        tie(f"Enrollment: {st_name} Jul 2025 to Jul 2026 % change (post: about 20%)",
+            ej["states_jul2025_jul2026"][code],
+            r1(100 * (ser.loc[(2026, 7)] - ser.loc[(2025, 7)]) / ser.loc[(2025, 7)]))
     tri = pd.read_csv(ROOT / "data/raw/ballotpedia/trifectas-2025-2026.csv")
     for yr, key in ((2026, "trifecta_2026"), (2025, "trifecta_2025_check")):
         t = tri[tri["year"] == yr].set_index("state")["trifecta"]
@@ -482,6 +473,9 @@ def main():
                 ej[key][lab]["jul2025"]["pct"], r1(100 * (b - a) / a))
     t26 = tri[tri["year"] == 2026].set_index("state")["trifecta"].map(
         {"R": "Republican", "D": "Democratic"}).fillna("Divided")
+    for party in ("Republican", "Democratic", "Divided"):
+        tie(f"Enrollment chart: number of {party} states in 2026 (label)",
+            len(ej["trifecta_2026"][party]["states"]), int((t26 == party).sum()))
     lost = lambda ser: int(ser.loc[(2025, 7)] - ser.loc[(2026, 7)])
     for lab, ser in (("Republican trifecta states", piv[list(t26[t26 == "Republican"].index)].sum(axis=1)),
                      ("United States", piv["US Summary"]),

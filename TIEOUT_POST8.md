@@ -185,18 +185,6 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment us jul2025 to Jul 2026: % change | -13.2 | -13.2 | match |
 | Enrollment us dec2025: persons at start | 39,207,898 | 39,207,898 | match |
 | Enrollment us dec2025 to Jul 2026: % change | -8.0 | -8.0 | match |
-| Enrollment limit_states jan2025: persons at start | 9,643,795 | 9,643,795 | match |
-| Enrollment limit_states jan2025 to Jul 2026: % change | -22.5 | -22.5 | match |
-| Enrollment limit_states jul2025: persons at start | 9,352,970 | 9,352,970 | match |
-| Enrollment limit_states jul2025 to Jul 2026: % change | -20.1 | -20.1 | match |
-| Enrollment limit_states dec2025: persons at start | 8,690,398 | 8,690,398 | match |
-| Enrollment limit_states dec2025 to Jul 2026: % change | -14.0 | -14.0 | match |
-| Enrollment other_states jan2025: persons at start | 32,714,366 | 32,714,366 | match |
-| Enrollment other_states jan2025 to Jul 2026: % change | -12.7 | -12.7 | match |
-| Enrollment other_states jul2025: persons at start | 32,185,665 | 32,185,665 | match |
-| Enrollment other_states jul2025 to Jul 2026: % change | -11.3 | -11.3 | match |
-| Enrollment other_states dec2025: persons at start | 30,456,215 | 30,456,215 | match |
-| Enrollment other_states dec2025 to Jul 2026: % change | -6.2 | -6.2 | match |
 | Enrollment ny_state_usda jan2025: persons at start | 2,974,909 | 2,974,909 | match |
 | Enrollment ny_state_usda jan2025 to Jul 2026: % change | -10.3 | -10.3 | match |
 | Enrollment ny_state_usda jul2025: persons at start | 2,940,513 | 2,940,513 | match |
@@ -221,8 +209,8 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment rest_of_ny_otda jul2025 to Jul 2026: % change | -10.2 | -10.2 | match |
 | Enrollment rest_of_ny_otda dec2025: persons at start | 1,104,526 | 1,104,526 | match |
 | Enrollment rest_of_ny_otda dec2025 to Jul 2026: % change | -6.3 | -6.3 | match |
-| Enrollment: other states and DC without Arizona, Jul 2025 to Jul 2026 % change | -10.2 | -10.2 | match |
-| Enrollment: Texas and Florida share of limit-state loss (%) | 70 | 70 | match |
+| Enrollment: Texas Jul 2025 to Jul 2026 % change (post: about 20%) | -19.8 | -19.8 | match |
+| Enrollment: Florida Jul 2025 to Jul 2026 % change (post: about 20%) | -22.1 | -22.1 | match |
 | Enrollment trifecta_2026 Republican (23 states): Jul 2025 to Jul 2026 % change | -16.1 | -16.1 | match |
 | Enrollment trifecta_2026 Democratic (16 states): Jul 2025 to Jul 2026 % change | -10.1 | -10.1 | match |
 | Enrollment trifecta_2026 Divided (11 states): Jul 2025 to Jul 2026 % change | -14.9 | -14.9 | match |
@@ -233,6 +221,9 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment trifecta_2025_check Divided (12 states): Jul 2025 to Jul 2026 % change | -14.4 | -14.4 | match |
 | Enrollment trifecta_2025_check Divided_excl_AZ: Jul 2025 to Jul 2026 % change | -10.5 | -10.5 | match |
 | Enrollment trifecta_2025_check Republican_excl_TX_FL: Jul 2025 to Jul 2026 % change | -12.9 | -12.9 | match |
+| Enrollment chart: number of Republican states in 2026 (label) | 23 | 23 | match |
+| Enrollment chart: number of Democratic states in 2026 (label) | 16 | 16 | match |
+| Enrollment chart: number of Divided states in 2026 (label) | 11 | 11 | match |
 | Enrollment chart: Republican trifecta states, people fewer Jul 2025 to Jul 2026 | 2,545,699 | 2,545,699 | match |
 | Enrollment chart: United States, people fewer Jul 2025 to Jul 2026 | 5,511,740 | 5,511,740 | match |
 | Enrollment chart: Divided states, people fewer Jul 2025 to Jul 2026 | 1,228,514 | 1,228,514 | match |
