@@ -172,6 +172,25 @@ def main():
                        "conv_pct_2026_if_shortfall_moved_to_2025":
                            pct(conv[2026]["left"] - short, conv[2026]["base"] - short)}
 
+    # Gap: 2026 convenience exits above what the earlier years' rate would
+    # give on the 2026 base. Expected = 2026 base x the mean of the seven
+    # unrounded 2019-2025 rates; "highest year" uses the single highest rate.
+    def gap(left, base, rates):
+        mean, hi = sum(rates) / len(rates) / 100, max(rates) / 100
+        whole = lambda x: int(Decimal(x).quantize(Decimal("1"), ROUND_HALF_UP))
+        return {"left": left, "base": base,
+                "expected_at_mean": whole(base * mean), "gap_vs_mean": left - whole(base * mean),
+                "expected_at_highest_year": whole(base * hi), "gap_vs_highest_year": left - whole(base * hi)}
+    early = YEARS[:-1]
+    c26 = conv[2026]
+    out["gap"] = {
+        "method": "2026 exits minus 2026 base x 2019-2025 rate (mean of unrounded yearly rates, or highest year)",
+        "not_replaced": gap(c26["left"], c26["base"], [exact(conv, y) for y in early]),
+        "before_address_test": gap(conv_all[2026]["left_any"], c26["base"],
+                                   [100 * conv_all[y]["left_any"] / conv[y]["base"] for y in early]),
+        "not_replaced_lag_adjusted": gap(c26["left"] - short, c26["base"] - short,
+                                         [exact(conv, y) for y in early]),
+    }
     OUT.write_text(json.dumps(out, indent=1, default=str))
     print(f"wrote {OUT}")
     charts(out, years, label)

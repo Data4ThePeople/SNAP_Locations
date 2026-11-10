@@ -169,6 +169,15 @@ November 5, 2026, against a 2019 to 2025 average of 9.0% (range 7.5% to
 10.9%). Post 8 reports the measure after the address test and discloses this
 one.
 
+**Gap above earlier years.** The number of 2026 convenience exits above what
+earlier years' rates would give: 2026 exits minus the 2026 base (117,055 stores)
+times the 2019 to 2025 rate, rounded to the nearest store, halves up. Against
+the mean of the seven unrounded yearly rates, 14,684 exits against 7,322
+expected, a gap of 7,362. Against the highest single year (2019, 8.2%), the gap
+is 5,072. Before the address test, the gaps are 6,600 and 4,320. With the
+recording lag adjustment below, they are 6,245 and 3,978. The gap is a count of
+exits above the usual rate, not a count of exits caused by the stocking rule.
+
 **Recording lag check.** The historical file shows fewer convenience stores
 with an end date in October to December 2025 (2,157) than the 2022 to 2024
 average for those months (3,349). If the 1,192 difference were exits that

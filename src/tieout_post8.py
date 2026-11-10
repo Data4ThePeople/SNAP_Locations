@@ -229,6 +229,22 @@ def main():
     tie("Q4 shortfall and adjusted 2026 rate", (q["shortfall_2025"], q["conv_pct_2026_if_shortfall_moved_to_2025"]),
         (short, pct(c26["left"] - short, c26["base"] - short)))
 
+    # Gap above the 2019-2025 rate, from the raw frames.
+    from decimal import Decimal, ROUND_HALF_UP
+    whole = lambda x: int(Decimal(x).quantize(Decimal("1"), ROUND_HALF_UP))
+    def gap(left, base, rates):
+        m, hi = sum(rates) / len(rates), max(rates)
+        return (left - whole(base * m), left - whole(base * hi))
+    cf = {y: frames[y][conv(frames[y])] for y in range(2019, 2027)}
+    nr = [cf[y]["gone"].sum() / len(cf[y]) for y in range(2019, 2026)]
+    an = [cf[y]["left_any"].sum() / len(cf[y]) for y in range(2019, 2026)]
+    L, B, LA = int(cf[2026]["gone"].sum()), len(cf[2026]), int(cf[2026]["left_any"].sum())
+    G = built["gap"]
+    for key, rec in (("not_replaced", gap(L, B, nr)), ("before_address_test", gap(LA, B, an)),
+                     ("not_replaced_lag_adjusted", gap(L - short, B - short, nr))):
+        tie(f"Gap {key}: vs average, vs highest year",
+            (G[key]["gap_vs_mean"], G[key]["gap_vs_highest_year"]), rec)
+
     fmt = lambda v: f"{v:,}" if isinstance(v, int) else str(v)
     lines = ["# Tie-out, post 8", "",
              f"Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and "

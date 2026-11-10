@@ -86,6 +86,9 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Map: convenience exits shown in lower 48 | 14,586 | 14,586 | match |
 | Q4 convenience stores with end dates, 2022–2025 | {'2022': 3423, '2023': 3428, '2024': 3195, '2025': 2157} | {'2022': 3423, '2023': 3428, '2024': 3195, '2025': 2157} | match |
 | Q4 shortfall and adjusted 2026 rate | (1192, 11.6) | (1192, 11.6) | match |
+| Gap not_replaced: vs average, vs highest year | (7362, 5072) | (7362, 5072) | match |
+| Gap before_address_test: vs average, vs highest year | (6600, 4320) | (6600, 4320) | match |
+| Gap not_replaced_lag_adjusted: vs average, vs highest year | (6245, 3978) | (6245, 3978) | match |
 
 ## Words
 
