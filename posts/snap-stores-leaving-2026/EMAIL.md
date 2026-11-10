@@ -46,9 +46,9 @@ Independent convenience stores led the rise. In 2026, 9,290 of them left SNAP, 1
 
 No place lost more convenience stores and small groceries from SNAP than New York City, where many of them are the corner stores known as bodegas. The city lost 1,368. Harris County, Texas, was next, with 518.
 
-We cannot know which of these changes matter most. Ideally, we would make one change to a complex system at a time, and then wait to gauge its impact and see if it has any unintended consequences. Instead, we ended up throwing many changes at SNAP all at once, and now we are left to sort through the wreckage without being able to pinpoint what caused it.
+Several things changed for SNAP at about the same time, and we cannot know which of them matter most. Ideally, we would make one change to a complex system at a time, and then wait to gauge its impact and see if it has any unintended consequences. Instead, we ended up throwing many changes at SNAP all at once, and now we are left to sort through the wreckage without being able to pinpoint what caused it.
 
-But we can say this. Whatever the causes, 2026 brought major changes to both the stores in SNAP and the number of people receiving the benefit. There is a lot of talk about how to make life more affordable for Americans right now, especially our most vulnerable Americans. If you are working on this, start here with SNAP, and use the map to see what happened in your community. This also could help you understand what could be coming soon in Medicaid.
+But we can say this. Whatever the causes, 2026 brought major changes to both the stores in SNAP and the number of people receiving the benefit. There is a lot of talk about how to make life more affordable for Americans right now, especially our most vulnerable Americans. If you are working on this, start here with SNAP, and use the map in the full report to see what happened in your community. This also could help you understand what could be coming soon in Medicaid.
 ```
 
 ## 6. Call to action

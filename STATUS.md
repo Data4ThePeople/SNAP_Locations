@@ -80,3 +80,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2f: Eric set the publication date, November 10, 2026, 7:45 a.m. Eastern (`date: 2026-11-10`, `time: 07:45:00-05:00`); draft re-pushed (same document) in the Migration Release.
 - 2026-11-10 Step 2f confirmed by Eric (post live). Step 2g: EMAIL.md drafted from the post text (one chart, 01-exits-by-year); hero email JPG 85KB. Waiting on approve or reject.
 - 2026-11-10 2g: at Eric's request the email ends on his two conclusion paragraphs (verbatim from the post) in place of the Hayes County paragraph.
+- 2026-11-10 2g: Eric accepted email edits 23 and 24 (conclusion reworded to stand on its own in the email; map pointed to the full report).
