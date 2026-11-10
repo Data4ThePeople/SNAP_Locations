@@ -3,6 +3,8 @@
 Drawn from the post and the email (`EMAIL.md`). Every number is in the post.
 Post URL: https://www.data4thepeople.com/p/snap-stores-leaving-2026
 
+Animation: `social/snap-stores-leaving-2026-independents-by-year.gif` (960x747, 0.5 MB). One frame per year, 2019 to 2026, about 1.1 seconds each, then 2026 holds for 5 seconds. Each frame shows that year's independent convenience stores that left SNAP between January 1 and November 5, over the stores still in SNAP. The last frame is chart 04. Built by `src/analysis/post8_gif.py`.
+
 ## X, thread of 7 (X counts the link as 23)
 
 **1/7** (262 of 280). Image: `images/01-exits-by-year.png`.
@@ -14,7 +16,7 @@ Nearly all of it happened before USDA's new stocking rule took effect on Novembe
 https://www.data4thepeople.com/p/snap-stores-leaving-2026
 ```
 
-**2/7** (229). Image: `images/03-independents-trend.png`.
+**2/7** (229). Image: `social/snap-stores-leaving-2026-independents-by-year.gif`.
 
 ```
 Independent convenience stores led the rise. 9,290 left SNAP, 18.2% of those authorized at the start of the year.
@@ -61,7 +63,7 @@ https://www.data4thepeople.com/p/snap-stores-leaving-2026
 
 ## LinkedIn
 
-Media: the hero, `images/snap-stores-leaving-2026-hero-1680x1080.png`.
+Media: `social/snap-stores-leaving-2026-independents-by-year.gif`. If LinkedIn shows it as a still, use the hero, `images/snap-stores-leaving-2026-hero-1680x1080.png`, instead.
 
 ```
 Between January 1 and November 5, 2026, 21,923 stores left SNAP. That is 8.8% of the stores authorized at the start of the year, and 88% more than the 2019 to 2025 average.
@@ -86,6 +88,11 @@ Full report and map: https://www.data4thepeople.com/p/snap-stores-leaving-2026
 ```
 
 ## Alt text
+
+Animated map (`social/snap-stores-leaving-2026-independents-by-year.gif`):
+```
+Animated map of the lower 48 states, one frame per year from 2019 to 2026. Orange dots mark the independent convenience stores that left SNAP between January 1 and November 5 of each year, over gray dots for stores still in SNAP. The orange is sparse from 2019 through 2025 and much denser in 2026, when 9,290 left, with clusters in large metro areas.
+```
 
 Exits by year (`01-exits-by-year.png`):
 ```

@@ -84,3 +84,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2g: at Eric's request, the email's last two paragraphs are now Claude's short transition carrying the conclusion's message (many changes at once; big changes to stores and enrollment; the map for your community; Arizona and Medicaid) instead of the conclusion verbatim.
 - 2026-11-10 Step 2g confirmed by Eric. Post 8 complete. Social posts started (X as a thread, per Eric).
 - 2026-11-10 Social: `SOCIAL.md` drafted (X thread of 7, LinkedIn with link in first comment, alt text). Eric's GIF idea: a map over time showing the 2026 drop-off.
+- 2026-11-10 Social: built Eric's map GIF, `social/snap-stores-leaving-2026-independents-by-year.gif` (`src/analysis/post8_gif.py`): independent convenience exits by year, 2019 to 2026, over stores still in SNAP; last frame is chart 04. Per-year counts match post8_beats rates (tied out). Used in X 2/7 and LinkedIn.
