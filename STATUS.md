@@ -63,3 +63,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Enrollment change chart: state counts in the group labels (23, 11, 16), US bar moved to the bottom. Restored tie-out checks for the trifecta groups and chart counts that the limit-state removal had cut by mistake; own tie-out 228 of 228.
 - 2026-11-10 Eric accepted edits 9 and 10: limit-state store exit rates (15.1% vs 11.7%, about 6% before) now in the soda and candy bullet; chart 09 removed from the post (images/09-limit-states-nyc.png deleted; post8-splits.png and its tie-out stay in the analysis).
 - 2026-11-10 Eric accepted edits 11 and 12: Chrisinger and White named in the soda and candy bullet; Ballotpedia added to the enrollment change caption.
+- 2026-11-10 Eric accepted edit 13: link to the interactive map (GitHub Pages, through November 5) added after "So we checked USDA's list again."

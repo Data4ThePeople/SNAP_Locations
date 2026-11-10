@@ -29,7 +29,7 @@ The rule took effect on November 4. Here is what it requires:
 
 USDA estimated that about 5,000 stores could be denied under the new standard, and that about 500 of them would not come back.
 
-It turns out that was the wrong question. While we were writing about the data through 2025, stores were already leaving SNAP faster than usual. So we checked USDA's list again.
+It turns out that was the wrong question. While we were writing about the data through 2025, stores were already leaving SNAP faster than usual. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our [interactive map](https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html).
 
 A note on how we count. A store **left SNAP** if it was authorized on December 31 of the year before and was gone from USDA's list by November 5, with no new authorization at the same address. A store that changed owners and got a new record number is not counted. We compare every year from 2019 to 2026 over the same window, January 1 to November 5.
 
