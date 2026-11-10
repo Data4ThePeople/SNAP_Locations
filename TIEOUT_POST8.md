@@ -94,6 +94,67 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Gap not_replaced: vs average, vs highest year | (7362, 5072) | (7362, 5072) | match |
 | Gap before_address_test: vs average, vs highest year | (6600, 4320) | (6600, 4320) | match |
 | Gap not_replaced_lag_adjusted: vs average, vs highest year | (6245, 3978) | (6245, 3978) | match |
+| Net change 2019: Dec 31, Nov 5, net | (245088, 242048, -3040) | (245088, 242048, -3040) | match |
+| Net change 2020: Dec 31, Nov 5, net | (239745, 244685, 4940) | (239745, 244685, 4940) | match |
+| Net change 2021: Dec 31, Nov 5, net | (244283, 247633, 3350) | (244283, 247633, 3350) | match |
+| Net change 2022: Dec 31, Nov 5, net | (247327, 251489, 4162) | (247327, 251489, 4162) | match |
+| Net change 2023: Dec 31, Nov 5, net | (250757, 253548, 2791) | (250757, 253548, 2791) | match |
+| Net change 2024: Dec 31, Nov 5, net | (252100, 255227, 3127) | (252100, 255227, 3127) | match |
+| Net change 2025: Dec 31, Nov 5, net | (254811, 250511, -4300) | (254811, 250511, -4300) | match |
+| Net change 2026: Dec 31, Nov 5, net | (249083, 235892, -13191) | (249083, 235892, -13191) | match |
+| Waterfall Independent convenience: Dec 31, Nov 5, net | (47856, 42494, -5362) | (47856, 42494, -5362) | match |
+| Waterfall Other convenience: Dec 31, Nov 5, net | (65619, 62565, -3054) | (65619, 62565, -3054) | match |
+| Waterfall Grocery, any size: Dec 31, Nov 5, net | (21211, 18969, -2242) | (21211, 18969, -2242) | match |
+| Waterfall All other stores: Dec 31, Nov 5, net | (105878, 104354, -1524) | (105878, 104354, -1524) | match |
+| Waterfall New York City: Dec 31, Nov 5, net | (8519, 7510, -1009) | (8519, 7510, -1009) | match |
+| Waterfall order (most negative first) | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores', 'New York City'] | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores', 'New York City'] | match |
+| Rate independent_convenience 2019 | {'base': 52195, 'left': 6026, 'pct': 11.5} | {'base': 52195, 'left': 6026, 'pct': 11.5} | match |
+| Rate independent_convenience 2020 | {'base': 49138, 'left': 3707, 'pct': 7.5} | {'base': 49138, 'left': 3707, 'pct': 7.5} | match |
+| Rate independent_convenience 2021 | {'base': 50051, 'left': 5091, 'pct': 10.2} | {'base': 50051, 'left': 5091, 'pct': 10.2} | match |
+| Rate independent_convenience 2022 | {'base': 49776, 'left': 4287, 'pct': 8.6} | {'base': 49776, 'left': 4287, 'pct': 8.6} | match |
+| Rate independent_convenience 2023 | {'base': 49982, 'left': 3990, 'pct': 8.0} | {'base': 49982, 'left': 3990, 'pct': 8.0} | match |
+| Rate independent_convenience 2024 | {'base': 50851, 'left': 3900, 'pct': 7.7} | {'base': 50851, 'left': 3900, 'pct': 7.7} | match |
+| Rate independent_convenience 2025 | {'base': 52343, 'left': 5031, 'pct': 9.6} | {'base': 52343, 'left': 5031, 'pct': 9.6} | match |
+| Rate independent_convenience 2026 | {'base': 51003, 'left': 9290, 'pct': 18.2} | {'base': 51003, 'left': 9290, 'pct': 18.2} | match |
+| Rate chain_convenience 2019 | {'base': 35821, 'left': 871, 'pct': 2.4} | {'base': 35821, 'left': 871, 'pct': 2.4} | match |
+| Rate chain_convenience 2020 | {'base': 36369, 'left': 358, 'pct': 1.0} | {'base': 36369, 'left': 358, 'pct': 1.0} | match |
+| Rate chain_convenience 2021 | {'base': 37825, 'left': 555, 'pct': 1.5} | {'base': 37825, 'left': 555, 'pct': 1.5} | match |
+| Rate chain_convenience 2022 | {'base': 38870, 'left': 608, 'pct': 1.6} | {'base': 38870, 'left': 608, 'pct': 1.6} | match |
+| Rate chain_convenience 2023 | {'base': 40057, 'left': 1273, 'pct': 3.2} | {'base': 40057, 'left': 1273, 'pct': 3.2} | match |
+| Rate chain_convenience 2024 | {'base': 40227, 'left': 751, 'pct': 1.9} | {'base': 40227, 'left': 751, 'pct': 1.9} | match |
+| Rate chain_convenience 2025 | {'base': 40683, 'left': 1265, 'pct': 3.1} | {'base': 40683, 'left': 1265, 'pct': 3.1} | match |
+| Rate chain_convenience 2026 | {'base': 40540, 'left': 1565, 'pct': 3.9} | {'base': 40540, 'left': 1565, 'pct': 3.9} | match |
+| Rate nyc_small 2019 | {'base': 4922, 'left': 638, 'pct': 13.0} | {'base': 4922, 'left': 638, 'pct': 13.0} | match |
+| Rate nyc_small 2020 | {'base': 4600, 'left': 567, 'pct': 12.3} | {'base': 4600, 'left': 567, 'pct': 12.3} | match |
+| Rate nyc_small 2021 | {'base': 4313, 'left': 745, 'pct': 17.3} | {'base': 4313, 'left': 745, 'pct': 17.3} | match |
+| Rate nyc_small 2022 | {'base': 4223, 'left': 634, 'pct': 15.0} | {'base': 4223, 'left': 634, 'pct': 15.0} | match |
+| Rate nyc_small 2023 | {'base': 4323, 'left': 532, 'pct': 12.3} | {'base': 4323, 'left': 532, 'pct': 12.3} | match |
+| Rate nyc_small 2024 | {'base': 4341, 'left': 501, 'pct': 11.5} | {'base': 4341, 'left': 501, 'pct': 11.5} | match |
+| Rate nyc_small 2025 | {'base': 4552, 'left': 646, 'pct': 14.2} | {'base': 4552, 'left': 646, 'pct': 14.2} | match |
+| Rate nyc_small 2026 | {'base': 4624, 'left': 1368, 'pct': 29.6} | {'base': 4624, 'left': 1368, 'pct': 29.6} | match |
+| Rate us_small_outside_nyc 2019 | {'base': 117048, 'left': 9875, 'pct': 8.4} | {'base': 117048, 'left': 9875, 'pct': 8.4} | match |
+| Rate us_small_outside_nyc 2020 | {'base': 112690, 'left': 5734, 'pct': 5.1} | {'base': 112690, 'left': 5734, 'pct': 5.1} | match |
+| Rate us_small_outside_nyc 2021 | {'base': 115704, 'left': 7598, 'pct': 6.6} | {'base': 115704, 'left': 7598, 'pct': 6.6} | match |
+| Rate us_small_outside_nyc 2022 | {'base': 116809, 'left': 6625, 'pct': 5.7} | {'base': 116809, 'left': 6625, 'pct': 5.7} | match |
+| Rate us_small_outside_nyc 2023 | {'base': 118617, 'left': 7097, 'pct': 6.0} | {'base': 118617, 'left': 7097, 'pct': 6.0} | match |
+| Rate us_small_outside_nyc 2024 | {'base': 120038, 'left': 6283, 'pct': 5.2} | {'base': 120038, 'left': 6283, 'pct': 5.2} | match |
+| Rate us_small_outside_nyc 2025 | {'base': 122829, 'left': 8517, 'pct': 6.9} | {'base': 122829, 'left': 8517, 'pct': 6.9} | match |
+| Rate us_small_outside_nyc 2026 | {'base': 120418, 'left': 15263, 'pct': 12.7} | {'base': 120418, 'left': 15263, 'pct': 12.7} | match |
+| Counties newly at zero | ['31085', '35021'] | ['31085', '35021'] | match |
+| Counties down to one | ['13101', '38065', '48155', '50009'] | ['13101', '38065', '48155', '50009'] | match |
+| Counties halved (to 2+) | ['08047', '18171', '38011', '48345'] | ['08047', '18171', '38011', '48345'] | match |
+| Counties with 0 and 1 store, Dec 31 and Nov 5 | (21, 22, 35, 37) | (21, 22, 35, 37) | match |
+| County Harding County, New Mexico: Dec 31, Nov 5 | (1, 0) | (1, 0) | match |
+| County Hayes County, Nebraska: Dec 31, Nov 5 | (1, 0) | (1, 0) | match |
+| County Oliver County, North Dakota: Dec 31, Nov 5 | (3, 1) | (3, 1) | match |
+| County Echols County, Georgia: Dec 31, Nov 5 | (2, 1) | (2, 1) | match |
+| County Essex County, Vermont: Dec 31, Nov 5 | (2, 1) | (2, 1) | match |
+| County Foard County, Texas: Dec 31, Nov 5 | (2, 1) | (2, 1) | match |
+| County Bowman County, North Dakota: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
+| County Gilpin County, Colorado: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
+| County Motley County, Texas: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
+| County Warren County, Indiana: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
+| NYC map: convenience and small groceries that left | 1,368 | 1,368 | match |
 
 ## Words
 

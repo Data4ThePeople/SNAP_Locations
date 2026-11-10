@@ -200,6 +200,38 @@ and the 2026 exits. Taking them out of both, the 2026 convenience rate would be
 11.6% instead of 12.5%. The file cannot tell which. The check is rough: it is
 not filtered by the address test.
 
+**Net change and the waterfall (post 8).** Stores in SNAP on a date are the
+map's universe: on a historical date, stores authorized and mappable in the
+historical file; on November 5, 2026, the live feed's map layer (no Restaurant
+Meals sites, no farmers-market entities the historical file never carried,
+mappable). Net change is the November 5 count minus the December 31 count, so
+it nets new authorizations against exits. The waterfall splits the 2026 net
+change into five groups that do not overlap, assigned in this order: New York
+City (state NY and a county field naming one of the five boroughs; the live
+feed's County column for live-only stores); independent convenience stores;
+other convenience stores (chain or owner unknown); grocery stores of any size
+(live-only grocery stores carry no size); everything else. New York City's net
+change is small next to its exits because many new stores were authorized
+there too.
+
+**New York City trend and map.** "Convenience stores and small groceries" are
+the historical file's Convenience Store and Grocery (Small) types, in the five
+boroughs by the county field. Rates use the exit test above. The map's "still
+in SNAP" layer is every store in the November 5 universe in the New York City
+group, all types.
+
+**Counties (post 8).** Stores are placed in counties by their coordinates, using
+the Census Bureau's 2024 cartographic county boundaries
+(`cb_2024_us_county_500k.zip` from `www2.census.gov/geo/tiger/GENZ2024/shp/`,
+cached in `data/raw/`, public domain), not by USDA's county field, which has
+errors (a store in Morrill, Nebraska is listed in Sioux County). Counts use the
+store universe above; 50 states and DC only. About 360 stores on December 31
+and 320 on November 5 fall outside every county polygon (mostly coastal
+geocodes and territories) and are not counted. Each county also notes the
+farmers-market entities on the November 5 list; they are outside the store
+count but usable by shoppers. Harding County, New Mexico has no store left
+but has one such entity.
+
 **Limits of the comparison.** Earlier years use the historical file on both
 dates. 2026 uses the file on one date and the live feed on the other. A store
 that left between December 31 and November 5 in an earlier year shows up in the

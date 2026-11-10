@@ -264,6 +264,81 @@ def main():
         tie(f"Gap {key}: vs average, vs highest year",
             (G[key]["gap_vs_mean"], G[key]["gap_vs_highest_year"]), rec)
 
+    # ---- Beats 2-5 (post8_beats.json) ----
+    bj = json.loads((ROOT / "reports/data/post8_beats.json").read_text())
+    con = connect(read_only=True)
+    lmap = con.execute("SELECT record_id rid, mappable, excluded, format, ownership FROM live_store").df().set_index("rid")
+    con.close()
+    hc = h.drop_duplicates("rid").set_index("rid")
+    def U(d):
+        return active(d) & mappable
+    lv_keep = lv[lv["rid"].isin(lmap.index[lmap["excluded"].isna() & lmap["mappable"]])]
+    for y in range(2019, 2027):
+        a = len(U(date(y - 1, 12, 31)))
+        b = len(lv_keep) if y == 2026 else len(U(date(y, snap.month, snap.day)))
+        tie(f"Net change {y}: Dec 31, Nov 5, net", (bj["net"][str(y)]["dec31"], bj["net"][str(y)]["nov5"],
+            bj["net"][str(y)]["net"]), (a, b, b - a))
+    boro = {"NEW YORK", "KINGS", "QUEENS", "BRONX", "RICHMOND"}
+    def grp(state, county, fm, own):
+        if state == "NY" and county in boro: return "New York City"
+        if fm == CONV: return "Independent convenience" if own == "independent" else "Other convenience"
+        if str(fm).startswith("Grocery"): return "Grocery, any size"
+        return "All other stores"
+    A26 = sorted(U(date(2025, 12, 31)))
+    ga = pd.Series([grp(st[r], cty[r], ds.at[r, "format"], ds.at[r, "ownership"]) for r in A26]).value_counts()
+    lk = lv_keep.set_index("rid")
+    gb = pd.Series([grp(st[r], cty[r], ds.at[r, "format"], ds.at[r, "ownership"]) if r in hist_ids else
+                    grp(lk.at[r, "State"], str(lk.at[r, "County"] or "").strip().upper(),
+                        lmap.at[r, "format"], lmap.at[r, "ownership"]) for r in lk.index]).value_counts()
+    for s in bj["waterfall"]["steps"]:
+        g = s["group"]
+        tie(f"Waterfall {g}: Dec 31, Nov 5, net", (s["dec31"], s["nov5"], s["net"]),
+            (int(ga.get(g, 0)), int(gb.get(g, 0)), int(gb.get(g, 0) - ga.get(g, 0))))
+    tie("Waterfall order (most negative first)", [s["group"] for s in bj["waterfall"]["steps"]],
+        list((gb - ga).sort_values().index))
+    SM = "Grocery (Small)"
+    for key, m in (("independent_convenience", lambda f: f["format"].eq(CONV) & f["own"].eq("independent")),
+                   ("chain_convenience", lambda f: f["format"].eq(CONV) & f["own"].eq("chain")),
+                   ("nyc_small", lambda f: f["format"].isin([CONV, SM]) & f["state"].eq("NY") & f["county"].isin(boro)),
+                   ("us_small_outside_nyc", lambda f: f["format"].isin([CONV, SM]) &
+                    ~(f["state"].eq("NY") & f["county"].isin(boro)))):
+        for y in range(2019, 2027):
+            tie(f"Rate {key} {y}", bj["rates"][key][str(y)], rate(y, m))
+    # Counties with shapely (the build uses matplotlib paths).
+    import io, zipfile as _zf, shapefile as _shp
+    from shapely.geometry import shape as _shape
+    from shapely import STRtree, points as _points
+    z = _zf.ZipFile(ROOT / "data/raw/cb_2024_us_county_500k.zip")
+    gt = lambda e: io.BytesIO(z.read(next(n for n in z.namelist() if n.endswith(e))))
+    rd = _shp.Reader(shp=gt(".shp"), dbf=gt(".dbf"), shx=gt(".shx"))
+    flds = [f[0] for f in rd.fields[1:]]
+    recs = [dict(zip(flds, r)) for r in rd.records()]
+    keepc = [i for i, r in enumerate(recs) if r["STATEFP"] not in {"60", "66", "69", "72", "78"}]
+    geoms = [_shape(rd.shape(i).__geo_interface__) for i in keepc]
+    tree = STRtree(geoms)
+    def county_counts(lon, lat):
+        pi, gi = tree.query(_points(np.asarray(lon, float), np.asarray(lat, float)), predicate="within")
+        return pd.Series(gi).drop_duplicates().size and pd.Series(pi).groupby(gi).nunique()
+    import numpy as np
+    ca = county_counts(hc.loc[A26, "Longitude"].astype(float), hc.loc[A26, "Latitude"].astype(float))
+    cbn = county_counts(lv_keep["Longitude"].astype(float), lv_keep["Latitude"].astype(float))
+    geo = [recs[i]["GEOID"] for i in keepc]
+    rows = pd.DataFrame({"geoid": geo, "dec31": [int(ca.get(i, 0)) for i in range(len(geo))],
+                         "nov5": [int(cbn.get(i, 0)) for i in range(len(geo))]})
+    pick = lambda q: sorted(rows.query(q)["geoid"])
+    tie("Counties newly at zero", sorted(r["geoid"] for r in bj["counties_newly_zero"]), pick("dec31 > 0 and nov5 == 0"))
+    tie("Counties down to one", sorted(r["geoid"] for r in bj["counties_down_to_one"]), pick("dec31 >= 2 and nov5 == 1"))
+    tie("Counties halved (to 2+)", sorted(r["geoid"] for r in bj["counties_halved"]),
+        pick("dec31 >= 2 and nov5 > 1 and nov5 <= dec31 / 2"))
+    cs = bj["counties_summary"]
+    tie("Counties with 0 and 1 store, Dec 31 and Nov 5", (cs["zero_dec31"], cs["zero_nov5"], cs["one_dec31"], cs["one_nov5"]),
+        (int((rows.dec31 == 0).sum()), int((rows.nov5 == 0).sum()), int((rows.dec31 == 1).sum()), int((rows.nov5 == 1).sum())))
+    for r in bj["counties_newly_zero"] + bj["counties_down_to_one"] + bj["counties_halved"]:
+        x = rows[rows.geoid == r["geoid"]].iloc[0]
+        tie(f"County {r['name']}: Dec 31, Nov 5", (r["dec31"], r["nov5"]), (int(x.dec31), int(x.nov5)))
+    tie("NYC map: convenience and small groceries that left", bj["nyc_map"]["left_conv_small"],
+        rate(2026, lambda f: f["format"].isin([CONV, SM]) & f["state"].eq("NY") & f["county"].isin(boro))["left"])
+
     fmt = lambda v: f"{v:,}" if isinstance(v, int) else str(v)
     lines = ["# Tie-out, post 8", "",
              f"Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and "

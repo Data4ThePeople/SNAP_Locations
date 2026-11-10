@@ -964,3 +964,133 @@ def chapter_card_png(path, day, headline, topic, stat_value, stat_label, placeme
     fig.savefig(path, facecolor=bg, dpi=DPI)
     plt.close(fig)
     return path
+
+
+def colbars_png(path, labels, values, width=6.6, height=3.0, title="", subtitle="",
+                highlight=None):
+    """Vertical bars for a signed count by period (net change per year).
+
+    Bars above zero use slot 1, below zero slot 2; `highlight` (a label) keeps
+    its colour and every other bar drops to MUTED so the eye lands on it.
+    Each bar carries its value, signed, so no reader has to read it off an axis.
+    """
+    fig, ax = plt.subplots(figsize=(width, height), dpi=DPI, facecolor=PAPER)
+    _style(ax)
+    ax.spines["bottom"].set_visible(False)
+    ax.grid(axis="y", color=RULE, lw=1, zorder=0)
+    ax.axhline(0, color=INK_SOFT, lw=1, zorder=2)
+    span = max(values) - min(min(values), 0)
+    for i, (lab, v) in enumerate(zip(labels, values)):
+        c = S[0] if v >= 0 else S[1]
+        if highlight is not None and lab != highlight:
+            c = MUTED
+        ax.bar(i, v, width=0.62, color=c, zorder=3)
+        ax.text(i, v + (0.02 * span if v >= 0 else -0.02 * span), f"{v:+,}",
+                ha="center", va="bottom" if v >= 0 else "top", fontsize=7.5,
+                family=MONO, color=INK)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, fontfamily=MONO)
+    ax.tick_params(axis="x", length=0)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:+,.0f}" if v else "0"))
+    lo, hi = min(min(values), 0), max(max(values), 0)
+    ax.set_ylim(lo - 0.12 * span, hi + 0.12 * span)
+    _titles(fig, ax, title, subtitle)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
+def waterfall_png(path, start, steps, end, width=7.2, height=3.6, title="", subtitle="",
+                  note=""):
+    """Start total, signed steps, end total, as floating bars.
+
+    `start` and `end` are (label, value); `steps` is [(label, value)] in the
+    order drawn. Totals are MUTED (no identity); decreases slot 2, increases
+    slot 1. The y-axis does not start at zero: the steps are small against the
+    totals, so the axis is cut and the cut is said in the subtitle by the
+    caller. Each bar is labelled with its value.
+    """
+    labels = [start[0]] + [s[0] for s in steps] + [end[0]]
+    fig, ax = plt.subplots(figsize=(width, height), dpi=DPI, facecolor=PAPER)
+    _style(ax)
+    ax.grid(axis="y", color=RULE, lw=1, zorder=0)
+    run = start[1]
+    tops = [start[1], end[1]]
+    lows = [start[1], end[1]]
+    bars = [(0, 0, start[1], MUTED, f"{start[1]:,}")]
+    for i, (lab, v) in enumerate(steps, 1):
+        lo, hi = sorted((run, run + v))
+        bars.append((i, lo, hi, S[1] if v < 0 else S[0], f"{v:+,}"))
+        tops.append(hi); lows.append(lo)
+        run += v
+    bars.append((len(labels) - 1, 0, end[1], MUTED, f"{end[1]:,}"))
+    ymin = min(lows) - 0.25 * (max(tops) - min(lows))
+    ymax = max(tops) + 0.10 * (max(tops) - min(lows))
+    for i, lo, hi, c, txt in bars:
+        b = max(lo, ymin)
+        ax.bar(i, hi - b, bottom=b, width=0.62, color=c, zorder=3)
+        ax.text(i, hi + 0.015 * (ymax - ymin), txt, ha="center", va="bottom",
+                fontsize=7.5, family=MONO, color=INK)
+    # connector lines between consecutive bars
+    run = start[1]
+    for i, (_, v) in enumerate(steps):
+        ax.plot([i + 0.31, i + 0.69], [run, run], color=INK_SOFT, lw=0.8, zorder=2)
+        run += v
+    ax.plot([len(steps) + 0.31, len(steps) + 0.69], [run, run], color=INK_SOFT, lw=0.8, zorder=2)
+    ax.set_ylim(ymin, ymax)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, fontfamily=MONO, fontsize=7.5)
+    ax.tick_params(axis="x", length=0)
+    ax.yaxis.set_major_formatter(FuncFormatter(_thousands))
+    _titles(fig, ax, title, subtitle)
+    if note:
+        fig.text(0.012, -0.02, note, ha="left", va="top", fontsize=7, family=MONO,
+                 color=INK_SOFT)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
+
+
+def local_map_png(path, rings, layers, keys, width=6.6, title="", subtitle="", note=""):
+    """A close-up dot map (one city or county group) with its own outlines.
+
+    `rings` are [(lon, lat), ...] boundary rings. Projection is equirectangular
+    with longitude scaled by cos(mean latitude), which is accurate enough at
+    city scale. `layers` = [{lon, lat, color, size, alpha}], ground first.
+    `keys` = [{label, color}] drawn under the map.
+    """
+    from matplotlib.collections import LineCollection
+    lat0 = sum(p[1] for r in rings for p in r) / sum(len(r) for r in rings)
+    k = math.cos(math.radians(lat0))
+    xs = [p[0] * k for r in rings for p in r]
+    ys = [p[1] for r in rings for p in r]
+    aspect = (max(ys) - min(ys)) / (max(xs) - min(xs))
+    fig, ax = plt.subplots(figsize=(width, width * aspect + 0.9), dpi=DPI, facecolor=PAPER)
+    ax.set_facecolor(PAPER)
+    ax.set_axis_off()
+    ax.add_collection(LineCollection([[(p[0] * k, p[1]) for p in r] for r in rings],
+                                     colors=INK_SOFT, linewidths=0.6, zorder=1))
+    for i, L in enumerate(layers):
+        ax.scatter([x * k for x in L["lon"]], L["lat"], s=L.get("size", 1.2), c=L["color"],
+                   marker=".", linewidths=0, alpha=L.get("alpha", 0.8), zorder=2 + i)
+    ax.set_xlim(min(xs), max(xs))
+    ax.set_ylim(min(ys), max(ys))
+    ax.set_aspect("equal")
+    if title:
+        fig.text(0.012, 0.995, title, ha="left", va="top", fontsize=10.5, family=MONO,
+                 color=INK, fontweight="bold")
+    if subtitle:
+        fig.text(0.012, 0.955, subtitle, ha="left", va="top", fontsize=8, family=MONO,
+                 color=INK_SOFT)
+    x = 0.012
+    for kk in keys:
+        fig.text(x, 0.06, kk["label"], ha="left", va="bottom", fontsize=8, family=MONO,
+                 color=kk["color"])
+        x += (len(kk["label"]) + 3) * 8 * MONO_ADVANCE / 72 / width
+    if note:
+        fig.text(0.012, 0.012, note, ha="left", va="bottom", fontsize=7, family=MONO,
+                 color=INK_SOFT)
+    fig.subplots_adjust(top=0.88, bottom=0.12, left=0.01, right=0.99)
+    fig.savefig(path, bbox_inches="tight", facecolor=PAPER, pad_inches=0.16)
+    plt.close(fig)
+    return path
