@@ -28,6 +28,8 @@ Since: 2026-11-10
 
 - Arizona follow-up post (Eric, 2026-11-10): Arizona's SNAP enrollment fell 50.8% from July 2025 to July 2026, the most of any state, which Arizona DES ties to verification and processing problems. Eric sees it as a case study for what could happen in Medicaid as state agencies handle calls and recertifications. Post 8 mentions Arizona only briefly; hold the discussion for this post.
 
+- Corrections to the earlier posts Eric linked (Eric, 2026-11-10: "we can add any corrections to these posts too after we are done with this post"): diverging-two-americas, chain-pharmacies, super-stores, snap-retailer-map. Check each for the same 5-digit-ZIP issue found in post 7, and update the snap-retailer-map page to the November 5, 2026 figures in `reports/visualization-page-meta.md` (its live description still says 661,456 stores, 2006–2025). Start only after post 8 is done.
+
 ## Stale
 
 None. No later step had been confirmed under this file.
@@ -72,3 +74,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2d: Eric said the text box hid too much of the map. Post 8 hero type scaled to 70% with a lighter panel (55%); caption shortened to "Independent convenience stores, January 1 to November 5". Alt text updated.
 - 2026-11-10 Step 2d confirmed by Eric. Step 2e started: SEO.
 - 2026-11-10 2e: meta title (50), description (136), 8 keywords (Eric's searches plus "SNAP enrollment by state") in the front matter. Eric accepted 17 to 19: Common questions section (FAQ schema, 5 questions), bodegas in the NYC section, "free" interactive map. FAQ state figures tied out; own tie-out 236 of 236.
+- 2026-11-10 2e: Eric supplied links to earlier posts. Accepted 20 to 22: map link now the site page (/p/snap-retailer-map), links to diverging-two-americas (county section) and super-stores (independent convenience section). Corrections to those posts queued after post 8.

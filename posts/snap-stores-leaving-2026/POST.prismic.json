@@ -88,7 +88,7 @@
                 "type": "hyperlink",
                 "data": {
                   "link_type": "Web",
-                  "url": "https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html",
+                  "url": "https://www.data4thepeople.com/p/snap-retailer-map",
                   "target": "_blank"
                 }
               }
@@ -380,8 +380,19 @@
         "paragraph_text": [
           {
             "type": "paragraph",
-            "text": "The map shows where those 9,290 stores were. They are spread across the country, and many are in large metro areas.",
-            "spans": [],
+            "text": "The map shows where those 9,290 stores were. They are spread across the country, and many are in large metro areas. Outside metro areas, convenience and dollar stores had become a bigger share of where people shop for food, as we showed in Super Stores for Some, Dollar and Convenience for the Rest.",
+            "spans": [
+              {
+                "start": 240,
+                "end": 298,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/super-stores",
+                  "target": "_blank"
+                }
+              }
+            ],
             "direction": "ltr"
           }
         ]
@@ -698,8 +709,19 @@
           },
           {
             "type": "paragraph",
-            "text": "Across the country, 22 counties now have no SNAP store, up from 21 on December 31. Thirty-seven have exactly one, up from 35. All together these 59 counties are home to about 78,000 people.",
-            "spans": [],
+            "text": "Across the country, 22 counties now have no SNAP store, up from 21 on December 31. Thirty-seven have exactly one, up from 35. Our earlier post, Twenty Years Drive Two Americas Further Apart, looked at the places that lost their grocery stores from 2006 to 2025. All together these 59 counties are home to about 78,000 people.",
+            "spans": [
+              {
+                "start": 144,
+                "end": 189,
+                "type": "hyperlink",
+                "data": {
+                  "link_type": "Web",
+                  "url": "https://www.data4thepeople.com/p/diverging-two-americas",
+                  "target": "_blank"
+                }
+              }
+            ],
             "direction": "ltr"
           }
         ]

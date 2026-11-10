@@ -29,7 +29,7 @@ The rule took effect on November 4. Here is what it requires:
 
 USDA estimated that about 5,000 stores could be denied under the new standard, and that about 500 of them would not come back.
 
-But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our free [interactive map](https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html).
+But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our free [interactive map](https://www.data4thepeople.com/p/snap-retailer-map).
 
 This post shows what has transpired throughout 2026. To be clear, there is no single answer for what has caused the unusually large drop in stores authorized to accept SNAP this year. Rather, it seems to be many drivers coming together at once, and they affect Americans who rely on food assistance. 
 
@@ -62,7 +62,7 @@ An independent store here is one whose name appears on four or fewer SNAP stores
 ![Share of convenience stores that left SNAP, independent and chain](images/03-independents-trend.png)
 *Stores whose owner could not be identified are not shown. Source: USDA.*
 
-The map shows where those 9,290 stores were. They are spread across the country, and many are in large metro areas.
+The map shows where those 9,290 stores were. They are spread across the country, and many are in large metro areas. Outside metro areas, convenience and dollar stores had become a bigger share of where people shop for food, as we showed in [Super Stores for Some, Dollar and Convenience for the Rest](https://www.data4thepeople.com/p/super-stores).
 
 ![Map of independent convenience stores that left SNAP in 2026](images/04-independents-map.png)
 *Source: USDA.*
@@ -98,7 +98,7 @@ Hayes County is one of ten counties where the count of SNAP stores fell to one o
 - **Down to one store:** Oliver County, North Dakota (3 to 1); Echols County, Georgia (2 to 1); Essex County, Vermont (2 to 1); Foard County, Texas (2 to 1).
 - **Cut in half:** Bowman County, North Dakota; Gilpin County, Colorado; Motley County, Texas; and Warren County, Indiana, each from 4 stores to 2.
 
-Across the country, 22 counties now have no SNAP store, up from 21 on December 31. Thirty-seven have exactly one, up from 35. All together these 59 counties are home to about 78,000 people.
+Across the country, 22 counties now have no SNAP store, up from 21 on December 31. Thirty-seven have exactly one, up from 35. Our earlier post, [Twenty Years Drive Two Americas Further Apart](https://www.data4thepeople.com/p/diverging-two-americas), looked at the places that lost their grocery stores from 2006 to 2025. All together these 59 counties are home to about 78,000 people.
 
 ## Fewer stores coming in
 
