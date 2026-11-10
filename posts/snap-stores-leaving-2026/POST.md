@@ -112,12 +112,17 @@ The 2026 ratio rose on both sides. Exits went up, and new stores went down, from
 The data shows which stores left and where. It cannot show why. Several things changed for SNAP stores at about the same time, and any of them could be part of it:
 
 - **State limits on buying soda and candy with SNAP.** Ten states had these limits in effect at some point in 2026. Convenience stores left SNAP at a higher rate in those states than in the rest of the country, as the chart below shows. A peer-reviewed study of the same USDA list found about 1.4% fewer convenience stores in SNAP in states with the limits than would have been expected. That is a real difference, but smaller than the rise we see, and the rise happened in states without limits too.
-- **Changes to who qualifies for SNAP.** The July 2025 budget law changed eligibility rules, and researchers at Tufts University report that enrollment is falling. Fewer SNAP shoppers would mean less SNAP business for stores, and USDA's own analysis says stores with the lowest SNAP sales may be the most likely to drop out.
+- **Fewer people on SNAP.** The July 2025 budget law changed who qualifies for SNAP. USDA's numbers show 36.1 million people on SNAP in July 2026, down 13.2% from July 2025. Enrollment fell 20.1% in the states with soda or candy limits and 11.3% in the other states. In New York City, where stores left at the highest rate, enrollment fell 8.7%, less than the national drop. Fewer SNAP shoppers would mean less SNAP business for stores, and USDA's own analysis says stores with the lowest SNAP sales may be the most likely to drop out.
 - **Stores leaving ahead of the stocking rule.** The rule was published on May 8, and USDA's guidance came in September. Some stores may have decided not to restock and left early. The data cannot test this.
 - **USDA enforcement.** USDA could have removed more stores for rule violations. We did not test this.
 
 ![Convenience stores that left SNAP, states with soda or candy limits, other states, and New York City](images/09-limit-states-nyc.png)
 *Source: USDA; state list from Chrisinger and White, Health Affairs Scholar, October 2026.*
+
+The chart below shows the number of people on SNAP each month since January 2020.
+
+![People on SNAP each month, January 2020 to July 2026](images/10-enrollment.png)
+*Source: USDA, SNAP Data Tables, data as of October 9, 2026. Pandemic school-meal benefits (P-EBT) are not counted.*
 
 We cannot know which of these matter most, or prove any of them. But the data is the data. About 22,000 stores left SNAP in ten months, nearly all of it before the November 4 compliance date. If we care about SNAP, we have to pay attention to this.
 
@@ -127,7 +132,7 @@ We cannot know which of these matter most, or prove any of them. But the data is
 
 ::: spacer 5px
 
-**Data.** USDA's SNAP retailer historical file, which lists every authorization through December 31, 2025, and USDA's live retailer list, saved on November 5, 2026. The live list is replaced every time USDA updates it, so our saved copy is the only record of that day.
+**Data.** USDA's SNAP retailer historical file, which lists every authorization through December 31, 2025, and USDA's live retailer list, saved on November 5, 2026. The live list is replaced every time USDA updates it, so our saved copy is the only record of that day. Enrollment figures come from USDA's SNAP Data Tables, data as of October 9, 2026, and, for New York City, New York State's SNAP caseload data.
 
 **What counts as an exit.** A store authorized on December 31 of the year before that is gone from the list by November 5, with no new authorization at the same street address and ZIP code. Earlier years use the historical file on both dates. 2026 uses the historical file on December 31 and the live list on November 5.
 
