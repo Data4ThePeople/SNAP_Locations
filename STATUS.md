@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
-Step: 2e
+Step: 2f
 Since: 2026-11-10
 
 ## Steps
@@ -18,7 +18,7 @@ Since: 2026-11-10
 | 2b | Eric's edit, Claude's look-over | 2026-11-10 | Edits 1 to 16 |
 | 2c | Slice markup | 2026-11-10 | 82 blocks, 10 images |
 | 2d | Hero 1680x1080 + alt text | 2026-11-10 | From chart 04, series frame |
-| 2e | SEO | | |
+| 2e | SEO | 2026-11-10 | FAQ, 8 keywords, 3 internal links |
 | 2f | Pushed to Prismic (draft) | | |
 | 2g | Mailchimp teaser | | |
 
@@ -75,3 +75,5 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Step 2d confirmed by Eric. Step 2e started: SEO.
 - 2026-11-10 2e: meta title (50), description (136), 8 keywords (Eric's searches plus "SNAP enrollment by state") in the front matter. Eric accepted 17 to 19: Common questions section (FAQ schema, 5 questions), bodegas in the NYC section, "free" interactive map. FAQ state figures tied out; own tie-out 236 of 236.
 - 2026-11-10 2e: Eric supplied links to earlier posts. Accepted 20 to 22: map link now the site page (/p/snap-retailer-map), links to diverging-two-americas (county section) and super-stores (independent convenience section). Corrections to those posts queued after post 8.
+- 2026-11-10 Step 2e confirmed by Eric. Step 2f started: push to Prismic as a draft.
+- 2026-11-10 2f: pushed to Prismic as a draft (document avMNtREAAC4AXEpG, uid snap-stores-leaving-2026, 68 slices, 10 charts plus the hero uploaded) in the Migration Release. Tags and author empty. Not verified through the Content API: no PRISMIC_READ_TOKEN in the central .env.

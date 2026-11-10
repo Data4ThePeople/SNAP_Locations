@@ -1,0 +1,79 @@
+{
+  "images/01-exits-by-year.png": {
+    "id": "vakzl8C8CiZDl8eO",
+    "width": 1185,
+    "height": 661,
+    "url": "https://images.prismic.io/data4thepeople/vakzl8C8CiZDl8eO_01-exits-by-year.png?auto=format,compress",
+    "stamp": "55674:1794307882"
+  },
+  "images/02-extra-exits-by-type.png": {
+    "id": "vdrG957Rj8Tko6kZ",
+    "width": 1470,
+    "height": 809,
+    "url": "https://images.prismic.io/data4thepeople/vdrG957Rj8Tko6kZ_02-extra-exits-by-type.png?auto=format,compress",
+    "stamp": "62463:1794307882"
+  },
+  "images/03-independents-trend.png": {
+    "id": "jFiCxgD33aSlkRXy",
+    "width": 1263,
+    "height": 716,
+    "url": "https://images.prismic.io/data4thepeople/jFiCxgD33aSlkRXy_03-independents-trend.png?auto=format,compress",
+    "stamp": "66886:1794307882"
+  },
+  "images/04-independents-map.png": {
+    "id": "1XtbWdt_wFx1ukyi",
+    "width": 1611,
+    "height": 1253,
+    "url": "https://images.prismic.io/data4thepeople/1XtbWdt_wFx1ukyi_04-independents-map.png?auto=format,compress",
+    "stamp": "377633:1794307882"
+  },
+  "images/05-places.png": {
+    "id": "Ayytge5DrHj_F1nH",
+    "width": 1429,
+    "height": 980,
+    "url": "https://images.prismic.io/data4thepeople/Ayytge5DrHj_F1nH_05-places.png?auto=format,compress",
+    "stamp": "74489:1794307882"
+  },
+  "images/06-nyc-trend.png": {
+    "id": "ZA5ul93gFKu0ojI7",
+    "width": 1473,
+    "height": 716,
+    "url": "https://images.prismic.io/data4thepeople/ZA5ul93gFKu0ojI7_06-nyc-trend.png?auto=format,compress",
+    "stamp": "67649:1794307882"
+  },
+  "images/07-nyc-map.png": {
+    "id": "SR85bIRZXUW4fsgR",
+    "width": 1744,
+    "height": 1540,
+    "url": "https://images.prismic.io/data4thepeople/SR85bIRZXUW4fsgR_07-nyc-map.png?auto=format,compress",
+    "stamp": "291000:1794307882"
+  },
+  "images/08-exits-per-new-store.png": {
+    "id": "QUsUtHWcyGrFUCB4",
+    "width": 1285,
+    "height": 688,
+    "url": "https://images.prismic.io/data4thepeople/QUsUtHWcyGrFUCB4_08-exits-per-new-store.png?auto=format,compress",
+    "stamp": "60215:1794307882"
+  },
+  "images/10-enrollment.png": {
+    "id": "qWvlSpMBoQ_A_9TZ",
+    "width": 1165,
+    "height": 687,
+    "url": "https://images.prismic.io/data4thepeople/qWvlSpMBoQ_A_9TZ_10-enrollment.png?auto=format,compress",
+    "stamp": "44426:1794308957"
+  },
+  "images/11-enrollment-change.png": {
+    "id": "R1jnZePmfvrcjA4O",
+    "width": 1566,
+    "height": 643,
+    "url": "https://images.prismic.io/data4thepeople/R1jnZePmfvrcjA4O_11-enrollment-change.png?auto=format,compress",
+    "stamp": "79524:1794310388"
+  },
+  "images/snap-stores-leaving-2026-hero-1680x1080.png": {
+    "id": "cfIQxmXsprb-JOww",
+    "width": 1680,
+    "height": 1080,
+    "url": "https://images.prismic.io/data4thepeople/cfIQxmXsprb-JOww_snap-stores-leaving-2026-hero-1680x1080.png?auto=format,compress",
+    "stamp": "410162:1794313316"
+  }
+}
