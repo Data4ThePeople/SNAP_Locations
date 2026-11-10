@@ -186,7 +186,7 @@ restriction was in effect at some point between January 1 and November 5,
 Texas, Utah and West Virginia. A court blocked the Iowa, Nebraska and West
 Virginia waivers on June 22, 2026. Arkansas (targeted July 1, 2026) and Montana
 (targeted September 30, 2026) stay in the comparison group because their start
-could not be confirmed. The comparison group is the other 40 states and DC;
+could not be confirmed. The chart says "see methods" for these details. The comparison group is the other 40 states and DC;
 territories are in neither. "Rise in points" is the unrounded 2026 rate minus
 the mean of the seven unrounded earlier rates. New York City is the five
 boroughs by the historical file's county field (New York, Kings, Queens, Bronx,
@@ -205,6 +205,20 @@ mappable on December 31 of the year before, its Record_ID is gone from the list
 by November 5, and no store that was not authorized on that December 31 shows
 up at the same street address and ZIP by then. Every exit count, rate, map and
 ranking in post 8 uses this test, in every year 2019 to 2026.
+
+**Details of the exit test.** The street line is the historical file's Street
+Number and Street Name joined by a space (Additional Address is not used),
+compared with the live feed's Store_Street_Address. Normalization upper-cases
+the text and turns every run of characters other than A to Z and 0 to 9 into
+one space. A store's address is the one on its historical record. In
+historical years, a store "shows up" if it is authorized on November 5 and was
+not authorized on December 31. In 2026, a replacement can be any live-feed row
+except Restaurant Meals sites (farmers-market entities and the few unmappable
+rows included); limiting it to the map layer, as the new-store count does,
+would add 36 exits. "Convenience Store" and "Grocery (Small)" are the derived
+format: a store whose name matches a dollar chain is a Dollar Store whatever
+USDA's type (with USDA's raw types, 2026 convenience would be 117,069 and
+14,687 instead of 117,055 and 14,684). Bases are mappable stores only.
 
 **Exits by year and the waterfall (post 8).** Exit counts use the test above,
 all store types. The waterfall starts at the 2019 to 2025 average count of
@@ -251,7 +265,11 @@ cached in `data/raw/`, public domain), not by USDA's county field, which has
 errors (a store in Morrill, Nebraska is listed in Sioux County). Counts use the
 store universe above; 50 states and DC only. About 360 stores on December 31
 and 320 on November 5 fall outside every county polygon (mostly coastal
-geocodes and territories) and are not counted. Each county also notes the
+geocodes and territories) and are not counted. "Down to one" means 2 or more
+stores on December 31 and exactly 1 on November 5. "Cut in half" means 2 or
+more on December 31 and on November 5, with the November 5 count at or below
+half. Stores are not filtered by state before placing, so territory stores
+count among the unplaced. Each county also notes the
 farmers-market entities on the November 5 list; they are outside the store
 count but usable by shoppers. Harding County, New Mexico has no store left
 but has one such entity.

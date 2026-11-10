@@ -336,8 +336,8 @@ def charts(out, years, label):
         [{"name": "2019–2025 average", "values": [sp[k]["earlier_mean"] for k, _ in keys], "slot": 1},
          {"name": "2026", "values": [sp[k]["y2026"]["pct"] for k, _ in keys], "slot": 2}],
         title=f"Convenience stores that left SNAP by {label}: limit states and New York City",
-        subtitle=("% of convenience stores authorized on December 31 of the year before;\n"
-                  "limit states had a SNAP soda or candy purchase restriction in effect in 2026"),
+        subtitle=("% of convenience stores authorized on December 31 of the year before; limit states had a SNAP\n"
+                  "soda or candy restriction in effect in 2026 (see methods). Shows where exits rose, not why."),
         divider_after=2, signed=False, x_zero=True,
     )
     OUT.write_text(json.dumps(out, indent=1, default=str))

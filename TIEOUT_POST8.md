@@ -174,6 +174,7 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | NYC share of US exits and of US stores (conv + small grocery) | (8.2, 3.7) | (8.2, 3.7) | match |
 | NYC share of US Convenience Store exits | 7.4 | 7.4 | match |
 | NYC share of US Grocery (Small) exits | 14.2 | 14.2 | match |
+| NYC map: stores still in SNAP (five boroughs, Nov 5 universe) | 7,510 | 7,510 | match |
 | NYC map: convenience and small groceries that left | 1,368 | 1,368 | match |
 
 ## Words

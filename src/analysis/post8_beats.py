@@ -305,7 +305,9 @@ def main():
         IMG / "post8-ratio.png", [str(y) for y in YEARS], [ent[y]["ratio"] for y in YEARS],
         title=f"SNAP stores that left for every new store, January 1 to {label}",
         subtitle=("stores that left (no new authorization at the same address) divided by new\n"
-                  "authorizations still active on {0} at an address that had not just lost a store").format(label),
+                  "authorizations still active on {0} at an address that had not just lost a store;\n"
+                  "2026 uses the live list ({1:.2f} without {2:,} live-only stores with older IDs)").format(
+                      label, ent[2026]["ratio_excl_old_ids"], ent[2026]["old_id_new_address"]),
         highlight="2026", fmt=lambda v: f"{v:.2f}", axis_fmt=lambda v, _: f"{v:.1f}",
     )
     ind = rates["independent_convenience"]
@@ -316,7 +318,7 @@ def main():
          {"name": "Chain", "values": [ch[y]["pct"] for y in YEARS], "slot": 1}],
         title=f"Convenience stores that left SNAP between January 1 and {label}",
         subtitle="% of each group authorized on December 31 of the year before;\n"
-                 "excludes exits replaced at the same address",
+                 "excludes exits replaced at the same address; stores with owner unknown not shown",
         annotate=[{"year": 2026, "text": "live list"}],
     )
     pts = [g for g in G26 if g["format"] == CONV and g["ownership"] == "independent"]
@@ -331,7 +333,7 @@ def main():
             {"xy": xy(g48), "color": figures.MUTED, "size": 0.18, "alpha": 0.35},
             {"xy": xy(p48), "color": S[1], "size": 0.9, "alpha": 0.8}],
           "keys": [{"label": f"{len(pts):,} independent convenience stores that left", "color": S[1]},
-                   {"label": "still in SNAP", "color": figures.MUTED}]}],
+                   {"label": "all stores still in SNAP", "color": figures.MUTED}]}],
         width=8.0,
         title=f"Independent convenience stores that left SNAP by {label}, 2026",
         subtitle="authorized December 31, 2025; no new authorization at the same address",
@@ -351,7 +353,7 @@ def main():
     rings = [r for c in boro for r in c[3]]
     nyc_left = [g for g in G26 if g["record_id"] in nyc_ids and g["format"] in (CONV, SMALL)]
     nyc_all_left = [g for g in G26 if g["record_id"] in nyc_ids]
-    still = [(r["lon"], r["lat"]) for r in B26 if group(r) == GROUPS[0]]
+    still = [(r["lon"], r["lat"]) for r in B26 if r["state"] == "NY" and r["county"] in NYC_COUNTIES]
     out["nyc_map"] = {"left_conv_small": len(nyc_left), "left_all_types": len(nyc_all_left),
                       "still_in_snap": len(still)}
     OUT.write_text(json.dumps(out, indent=1, default=str))
@@ -365,16 +367,18 @@ def main():
          {"label": f"{len(still):,} stores still in SNAP", "color": figures.MUTED}],
         title=f"New York City: convenience stores and small groceries that left SNAP by {label}, 2026",
         subtitle="authorized December 31, 2025; no new authorization at the same address",
-        note="Source: USDA, SNAP retailer historical data and live feed; Census county boundaries.",
+        note=("New York City is the five boroughs by USDA's county field. "
+              "Source: USDA, SNAP retailer historical data and live feed; Census county boundaries."),
     )
     top = out["places"]["top"]
     figures.hbar_png(
         IMG / "post8-places.png",
-        [{"label": r["place"].replace(" County", ""), "value": r["left"], "slot": 2 if i == 0 else 0}
+        [{"label": r["place"].replace(" County", "").replace("Miami Dade", "Miami-Dade"),
+          "value": r["left"], "slot": 2 if i == 0 else 0}
          for i, r in enumerate(top)],
         title=f"Places with the most convenience stores and small groceries leaving SNAP, 2026",
         subtitle=(f"stores that left by {label}, no new authorization at the same address;\n"
-                  "New York City's five boroughs counted as one place"),
+                  "New York City's five boroughs counted as one place, which favors it against single counties"),
     )
     print(f"wrote charts to {IMG}")
     return out

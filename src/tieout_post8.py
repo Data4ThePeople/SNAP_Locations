@@ -397,6 +397,13 @@ def main():
         q = pf[pf["format"].eq(fm) & pf["gone"]]
         tie(f"NYC share of US {fm} exits", bj["places"]["nyc_by_type"][fm]["share_pct"],
             pct(int((q["place"] == "New York City").sum()), len(q)))
+    lk = lv_keep.set_index("rid")
+    def in_nyc(r):
+        if r in hist_ids:
+            return st[r] == "NY" and cty[r] in boro
+        return lk.at[r, "State"] == "NY" and str(lk.at[r, "County"] or "").strip().upper() in boro
+    nyc_still = sum(1 for r in lk.index if in_nyc(r))
+    tie("NYC map: stores still in SNAP (five boroughs, Nov 5 universe)", bj["nyc_map"]["still_in_snap"], nyc_still)
     tie("NYC map: convenience and small groceries that left", bj["nyc_map"]["left_conv_small"],
         rate(2026, lambda f: f["format"].isin([CONV, SM]) & f["state"].eq("NY") & f["county"].isin(boro))["left"])
 
