@@ -161,6 +161,8 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Counties down to one | ['13101', '38065', '48155', '50009'] | ['13101', '38065', '48155', '50009'] | match |
 | Counties halved (to 2+) | ['08047', '18171', '38011', '48345'] | ['08047', '18171', '38011', '48345'] | match |
 | Counties with 0 and 1 store, Dec 31 and Nov 5 | (21, 22, 35, 37) | (21, 22, 35, 37) | match |
+| Counties with 0 or 1 store on Nov 5 (post: 59) | 59 | 59 | match |
+| Population of those counties, July 1, 2025 (post: about 78,000) | 77,601 | 77,601 | match |
 | County Harding County, New Mexico: Dec 31, Nov 5 | (1, 0) | (1, 0) | match |
 | County Hayes County, Nebraska: Dec 31, Nov 5 | (1, 0) | (1, 0) | match |
 | County Oliver County, North Dakota: Dec 31, Nov 5 | (3, 1) | (3, 1) | match |

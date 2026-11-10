@@ -314,6 +314,13 @@ replacement, which makes "not replaced" counts lower, not higher.
 - **2026 groups:** 23 Republican, 16 Democratic, 11 divided (Alaska, Arizona, Kansas, Kentucky, Michigan, Minnesota, Nevada, North Carolina, Pennsylvania, Vermont, Wisconsin).
 - **Used in post 8:** the enrollment change chart groups states this way. It shows where enrollment fell more. It does not show that party control, or any one policy, caused it.
 
+## County population estimates, Vintage 2025 (US Census Bureau)
+
+- **What:** estimated population of every county on July 1, 2025.
+- **Where:** https://www2.census.gov/programs-surveys/popest/datasets/2020-2025/counties/totals/co-est2025-alldata.csv, downloaded November 10, 2026, to `data/raw/census/co-est2025-alldata.csv`.
+- **Fields used:** `SUMLEV` (050 = county), `STATE` and `COUNTY` (joined as the five-digit GEOID used by the Census county boundaries), `POPESTIMATE2025`.
+- **Used in post 8:** the 59 counties with zero or one SNAP store on November 5, 2026 (22 with none, 37 with one) were home to 77,601 people (13,974 in the counties with none). Listed in `reports/data/post8_beats.json` under `counties_zero_or_one_nov5`.
+
 ## Curated brand and parent-company files (Data 4 The People)
 
 **What it is.** `data/brands.csv` maps normalized store names to a brand and a

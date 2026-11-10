@@ -31,6 +31,7 @@ Writes reports/data/post8_beats.json and PNGs in reports/post8/images/.
 
     python -m analysis.post8_beats      (from src/)
 """
+import csv
 import gzip
 import json
 import urllib.request
@@ -53,6 +54,7 @@ OUT = ROOT / "reports" / "data" / "post8_beats.json"
 IMG = ROOT / "reports" / "post8" / "images"
 LIVE_DIR = ROOT / "data" / "raw" / "live"
 CTY_ZIP = ROOT / "data" / "raw" / "cb_2024_us_county_500k.zip"
+POP_CSV = ROOT / "data" / "raw" / "census" / "co-est2025-alldata.csv"
 CTY_URL = "https://www2.census.gov/geo/tiger/GENZ2024/shp/cb_2024_us_county_500k.zip"
 YEARS = list(range(2019, 2027))
 CONV, SMALL = "Convenience Store", "Grocery (Small)"
@@ -122,6 +124,13 @@ def counties():
         rings = [pts[parts[i]:parts[i + 1]] for i in range(len(parts) - 1)]
         out.append((rec["GEOID"], rec["NAMELSAD"], rec["STUSPS"], rings, shp.bbox))
     return out
+
+
+def county_population():
+    """GEOID -> July 1, 2025 population, Census Vintage 2025 county estimates."""
+    with open(POP_CSV, newline="", encoding="latin-1") as f:
+        return {r["STATE"] + r["COUNTY"]: int(r["POPESTIMATE2025"])
+                for r in csv.DictReader(f) if r["SUMLEV"] == "050"}
 
 
 def assign(cty, lon, lat):
@@ -278,6 +287,12 @@ def main():
         "zero_dec31": sum(r["dec31"] == 0 for r in rows), "zero_nov5": sum(r["nov5"] == 0 for r in rows),
         "one_dec31": sum(r["dec31"] == 1 for r in rows), "one_nov5": sum(r["nov5"] == 1 for r in rows),
     }
+    pop = county_population()
+    low = [dict(r, population=pop[r["geoid"]]) for r in rows if r["nov5"] <= 1]
+    out["counties_zero_or_one_nov5"] = {
+        "count": len(low), "population_2025": sum(r["population"] for r in low),
+        "population_source": "Census Bureau, Vintage 2025 county population estimates (July 1, 2025)",
+        "counties": sorted(low, key=lambda r: (r["nov5"], r["name"]))}
     out["counties_newly_zero"] = [r for r in rows if r["dec31"] > 0 and r["nov5"] == 0]
     out["counties_down_to_one"] = sorted((r for r in rows if r["dec31"] >= 2 and r["nov5"] == 1),
                                          key=lambda r: (-r["dec31"], r["name"]))

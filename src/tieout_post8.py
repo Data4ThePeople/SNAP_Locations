@@ -378,6 +378,14 @@ def main():
     cs = bj["counties_summary"]
     tie("Counties with 0 and 1 store, Dec 31 and Nov 5", (cs["zero_dec31"], cs["zero_nov5"], cs["one_dec31"], cs["one_nov5"]),
         (int((rows.dec31 == 0).sum()), int((rows.nov5 == 0).sum()), int((rows.dec31 == 1).sum()), int((rows.nov5 == 1).sum())))
+    pe = pd.read_csv(ROOT / "data/raw/census/co-est2025-alldata.csv", encoding="latin-1", dtype=str)
+    pe = pe[pe["SUMLEV"] == "050"]
+    pe = pe.assign(geoid=pe["STATE"] + pe["COUNTY"]).set_index("geoid")["POPESTIMATE2025"].astype(int)
+    low = rows[rows.nov5 <= 1]
+    zl = bj["counties_zero_or_one_nov5"]
+    tie("Counties with 0 or 1 store on Nov 5 (post: 59)", zl["count"], len(low))
+    tie("Population of those counties, July 1, 2025 (post: about 78,000)", zl["population_2025"],
+        int(pe.reindex(low["geoid"]).sum()))
     for r in bj["counties_newly_zero"] + bj["counties_down_to_one"] + bj["counties_halved"]:
         x = rows[rows.geoid == r["geoid"]].iloc[0]
         tie(f"County {r['name']}: Dec 31, Nov 5", (r["dec31"], r["nov5"]), (int(x.dec31), int(x.nov5)))
