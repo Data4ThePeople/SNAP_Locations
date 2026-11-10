@@ -24,6 +24,10 @@ ROWS = []
 CONV = "Convenience Store"
 
 WORDS = [
+    ("Splits chart: \"limit states had a SNAP soda or candy purchase restriction in effect in 2026\"",
+     "Chrisinger and White, Health Affairs Scholar 4(10) qxag275, Oct 2026: ten states implemented during Jan 2025 to Jun 2026; IA, NE, WV blocked Jun 22, 2026",
+     "supported; AR and MT targeted mid-2026 starts are unconfirmed and sit in the comparison group (DATASETS.md)"),
+    ("Splits chart: \"New York City\"", "historical file County field: New York, Kings, Queens, Bronx, Richmond", "matches"),
     ("Every chart: \"left SNAP\" (never \"closed\")", "Authorization records; memory rule and DATASETS.md", "supported"),
     ("Every rate subtitle: \"% of ... authorized on December 31 of the year before\"",
      "Base in DATASETS.md exit test; recomputed above", "supported"),
@@ -82,6 +86,7 @@ def main():
     h["addr"] = (h["Street Number"].fillna("") + " " + h["Street Name"].fillna("")).map(norm)
     h["zip5"] = h["Zip Code"].fillna("").str.strip().str[:5].str.zfill(5)
     st = h.drop_duplicates("rid").set_index("rid")["State"].str.strip()
+    cty = h.drop_duplicates("rid").set_index("rid")["County"].fillna("").str.strip().str.upper()
 
     with gzip.open(LIVE_DIR / f"snap-live-{snap}.csv.gz", "rt", encoding="utf-8") as fh:
         lv = pd.read_csv(fh, dtype=str)
@@ -118,7 +123,7 @@ def main():
         rep = pd.Series([x != "" and (x, z) in keys for x, z in zip(A["addr"], A["zip5"])], index=A.index)
         f = pd.DataFrame({"gone": left & ~rep, "left_any": left, "rep_left": left & rep, "format": A.index.map(ds["format"]),
                           "own": A.index.map(ds["ownership"]), "brand": A.index.map(ds["brand"]),
-                          "state": A.index.map(st)}, index=A.index)
+                          "state": A.index.map(st), "county": A.index.map(cty)}, index=A.index)
         frames[y] = f
         if y < 2026:
             n = len((B_ids - active(a)) & set(ds.index[ds["mappable"] & ds["format"].eq(CONV)]))
@@ -228,6 +233,20 @@ def main():
     c26 = rate(2026, conv)
     tie("Q4 shortfall and adjusted 2026 rate", (q["shortfall_2025"], q["conv_pct_2026_if_shortfall_moved_to_2025"]),
         (short, pct(c26["left"] - short, c26["base"] - short)))
+
+    # Restriction states (Chrisinger & White 2026, ten states) and NYC.
+    R = set("IN ID OK LA TX FL UT IA NE WV".split()); T = set("PR VI GU AS MP".split())
+    boro = {"NEW YORK", "KINGS", "QUEENS", "BRONX", "RICHMOND"}
+    sp = built["splits"]
+    for key, m in (("restricted", lambda f: f["format"].eq(CONV) & f["state"].isin(R)),
+                   ("other_states", lambda f: f["format"].eq(CONV) & ~f["state"].isin(R | T)),
+                   ("nyc", lambda f: f["format"].eq(CONV) & f["state"].eq("NY") & f["county"].isin(boro)),
+                   ("rest_of_ny", lambda f: f["format"].eq(CONV) & f["state"].eq("NY") & ~f["county"].isin(boro))):
+        vals = [100 * frames[y][m(frames[y])]["gone"].mean() for y in range(2019, 2027)]
+        tie(f"Split {key}: 2026, average, rise in points",
+            (sp[key]["y2026"], sp[key]["earlier_mean"], sp[key]["rise_points"]),
+            (rate(2026, m), r1(sum(vals[:7]) / 7), r1(vals[7] - sum(vals[:7]) / 7)))
+    tie("Restriction states list", sp["restricted_states"], sorted(R))
 
     # Gap above the 2019-2025 rate, from the raw frames.
     from decimal import Decimal, ROUND_HALF_UP

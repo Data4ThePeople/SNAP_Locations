@@ -144,6 +144,30 @@ September 25, 2025.)
   appropriations language since 2017), a store could stock as few as 36 food
   items."
 
+## Other 2026 changes for SNAP retailers
+
+- **State purchase restrictions.** Chrisinger, B. W. and White, J. S., "SNAP
+  food purchase restrictions and retailer availability: a
+  difference-in-differences analysis," *Health Affairs Scholar* 4(10),
+  qxag275, published online Oct. 10, 2026.
+  https://academic.oup.com/healthaffairsscholar/article/4/10/qxag275/8903904
+  Abstract: "Waiver implementation was associated with a 1.4% decline in
+  SNAP-authorized convenience stores." Beverage-and-candy states: 2.2%.
+  Excluding Texas, the estimate falls to 0.7% and the interval includes zero;
+  the wild-cluster bootstrap interval also includes zero (P = 0.075). Data:
+  archived USDA retailer locator files, Jan. 1, 2025 to June 23, 2026.
+  Limitation: USDA files do not show "whether changes reflect store closure,
+  voluntary withdrawal, disqualification, or administrative updating."
+  Plain-language version: Tufts Now, Oct. 30, 2026,
+  https://now.tufts.edu/2026/10/30/more-convenience-stores-stop-taking-snap-benefits
+- **Court ruling.** On June 22, 2026 a federal district court blocked the
+  waivers in Colorado, Iowa, Nebraska, Tennessee and West Virginia (Wikipedia,
+  "SNAP food restriction waivers," revision of June 25, 2026; Tufts Now,
+  Oct. 30).
+- **Fewer people on SNAP.** Tufts Now (Oct. 30) says enrollment "is falling
+  fast" after the July 2025 budget law changed eligibility. **Not verified
+  against USDA caseload data.**
+
 ## Guidance and the delay request
 
 - USDA "did not issue official guidance to retailers until September 2026"

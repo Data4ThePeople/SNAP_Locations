@@ -41,6 +41,15 @@ STATES = dict(zip(
      "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
      "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "Puerto Rico",
      "Virgin Islands", "Guam"]))
+# States whose SNAP soda/candy purchase restriction was in effect at some point
+# between Jan 1 and Nov 5, 2026: the ten in Chrisinger and White, Health Affairs
+# Scholar 4(10), qxag275 (Oct 2026). Iowa, Nebraska and West Virginia were
+# blocked by a court on June 22, 2026. Arkansas (target Jul 1) and Montana
+# (target Sep 30) are left in the comparison group because their start could
+# not be confirmed. Territories are left out of both groups.
+RESTRICTED = {"IN", "ID", "OK", "LA", "TX", "FL", "UT", "IA", "NE", "WV"}
+TERRITORIES = {"PR", "VI", "GU", "AS", "MP"}
+NYC_COUNTIES = {"NEW YORK", "KINGS", "QUEENS", "BRONX", "RICHMOND"}
 OWN = [("chain", "Chain"), ("independent", "Independent"), ("unknown", "Owner unknown")]
 
 
@@ -136,6 +145,28 @@ def main():
     states.sort(key=lambda d: (-d["y2026"]["left"] / d["y2026"]["base"], d["state"]))
     out["states"] = states
     out["states_min_base"] = 500
+
+    # Restriction states vs the rest, and New York City vs the rest of NY.
+    # NYC uses the historical file's county field (the five boroughs).
+    con = connect(read_only=True)
+    nyc_ids = {r[0] for r in con.execute(
+        "SELECT record_id FROM dim_store WHERE state = 'NY' AND upper(trim(county)) IN ('"
+        + "','".join(sorted(NYC_COUNTIES)) + "')").fetchall()}
+    con.close()
+    groups = {
+        "restricted": lambda r: r["format"] == CONV and r["state"] in RESTRICTED,
+        "other_states": lambda r: (r["format"] == CONV and r["state"] not in RESTRICTED
+                                   and r["state"] not in TERRITORIES),
+        "nyc": lambda r: r["format"] == CONV and r["state"] == "NY" and r["record_id"] in nyc_ids,
+        "rest_of_ny": lambda r: r["format"] == CONV and r["state"] == "NY" and r["record_id"] not in nyc_ids,
+    }
+    out["splits"] = {}
+    for k, keep in groups.items():
+        s = series(keep)
+        out["splits"][k] = {"by_year": s, "earlier_mean": earlier(s), "y2026": s[2026],
+                            "rise_points": float(Decimal(exact(s, 2026) - sum(exact(s, y) for y in YEARS[:-1]) / 7)
+                                                   .quantize(Decimal("0.1"), ROUND_HALF_UP))}
+    out["splits"]["restricted_states"] = sorted(RESTRICTED)
 
     fm = Counter(r["format"] for r in years[2026]["A"])
     formats = []
@@ -295,6 +326,19 @@ def charts(out, years, label):
         title=f"Stores that left SNAP by {label}, by store type",
         subtitle="% of each type authorized on December 31 of the year before; types with 1,000 or more",
         signed=False, x_zero=True,
+    )
+    # 8. Restriction states and New York City.
+    sp = out["splits"]
+    keys = [("restricted", "States with soda or candy limits"), ("other_states", "Other states and DC"),
+            ("nyc", "New York City"), ("rest_of_ny", "Rest of New York State")]
+    figures.dotrows_png(
+        IMG / "post8-splits.png", [n for _, n in keys],
+        [{"name": "2019–2025 average", "values": [sp[k]["earlier_mean"] for k, _ in keys], "slot": 1},
+         {"name": "2026", "values": [sp[k]["y2026"]["pct"] for k, _ in keys], "slot": 2}],
+        title=f"Convenience stores that left SNAP by {label}: limit states and New York City",
+        subtitle=("% of convenience stores authorized on December 31 of the year before;\n"
+                  "limit states had a SNAP soda or candy purchase restriction in effect in 2026"),
+        divider_after=2, signed=False, x_zero=True,
     )
     OUT.write_text(json.dumps(out, indent=1, default=str))
     print(f"wrote charts to {IMG}")

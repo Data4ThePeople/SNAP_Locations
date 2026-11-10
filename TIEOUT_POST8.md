@@ -86,6 +86,11 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Map: convenience exits shown in lower 48 | 14,586 | 14,586 | match |
 | Q4 convenience stores with end dates, 2022–2025 | {'2022': 3423, '2023': 3428, '2024': 3195, '2025': 2157} | {'2022': 3423, '2023': 3428, '2024': 3195, '2025': 2157} | match |
 | Q4 shortfall and adjusted 2026 rate | (1192, 11.6) | (1192, 11.6) | match |
+| Split restricted: 2026, average, rise in points | ({'base': 28508, 'left': 4314, 'pct': 15.1}, 6.2, 8.9) | ({'base': 28508, 'left': 4314, 'pct': 15.1}, 6.2, 8.9) | match |
+| Split other_states: 2026, average, rise in points | ({'base': 88426, 'left': 10338, 'pct': 11.7}, 6.3, 5.4) | ({'base': 88426, 'left': 10338, 'pct': 11.7}, 6.3, 5.4) | match |
+| Split nyc: 2026, average, rise in points | ({'base': 3580, 'left': 1092, 'pct': 30.5}, 14.1, 16.4) | ({'base': 3580, 'left': 1092, 'pct': 30.5}, 14.1, 16.4) | match |
+| Split rest_of_ny: 2026, average, rise in points | ({'base': 3675, 'left': 462, 'pct': 12.6}, 6.5, 6.1) | ({'base': 3675, 'left': 462, 'pct': 12.6}, 6.5, 6.1) | match |
+| Restriction states list | ['FL', 'IA', 'ID', 'IN', 'LA', 'NE', 'OK', 'TX', 'UT', 'WV'] | ['FL', 'IA', 'ID', 'IN', 'LA', 'NE', 'OK', 'TX', 'UT', 'WV'] | match |
 | Gap not_replaced: vs average, vs highest year | (7362, 5072) | (7362, 5072) | match |
 | Gap before_address_test: vs average, vs highest year | (6600, 4320) | (6600, 4320) | match |
 | Gap not_replaced_lag_adjusted: vs average, vs highest year | (6245, 3978) | (6245, 3978) | match |
@@ -94,6 +99,8 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 
 | Text on the output | Source | Verdict |
 |---|---|---|
+| Splits chart: "limit states had a SNAP soda or candy purchase restriction in effect in 2026" | Chrisinger and White, Health Affairs Scholar 4(10) qxag275, Oct 2026: ten states implemented during Jan 2025 to Jun 2026; IA, NE, WV blocked Jun 22, 2026 | supported; AR and MT targeted mid-2026 starts are unconfirmed and sit in the comparison group (DATASETS.md) |
+| Splits chart: "New York City" | historical file County field: New York, Kings, Queens, Bronx, Richmond | matches |
 | Every chart: "left SNAP" (never "closed") | Authorization records; memory rule and DATASETS.md | supported |
 | Every rate subtitle: "% of ... authorized on December 31 of the year before" | Base in DATASETS.md exit test; recomputed above | supported |
 | Trend and new-store titles: "between January 1 and November 5" | Exit window Dec 31 to Nov 5 in DATASETS.md; live feed refresh date | supported |

@@ -178,6 +178,20 @@ is 5,072. Before the address test, the gaps are 6,600 and 4,320. With the
 recording lag adjustment below, they are 6,245 and 3,978. The gap is a count of
 exits above the usual rate, not a count of exits caused by the stocking rule.
 
+**Restriction states and New York City.** Same measure, convenience stores
+only. "Limit states" are the ten states whose SNAP soda or candy purchase
+restriction was in effect at some point between January 1 and November 5,
+2026, per Chrisinger and White, *Health Affairs Scholar* 4(10), qxag275
+(October 2026): Florida, Idaho, Indiana, Iowa, Louisiana, Nebraska, Oklahoma,
+Texas, Utah and West Virginia. A court blocked the Iowa, Nebraska and West
+Virginia waivers on June 22, 2026. Arkansas (targeted July 1, 2026) and Montana
+(targeted September 30, 2026) stay in the comparison group because their start
+could not be confirmed. The comparison group is the other 40 states and DC;
+territories are in neither. "Rise in points" is the unrounded 2026 rate minus
+the mean of the seven unrounded earlier rates. New York City is the five
+boroughs by the historical file's county field (New York, Kings, Queens, Bronx,
+Richmond). The comparison shows where exits rose, not why.
+
 **Recording lag check.** The historical file shows fewer convenience stores
 with an end date in October to December 2025 (2,157) than the 2022 to 2024
 average for those months (3,349). If the 1,192 difference were exits that
