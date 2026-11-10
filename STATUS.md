@@ -79,3 +79,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2f: pushed to Prismic as a draft (document avMNtREAAC4AXEpG, uid snap-stores-leaving-2026, 68 slices, 10 charts plus the hero uploaded) in the Migration Release. Tags and author empty. Not verified through the Content API: no PRISMIC_READ_TOKEN in the central .env.
 - 2026-11-10 2f: Eric set the publication date, November 10, 2026, 7:45 a.m. Eastern (`date: 2026-11-10`, `time: 07:45:00-05:00`); draft re-pushed (same document) in the Migration Release.
 - 2026-11-10 Step 2f confirmed by Eric (post live). Step 2g: EMAIL.md drafted from the post text (one chart, 01-exits-by-year); hero email JPG 85KB. Waiting on approve or reject.
+- 2026-11-10 2g: at Eric's request the email ends on his two conclusion paragraphs (verbatim from the post) in place of the Hayes County paragraph.
