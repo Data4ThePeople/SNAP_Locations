@@ -111,13 +111,10 @@ The 2026 ratio rose on both sides. Exits went up, and new stores went down, from
 
 The data shows which stores left and where. It cannot show why. Several things changed for SNAP stores at about the same time, and any of them could be part of it:
 
-- **State limits on buying soda and candy with SNAP.** Ten states had these limits in effect at some point in 2026. Convenience stores left SNAP at a higher rate in those states than in the rest of the country, as the chart below shows. A peer-reviewed study of the same USDA list found about 1.4% fewer convenience stores in SNAP in states with the limits than would have been expected. That is a real difference, but smaller than the rise we see, and the rise happened in states without limits too.
+- **State limits on buying soda and candy with SNAP.** Ten states had these limits in effect at some point in 2026. In those states, 15.1% of convenience stores left SNAP by November 5, compared with 11.7% in the other states and DC. In 2019 to 2025, the average was about 6% in both. A peer-reviewed study of the same USDA list found about 1.4% fewer convenience stores in SNAP in states with the limits than would have been expected. That is a real difference, but smaller than the rise we see, and the rise happened in states without limits too.
 - **Fewer people on SNAP.** The July 2025 budget law changed who qualifies for SNAP. USDA's numbers show 36.1 million people on SNAP in July 2026, down 13.2% from July 2025. Enrollment fell 16.1% in states where one party, Republican, controls the governor's office and both chambers of the legislature, 14.9% in states where control is divided, and 10.1% in states where Democrats control all three, not counting New York City. A few large drops move these averages. Texas and Florida fell about 20%. Arizona, a divided state, fell 50.8%, the largest drop of any state. We will look at Arizona in a later post. In New York City, where stores left at the highest rate, enrollment fell 8.7%, less than the national drop. Fewer SNAP shoppers would mean less SNAP business for stores, and USDA's own analysis says stores with the lowest SNAP sales may be the most likely to drop out.
 - **Stores leaving ahead of the stocking rule.** The rule was published on May 8, and USDA's guidance came in September. Some stores may have decided not to restock and left early. The data cannot test this.
 - **USDA enforcement.** USDA could have removed more stores for rule violations. We did not test this.
-
-![Convenience stores that left SNAP, states with soda or candy limits, other states, and New York City](images/09-limit-states-nyc.png)
-*Source: USDA; state list from Chrisinger and White, Health Affairs Scholar, October 2026.*
 
 The chart below shows the number of people on SNAP each month since January 2020.
 
