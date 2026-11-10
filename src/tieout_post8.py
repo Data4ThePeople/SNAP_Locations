@@ -280,7 +280,6 @@ def main():
             bj["net"][str(y)]["net"]), (a, b, b - a))
     boro = {"NEW YORK", "KINGS", "QUEENS", "BRONX", "RICHMOND"}
     def grp(state, county, fm, own):
-        if state == "NY" and county in boro: return "New York City"
         if fm == CONV: return "Independent convenience" if own == "independent" else "Other convenience"
         if str(fm).startswith("Grocery"): return "Grocery, any size"
         return "All other stores"
@@ -336,6 +335,26 @@ def main():
     for r in bj["counties_newly_zero"] + bj["counties_down_to_one"] + bj["counties_halved"]:
         x = rows[rows.geoid == r["geoid"]].iloc[0]
         tie(f"County {r['name']}: Dec 31, Nov 5", (r["dec31"], r["nov5"]), (int(x.dec31), int(x.nov5)))
+    # Places: exits of convenience + small grocery by county field, NYC as one place.
+    f26 = frames[2026]
+    pf = f26[f26["format"].isin([CONV, SM])]
+    plc = [("New York City" if s == "NY" and c in boro else f"{c.title()} County, {s}")
+           for s, c in zip(pf["state"], pf["county"])]
+    pf = pf.assign(place=plc)
+    left = pf[pf["gone"]]["place"].value_counts()
+    basep = pf["place"].value_counts()
+    top = sorted(left.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
+    tie("Places top 10 (place, left, base, %)",
+        [(r["place"], r["left"], r["base"], r["pct"]) for r in bj["places"]["top"]],
+        [(k, int(n), int(basep[k]), pct(int(n), int(basep[k]))) for k, n in top])
+    nyc = bj["places"]["top"][0]
+    tie("NYC share of US exits and of US stores (conv + small grocery)",
+        (nyc["share_of_us_left"], nyc["share_of_us_base"]),
+        (pct(int(left["New York City"]), int(pf["gone"].sum())), pct(int(basep["New York City"]), len(pf))))
+    for fm in (CONV, SM):
+        q = pf[pf["format"].eq(fm) & pf["gone"]]
+        tie(f"NYC share of US {fm} exits", bj["places"]["nyc_by_type"][fm]["share_pct"],
+            pct(int((q["place"] == "New York City").sum()), len(q)))
     tie("NYC map: convenience and small groceries that left", bj["nyc_map"]["left_conv_small"],
         rate(2026, lambda f: f["format"].isin([CONV, SM]) & f["state"].eq("NY") & f["county"].isin(boro))["left"])
 

@@ -102,12 +102,11 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Net change 2024: Dec 31, Nov 5, net | (252100, 255227, 3127) | (252100, 255227, 3127) | match |
 | Net change 2025: Dec 31, Nov 5, net | (254811, 250511, -4300) | (254811, 250511, -4300) | match |
 | Net change 2026: Dec 31, Nov 5, net | (249083, 235892, -13191) | (249083, 235892, -13191) | match |
-| Waterfall Independent convenience: Dec 31, Nov 5, net | (47856, 42494, -5362) | (47856, 42494, -5362) | match |
-| Waterfall Other convenience: Dec 31, Nov 5, net | (65619, 62565, -3054) | (65619, 62565, -3054) | match |
-| Waterfall Grocery, any size: Dec 31, Nov 5, net | (21211, 18969, -2242) | (21211, 18969, -2242) | match |
-| Waterfall All other stores: Dec 31, Nov 5, net | (105878, 104354, -1524) | (105878, 104354, -1524) | match |
-| Waterfall New York City: Dec 31, Nov 5, net | (8519, 7510, -1009) | (8519, 7510, -1009) | match |
-| Waterfall order (most negative first) | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores', 'New York City'] | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores', 'New York City'] | match |
+| Waterfall Independent convenience: Dec 31, Nov 5, net | (51003, 45133, -5870) | (51003, 45133, -5870) | match |
+| Waterfall Other convenience: Dec 31, Nov 5, net | (66052, 62942, -3110) | (66052, 62942, -3110) | match |
+| Waterfall Grocery, any size: Dec 31, Nov 5, net | (23496, 20909, -2587) | (23496, 20909, -2587) | match |
+| Waterfall All other stores: Dec 31, Nov 5, net | (108532, 106908, -1624) | (108532, 106908, -1624) | match |
+| Waterfall order (most negative first) | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores'] | ['Independent convenience', 'Other convenience', 'Grocery, any size', 'All other stores'] | match |
 | Rate independent_convenience 2019 | {'base': 52195, 'left': 6026, 'pct': 11.5} | {'base': 52195, 'left': 6026, 'pct': 11.5} | match |
 | Rate independent_convenience 2020 | {'base': 49138, 'left': 3707, 'pct': 7.5} | {'base': 49138, 'left': 3707, 'pct': 7.5} | match |
 | Rate independent_convenience 2021 | {'base': 50051, 'left': 5091, 'pct': 10.2} | {'base': 50051, 'left': 5091, 'pct': 10.2} | match |
@@ -154,6 +153,10 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | County Gilpin County, Colorado: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
 | County Motley County, Texas: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
 | County Warren County, Indiana: Dec 31, Nov 5 | (4, 2) | (4, 2) | match |
+| Places top 10 (place, left, base, %) | [('New York City', 1368, 4624, 29.6), ('Harris County, TX', 518, 2092, 24.8), ('Los Angeles County, CA', 497, 3380, 14.7), ('Cook County, IL', 250, 1601, 15.6), ('Philadelphia County, PA', 249, 1031, 24.2), ('Wayne County, MI', 177, 1322, 13.4), ('Dallas County, TX', 163, 933, 17.5), ('Tarrant County, TX', 126, 735, 17.1), ('Miami Dade County, FL', 115, 489, 23.5), ('Bexar County, TX', 102, 788, 12.9)] | [('New York City', 1368, 4624, 29.6), ('Harris County, TX', 518, 2092, 24.8), ('Los Angeles County, CA', 497, 3380, 14.7), ('Cook County, IL', 250, 1601, 15.6), ('Philadelphia County, PA', 249, 1031, 24.2), ('Wayne County, MI', 177, 1322, 13.4), ('Dallas County, TX', 163, 933, 17.5), ('Tarrant County, TX', 126, 735, 17.1), ('Miami Dade County, FL', 115, 489, 23.5), ('Bexar County, TX', 102, 788, 12.9)] | match |
+| NYC share of US exits and of US stores (conv + small grocery) | (8.2, 3.7) | (8.2, 3.7) | match |
+| NYC share of US Convenience Store exits | 7.4 | 7.4 | match |
+| NYC share of US Grocery (Small) exits | 14.2 | 14.2 | match |
 | NYC map: convenience and small groceries that left | 1,368 | 1,368 | match |
 
 ## Words

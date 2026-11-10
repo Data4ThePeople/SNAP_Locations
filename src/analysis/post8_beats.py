@@ -8,15 +8,14 @@ farmers-market entities the historical file never carried, mappable). Net
 change is the count on November 5 minus the count on December 31 of the year
 before, so it nets new authorizations against exits.
 
-Waterfall groups are mutually exclusive, applied in this order:
-  1. New York City: state NY and a county field naming one of the five
-     boroughs (historical file's county for historical stores, the live feed's
-     County column for live-only stores).
-  2. Independent convenience stores (outside NYC).
-  3. Other convenience stores: chain or owner unknown (outside NYC).
-  4. Grocery stores, any size (outside NYC). Live-only grocery stores carry no
-     size, so sizes are not split.
-  5. Everything else.
+Waterfall groups are store types and do not overlap: independent
+convenience stores; other convenience stores (chain or owner unknown); grocery
+stores of any size (live-only grocery stores carry no size, so sizes are not
+split); everything else.
+
+Places: 2026 exits of convenience stores and small groceries (not replaced at
+the same address) by the historical file's county field, with New York City's
+five boroughs counted as one place.
 
 Exit rates (independents, NYC trend) use the post's exit test: left and not
 replaced at the same address (left_2026.exits).
@@ -59,18 +58,22 @@ CONV, SMALL = "Convenience Store", "Grocery (Small)"
 NYC_COUNTIES = {"NEW YORK", "KINGS", "QUEENS", "BRONX", "RICHMOND"}
 NYC_FIPS = {"36005", "36047", "36061", "36081", "36085"}
 TERR_FIPS = {"60", "66", "69", "72", "78"}
-GROUPS = ["New York City", "Independent convenience", "Other convenience", "Grocery, any size",
-          "All other stores"]
+GROUPS = ["Independent convenience", "Other convenience", "Grocery, any size", "All other stores"]
 
 
 def group(r):
-    if r["state"] == "NY" and r["county"] in NYC_COUNTIES:
-        return GROUPS[0]
     if r["format"] == CONV:
-        return GROUPS[1] if r["ownership"] == "independent" else GROUPS[2]
+        return GROUPS[0] if r["ownership"] == "independent" else GROUPS[1]
     if (r["format"] or "").startswith("Grocery"):
-        return GROUPS[3]
-    return GROUPS[4]
+        return GROUPS[2]
+    return GROUPS[3]
+
+
+def place(state, county):
+    """New York City as one place (five boroughs); every other county alone."""
+    if state == "NY" and county in NYC_COUNTIES:
+        return "New York City"
+    return f"{county.title()} County, {state}"
 
 
 def universe_hist(con, d):
@@ -182,6 +185,24 @@ def main():
         if y == 2026:
             G26 = G
     out["rates"] = rates
+    # Places with the most 2026 exits of convenience stores and small groceries.
+    cmap = {r[0]: (r[1], (r[2] or "").strip().upper()) for r in
+            con.execute("SELECT record_id, state, county FROM dim_store").fetchall()}
+    F = (CONV, SMALL)
+    PB = [r for r in base(con, date(2025, 12, 31)) if r["format"] in F]
+    PE = [g for g in G26 if g["format"] in F]
+    pb = Counter(place(*cmap[r["record_id"]]) for r in PB)
+    pe = Counter(place(*cmap[g["record_id"]]) for g in PE)
+    out["places"] = {
+        "total_base": len(PB), "total_left": len(PE),
+        "top": [{"place": k, "left": n, "base": pb[k], "pct": pct(n, pb[k]),
+                 "share_of_us_left": pct(n, len(PE)), "share_of_us_base": pct(pb[k], len(PB))}
+                for k, n in sorted(pe.items(), key=lambda kv: (-kv[1], kv[0]))[:10]],
+        "nyc_by_type": {f: {"left": sum(1 for g in PE if g["format"] == f and place(*cmap[g["record_id"]]) == "New York City"),
+                            "us_left": sum(1 for g in PE if g["format"] == f)} for f in F},
+    }
+    for v in out["places"]["nyc_by_type"].values():
+        v["share_pct"] = pct(v["left"], v["us_left"])
     ground = con.execute("SELECT lon, lat FROM live_store WHERE excluded IS NULL AND mappable").fetchall()
     # Farmers-market entities the historical file never carried are outside the
     # store universe, but a shopper can still use one, so the county list notes them.
@@ -231,8 +252,7 @@ def main():
         (f"{snap:%b} {snap.day}\n{snap.year}", wf["end"]),
         title=f"Where the net drop in SNAP stores came from, 2026",
         subtitle="stores authorized; net of new authorizations; the axis does not start at zero",
-        note="Groups are exclusive, in this order: New York City, then the rest by store type. "
-             "Source: USDA, SNAP retailer historical data and live feed.",
+        note="Source: USDA, SNAP retailer historical data and live feed.",
     )
     ind = rates["independent_convenience"]
     ch = rates["chain_convenience"]
@@ -292,6 +312,15 @@ def main():
         title=f"New York City: convenience stores and small groceries that left SNAP by {label}, 2026",
         subtitle="authorized December 31, 2025; no new authorization at the same address",
         note="Source: USDA, SNAP retailer historical data and live feed; Census county boundaries.",
+    )
+    top = out["places"]["top"]
+    figures.hbar_png(
+        IMG / "post8-places.png",
+        [{"label": r["place"].replace(" County", ""), "value": r["left"], "slot": 2 if i == 0 else 0}
+         for i, r in enumerate(top)],
+        title=f"Places with the most convenience stores and small groceries leaving SNAP, 2026",
+        subtitle=(f"stores that left by {label}, no new authorization at the same address;\n"
+                  "New York City's five boroughs counted as one place"),
     )
     print(f"wrote charts to {IMG}")
     return out

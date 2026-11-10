@@ -200,19 +200,26 @@ and the 2026 exits. Taking them out of both, the 2026 convenience rate would be
 11.6% instead of 12.5%. The file cannot tell which. The check is rough: it is
 not filtered by the address test.
 
+**What "left SNAP" means in post 8.** A store left if it was authorized and
+mappable on December 31 of the year before, its Record_ID is gone from the list
+by November 5, and no store that was not authorized on that December 31 shows
+up at the same street address and ZIP by then. Every exit count, rate, map and
+ranking in post 8 uses this test, in every year 2019 to 2026.
+
 **Net change and the waterfall (post 8).** Stores in SNAP on a date are the
 map's universe: on a historical date, stores authorized and mappable in the
 historical file; on November 5, 2026, the live feed's map layer (no Restaurant
 Meals sites, no farmers-market entities the historical file never carried,
 mappable). Net change is the November 5 count minus the December 31 count, so
 it nets new authorizations against exits. The waterfall splits the 2026 net
-change into five groups that do not overlap, assigned in this order: New York
-City (state NY and a county field naming one of the five boroughs; the live
-feed's County column for live-only stores); independent convenience stores;
-other convenience stores (chain or owner unknown); grocery stores of any size
-(live-only grocery stores carry no size); everything else. New York City's net
-change is small next to its exits because many new stores were authorized
-there too.
+change into four store-type groups that do not overlap: independent
+convenience stores; other convenience stores (chain or owner unknown); grocery
+stores of any size (live-only grocery stores carry no size); everything else.
+
+**Places (post 8).** Exits of convenience stores and small groceries in 2026,
+counted by the historical file's county field, with New York City's five
+boroughs counted as one place and every other county alone. Comparing a
+five-county city with single counties favors the city; the chart says so.
 
 **New York City trend and map.** "Convenience stores and small groceries" are
 the historical file's Convenience Store and Grocery (Small) types, in the five
