@@ -22,6 +22,10 @@ Since: 2026-11-09
 | 2f | Pushed to Prismic (draft) | | |
 | 2g | Mailchimp teaser | | |
 
+## Queued after post 8
+
+- Correct the August 28, 2026 post (post 7, `/p/stocking-rule`): its store count (232,165; 109,791 convenience) and ZIP-code analysis (2,871 ZIP codes, 5.3 million people) kept only 5-digit ZIPs, so stores whose ZIP lost its leading zero were left out. Eric will ask to fix the numbers in the post and add a highlighted correction blurb at the top of the page. Start only after post 8 is done.
+
 ## Stale
 
 None. No later step had been confirmed under this file.
@@ -39,3 +43,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Eric set the beat list (tie-back to the Aug 28 post, net drop and waterfall, independent convenience, NYC, Hayes County and small counties, conclusion). Built `src/analysis/post8_beats.py`: net change by year (2026: -13,191, -5.3%; 2025: -4,300), waterfall by group, independent and NYC trend charts, independent map, five-borough map, county list by Census boundaries. New figure helpers `colbars_png`, `waterfall_png`, `local_map_png`. Own tie-out 151 of 151 (counties cross-checked with shapely). Found: post 7's store total (232,165) kept only 5-digit ZIPs, so it left out stores whose ZIP lost its leading zero; flagged to Eric, not changed.
 - 2026-11-10 Eric asked to take NYC out of the waterfall: waterfall now by store type only (independent convenience -5,870; other convenience -3,110; grocery -2,587; all other -1,624). NYC told by exits instead: new `post8-places.png`, NYC 1,368 convenience and small-grocery exits, 8.2% of US exits vs 3.7% of stores, next place Harris County 518; NYC is 14.2% of US small-grocery exits. Added the 'left SNAP' definition to DATASETS.md. Own tie-out 154 of 154.
 - 2026-11-10 Eric refocused post 8 on exits. Replaced the net-change chart with exits by year (`post8-exits`: 21,923 in 2026 vs 8,872 to 15,224); the waterfall now runs from the 2019-2025 average exits (11,682) to 2026 by store type (independent convenience +4,714, other convenience +2,827, grocery +2,150, all other +550); new last beat `post8-ratio`: exits per new store 2.50 in 2026 vs 0.64 to 1.42 (3.15 without older-ID live-only stores; 2.02 counting every exit and entry). Own tie-out 171 of 171.
+- 2026-11-10 Eric queued the post 7 correction (fixed numbers plus a highlighted correction note at the top) for after post 8. Independent tie-out of the post 8 beats started.
