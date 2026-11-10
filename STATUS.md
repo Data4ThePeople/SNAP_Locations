@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
-Step: 2f
+Step: 2g
 Since: 2026-11-10
 
 ## Steps
@@ -19,7 +19,7 @@ Since: 2026-11-10
 | 2c | Slice markup | 2026-11-10 | 82 blocks, 10 images |
 | 2d | Hero 1680x1080 + alt text | 2026-11-10 | From chart 04, series frame |
 | 2e | SEO | 2026-11-10 | FAQ, 8 keywords, 3 internal links |
-| 2f | Pushed to Prismic (draft) | | |
+| 2f | Pushed to Prismic (draft) | 2026-11-10 | avMNtREAAC4AXEpG; Eric published it Nov 10 |
 | 2g | Mailchimp teaser | | |
 
 ## Queued after post 8
@@ -78,3 +78,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Step 2e confirmed by Eric. Step 2f started: push to Prismic as a draft.
 - 2026-11-10 2f: pushed to Prismic as a draft (document avMNtREAAC4AXEpG, uid snap-stores-leaving-2026, 68 slices, 10 charts plus the hero uploaded) in the Migration Release. Tags and author empty. Not verified through the Content API: no PRISMIC_READ_TOKEN in the central .env.
 - 2026-11-10 2f: Eric set the publication date, November 10, 2026, 7:45 a.m. Eastern (`date: 2026-11-10`, `time: 07:45:00-05:00`); draft re-pushed (same document) in the Migration Release.
+- 2026-11-10 Step 2f confirmed by Eric (post live). Step 2g: EMAIL.md drafted from the post text (one chart, 01-exits-by-year); hero email JPG 85KB. Waiting on approve or reject.
