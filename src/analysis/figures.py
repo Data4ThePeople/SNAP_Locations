@@ -971,12 +971,17 @@ def chapter_card_png(path, day, headline, topic, stat_value, stat_label, placeme
 
 
 def colbars_png(path, labels, values, width=6.6, height=3.0, title="", subtitle="",
-                highlight=None, fmt=None, axis_fmt=None):
+                highlight=None, fmt=None, axis_fmt=None, grow=None):
     """Vertical bars for a signed count by period (net change per year).
 
     Bars above zero use slot 1, below zero slot 2; `highlight` (a label) keeps
     its colour and every other bar drops to MUTED so the eye lands on it.
     Each bar carries its value, signed, so no reader has to read it off an axis.
+
+    `grow` (one fraction per bar, 0 to 1) is for animation frames: each bar is
+    drawn at that fraction of its height and labeled only when complete, so a
+    frame never shows an in-between value. Axis limits always come from the
+    full values, so every frame shares one frame of reference.
     """
     fig, ax = plt.subplots(figsize=(width, height), dpi=DPI, facecolor=PAPER)
     _style(ax)
@@ -988,7 +993,11 @@ def colbars_png(path, labels, values, width=6.6, height=3.0, title="", subtitle=
         c = S[0] if v >= 0 else S[1]
         if highlight is not None and lab != highlight:
             c = MUTED
-        ax.bar(i, v, width=0.62, color=c, zorder=3)
+        g = 1.0 if grow is None else grow[i]
+        if g > 0:
+            ax.bar(i, v * g, width=0.62, color=c, zorder=3)
+        if g < 1:
+            continue
         ax.text(i, v + (0.02 * span if v >= 0 else -0.02 * span), (fmt or (lambda x: f"{x:+,}"))(v),
                 ha="center", va="bottom" if v >= 0 else "top", fontsize=7.5,
                 family=MONO, color=INK)

@@ -102,28 +102,6 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Net change 2024: Dec 31, Nov 5, net | (252100, 255227, 3127) | (252100, 255227, 3127) | match |
 | Net change 2025: Dec 31, Nov 5, net | (254811, 250511, -4300) | (254811, 250511, -4300) | match |
 | Net change 2026: Dec 31, Nov 5, net | (249083, 235892, -13191) | (249083, 235892, -13191) | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2005 | 33,235 | 33,235 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2006 | 33,187 | 33,187 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2007 | 33,376 | 33,376 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2008 | 34,985 | 34,985 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2009 | 39,731 | 39,731 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2010 | 46,100 | 46,100 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2011 | 50,118 | 50,118 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2012 | 54,727 | 54,727 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2013 | 56,997 | 56,997 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2014 | 57,218 | 57,218 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2015 | 57,846 | 57,846 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2016 | 57,521 | 57,521 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2017 | 56,587 | 56,587 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2018 | 52,195 | 52,195 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2019 | 49,138 | 49,138 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2020 | 50,051 | 50,051 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2021 | 49,776 | 49,776 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2022 | 49,982 | 49,982 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2023 | 50,851 | 50,851 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2024 | 52,343 | 52,343 | match |
-| GIF: independent convenience stores in SNAP, Dec 31, 2025 | 51,003 | 51,003 | match |
-| GIF: independent convenience stores in SNAP, Nov 5, 2026 | 45,133 | 45,133 | match |
 | Exits 2019: left, left before address test, base | (15224, 19696, 245088) | (15224, 19696, 245088) | match |
 | Exits 2020: left, left before address test, base | (8872, 12660, 239745) | (8872, 12660, 239745) | match |
 | Exits 2021: left, left before address test, base | (11089, 15656, 244283) | (11089, 15656, 244283) | match |

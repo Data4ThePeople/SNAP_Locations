@@ -3,11 +3,11 @@
 Drawn from the post and the email (`EMAIL.md`). Every number is in the post.
 Post URL: https://www.data4thepeople.com/p/snap-stores-leaving-2026
 
-Animation: `social/snap-stores-leaving-2026-independents-in-snap.gif` (960x540, 0.2 MB). Every independent convenience store in SNAP, mapped on December 31 of each year from 2005 to 2025, then on November 5, 2026, with a counter and a line of the counts so far. About 8 seconds for the 22 dates, then November 5, 2026 holds for 5 seconds. Every count is that date's real count (tied out in `TIEOUT_POST8.md`). Built by `src/analysis/post8_gif.py`. The yearly counts before 2025 are not in the post; the post's numbers for this group are the 2026 exits and exit rates.
+Animation: `social/snap-stores-leaving-2026-exits-by-year.gif` (1080x602, 0.2 MB). Chart 01 with its bars growing in one at a time, 2019 to 2026, over about 8 seconds, then the finished chart holds for 5 seconds. Each value label appears only when its bar is complete. The last frame is chart 01. Built by `src/analysis/post8_gif.py`.
 
 ## X, thread of 7 (X counts the link as 23)
 
-**1/7** (262 of 280). Image: `images/01-exits-by-year.png`.
+**1/7** (262 of 280). Image: `social/snap-stores-leaving-2026-exits-by-year.gif`.
 
 ```
 21,923 stores left SNAP between January 1 and November 5, 2026. That is 8.8% of authorized stores, and 88% more than the 2019 to 2025 average.
@@ -16,7 +16,7 @@ Nearly all of it happened before USDA's new stocking rule took effect on Novembe
 https://www.data4thepeople.com/p/snap-stores-leaving-2026
 ```
 
-**2/7** (229). Image: `social/snap-stores-leaving-2026-independents-in-snap.gif`.
+**2/7** (229). Image: `images/03-independents-trend.png`.
 
 ```
 Independent convenience stores led the rise. 9,290 left SNAP, 18.2% of those authorized at the start of the year.
@@ -63,7 +63,7 @@ https://www.data4thepeople.com/p/snap-stores-leaving-2026
 
 ## LinkedIn
 
-Media: `social/snap-stores-leaving-2026-independents-in-snap.gif`. If LinkedIn shows it as a still, use the hero, `images/snap-stores-leaving-2026-hero-1680x1080.png`, instead.
+Media: `social/snap-stores-leaving-2026-exits-by-year.gif`. If LinkedIn shows it as a still, use the hero, `images/snap-stores-leaving-2026-hero-1680x1080.png`, instead.
 
 ```
 Between January 1 and November 5, 2026, 21,923 stores left SNAP. That is 8.8% of the stores authorized at the start of the year, and 88% more than the 2019 to 2025 average.
@@ -89,9 +89,9 @@ Full report and map: https://www.data4thepeople.com/p/snap-stores-leaving-2026
 
 ## Alt text
 
-Animated map (`social/snap-stores-leaving-2026-independents-in-snap.gif`):
+Animated chart (`social/snap-stores-leaving-2026-exits-by-year.gif`):
 ```
-Animated map of the lower 48 states with bright orange dots for every independent convenience store authorized to accept SNAP, from 2005 to 2026. A counter beside the map rises from 33,235 stores at the end of 2005 to a peak of 57,846 at the end of 2015, holds near 50,000 from 2019 to 2025, then falls to 45,133 on November 5, 2026.
+Animated bar chart of SNAP stores that left between January 1 and November 5, by year. Gray bars grow in one at a time for 2019 to 2025, ranging from 8,872 to 15,224. Then a blue bar for 2026 grows past all of them to 21,923.
 ```
 
 Exits by year (`01-exits-by-year.png`):
