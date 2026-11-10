@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
-Step: 2d
+Step: 2e
 Since: 2026-11-10
 
 ## Steps
@@ -17,7 +17,7 @@ Since: 2026-11-10
 | 2a | Draft with brackets resolved | 2026-11-10 | Claude drafted at Eric's request |
 | 2b | Eric's edit, Claude's look-over | 2026-11-10 | Edits 1 to 16 |
 | 2c | Slice markup | 2026-11-10 | 82 blocks, 10 images |
-| 2d | Hero 1680x1080 + alt text | | |
+| 2d | Hero 1680x1080 + alt text | 2026-11-10 | From chart 04, series frame |
 | 2e | SEO | | |
 | 2f | Pushed to Prismic (draft) | | |
 | 2g | Mailchimp teaser | | |
@@ -70,3 +70,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Step 2b confirmed by Eric. Step 2c started: slice markup.
 - 2026-11-10 Step 2c confirmed by Eric. Step 2d: hero from chart 04 (independent convenience exits map), per Eric. `hero pad` on the PNG left the type too small, so re-rendered at hero scale in the series frame (`python -m analysis.hero 8`, dot fields saved by post8_beats so they match chart 04), with a post 8 lockup (SNAP STORES / 2026) instead of the seven-day series label. Alt text 456 characters; `hero check` ok. Chart 04 kept as `images/snap-stores-leaving-2026-hero-source.png`.
 - 2026-11-10 2d: Eric said the text box hid too much of the map. Post 8 hero type scaled to 70% with a lighter panel (55%); caption shortened to "Independent convenience stores, January 1 to November 5". Alt text updated.
+- 2026-11-10 Step 2d confirmed by Eric. Step 2e started: SEO.
