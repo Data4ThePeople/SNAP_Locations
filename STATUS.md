@@ -26,6 +26,8 @@ Since: 2026-11-10
 
 - Correct the August 28, 2026 post (post 7, `/p/stocking-rule`): its store count (232,165; 109,791 convenience) and ZIP-code analysis (2,871 ZIP codes, 5.3 million people) kept only 5-digit ZIPs, so stores whose ZIP lost its leading zero were left out. Eric will ask to fix the numbers in the post and add a highlighted correction blurb at the top of the page. Start only after post 8 is done.
 
+- Arizona follow-up post (Eric, 2026-11-10): Arizona's SNAP enrollment fell 50.8% from July 2025 to July 2026, the most of any state, which Arizona DES ties to verification and processing problems. Eric sees it as a case study for what could happen in Medicaid as state agencies handle calls and recertifications. Post 8 mentions Arizona only briefly; hold the discussion for this post.
+
 ## Stale
 
 None. No later step had been confirmed under this file.
@@ -53,3 +55,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Eric asked for a chart of the enrollment changes in the why section: `post8-enrollment-change.png` (July 2025 to July 2026: limit states -20.1%, US -13.2%, other states and DC -11.3%, NYC -8.7%), copied to `images/11-enrollment-change.png`. Values are the tied-out JSON figures. Placement in POST.md proposed to Eric, not applied.
 - 2026-11-10 Eric accepted edit 4: enrollment change chart placed after the monthly enrollment chart.
 - 2026-11-10 At Eric's request, cut the limit-state vs other-state enrollment sentence (a likely confounded comparison) and made the enrollment change chart US (-13.2%) vs NYC (-8.7%); chart intro sentence updated to match. Limit and other-state groups removed from the script, tie-out and DATASETS.md. Checked Arizona's -50.8%: real, matches CBPP's SNAP Tracker; Arizona DES points to verification and processing problems. CBPP's national 5.5 million (13%) also matches ours. Own tie-out 208 of 208.
+- 2026-11-10 Eric asked to keep the limit-state bar: restored the four-bar enrollment change chart (limit states -20.1%, US -13.2%, other states and DC -11.3%, NYC -8.7%) and the limit-state checks. Arizona is not a limit state (it is in the other-states group; without it that group fell 10.2%); Texas and Florida are 70% of the limit-state loss. Told Eric before any text change. Queued an Arizona follow-up post.

@@ -434,7 +434,12 @@ def main():
                    and c not in {"NERO", "MARO", "SERO", "MWRO", "SWRO", "MPRO", "WRO"}
                    and c in set(P["name"]) and P[P["name"] == c]["p"].max() > 10000]
     tie("Enrollment: states plus DC found in USDA files", 51, len(states_cols))
-    grp = {"us": piv["US Summary"], "ny_state_usda": piv["New York"]}
+    limit_st = {"Indiana", "Idaho", "Oklahoma", "Louisiana", "Texas", "Florida", "Utah",
+                "Iowa", "Nebraska", "West Virginia"}
+    grp = {"us": piv["US Summary"],
+           "limit_states": piv[[c for c in states_cols if c in limit_st]].sum(axis=1),
+           "other_states": piv[[c for c in states_cols if c not in limit_st]].sum(axis=1),
+           "ny_state_usda": piv["New York"]}
     az = piv["Arizona"]
     tie("Enrollment: Arizona Jul 2025 to Jul 2026 % change (checked against CBPP, nearly 51%)",
         ej["states_jul2025_jul2026"]["AZ"], r1(100 * (az.loc[(2026, 7)] - az.loc[(2025, 7)]) / az.loc[(2025, 7)]))
@@ -448,6 +453,15 @@ def main():
             a, b = int(ser.loc[(yy, mm)]), int(ser.loc[(2026, 7)])
             tie(f"Enrollment {g} {k}: persons at start", ej[g][k]["from"], a)
             tie(f"Enrollment {g} {k} to Jul 2026: % change", ej[g][k]["pct"], r1(100 * (b - a) / a))
+    oth_az = piv[[c for c in states_cols if c not in limit_st and c != "Arizona"]].sum(axis=1)
+    tie("Enrollment: other states and DC without Arizona, Jul 2025 to Jul 2026 % change",
+        ej["other_states_excl_az"]["jul2025"]["pct"],
+        r1(100 * (oth_az.loc[(2026, 7)] - oth_az.loc[(2025, 7)]) / oth_az.loc[(2025, 7)]))
+    lim = grp["limit_states"]
+    txfl = sum(piv[c].loc[(2025, 7)] - piv[c].loc[(2026, 7)] for c in ("Texas", "Florida"))
+    tie("Enrollment: Texas and Florida share of limit-state loss (%)",
+        ej["tx_fl_share_of_limit_loss_jul2025_jul2026"],
+        int(Decimal(100 * txfl / (lim.loc[(2025, 7)] - lim.loc[(2026, 7)])).quantize(Decimal("1"), ROUND_HALF_UP)))
     tie("Enrollment: US persons July 2026", ej["us"]["jul2025"]["to"], int(piv["US Summary"].loc[(2026, 7)]))
     tie("Enrollment: NYC persons August 2026", ej["nyc_latest"]["persons"], int(nyc_s.loc[(2026, 8)]))
     us20 = piv["US Summary"].loc[(2020, 1):(2026, 7)]
