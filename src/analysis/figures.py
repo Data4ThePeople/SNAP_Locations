@@ -107,8 +107,9 @@ def _titles(fig, ax, title, subtitle, gutter_pt=0):
 
 
 def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=None,
-             label_ends=True, title="", subtitle="", y_zero=True):
-    """`series` = [{name, values, slot}]. Direct end labels satisfy the relief
+             label_ends=True, title="", subtitle="", y_zero=True, xticks=None):
+    """`series` = [{name, values, slot}]. `xticks` = [(x, label)] replaces the
+    year ticks, for x values that are not whole years (monthly series). Direct end labels satisfy the relief
     rule for the lighter slots, which sit under 3:1 on a light ground.
 
     `subtitle` is an alias for `ylabel` so that every renderer here takes the same
@@ -187,7 +188,9 @@ def line_png(path, years, series, ylabel="", width=6.6, height=3.3, annotate=Non
     # The old rule — first, last, and every year divisible by four — put 2006,
     # 2012, 2016, 2020, 2025 on a 2006-2025 axis: gaps of 6, 4, 4, 5, which
     # reads as a mis-drawn axis rather than a chosen one.
-    if len(years) <= 12:
+    if xticks:
+        ax.set_xticks([t[0] for t in xticks], [t[1] for t in xticks])
+    elif len(years) <= 12:
         ax.set_xticks(list(years))
     else:
         step = max(1, round((len(years) - 1) / 4))

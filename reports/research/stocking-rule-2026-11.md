@@ -165,8 +165,12 @@ September 25, 2025.)
   "SNAP food restriction waivers," revision of June 25, 2026; Tufts Now,
   Oct. 30).
 - **Fewer people on SNAP.** Tufts Now (Oct. 30) says enrollment "is falling
-  fast" after the July 2025 budget law changed eligibility. **Not verified
-  against USDA caseload data.**
+  fast" after the July 2025 budget law changed eligibility. Checked against
+  USDA's SNAP Data Tables (data as of Oct. 9, 2026): 36.1 million people in
+  July 2026, down 13.2% from July 2025 and 14.9% from January 2025. Limit
+  states fell 20.1% from July 2025 to July 2026; other states and DC 11.3%.
+  New York City (NY OTDA) fell 8.7%, less than the nation, though its store
+  exit rate was the highest. See `reports/data/post8_enrollment.json`.
 
 ## Guidance and the delay request
 

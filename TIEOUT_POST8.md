@@ -177,6 +177,52 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | NYC share of US Grocery (Small) exits | 14.2 | 14.2 | match |
 | NYC map: stores still in SNAP (five boroughs, Nov 5 universe) | 7,510 | 7,510 | match |
 | NYC map: convenience and small groceries that left | 1,368 | 1,368 | match |
+| Enrollment: states plus DC found in USDA files | 51 | 51 | match |
+| Enrollment us jan2025: persons at start | 42,412,762 | 42,412,762 | match |
+| Enrollment us jan2025 to Jul 2026: % change | -14.9 | -14.9 | match |
+| Enrollment us jul2025: persons at start | 41,599,407 | 41,599,407 | match |
+| Enrollment us jul2025 to Jul 2026: % change | -13.2 | -13.2 | match |
+| Enrollment us dec2025: persons at start | 39,207,898 | 39,207,898 | match |
+| Enrollment us dec2025 to Jul 2026: % change | -8.0 | -8.0 | match |
+| Enrollment limit_states jan2025: persons at start | 9,643,795 | 9,643,795 | match |
+| Enrollment limit_states jan2025 to Jul 2026: % change | -22.5 | -22.5 | match |
+| Enrollment limit_states jul2025: persons at start | 9,352,970 | 9,352,970 | match |
+| Enrollment limit_states jul2025 to Jul 2026: % change | -20.1 | -20.1 | match |
+| Enrollment limit_states dec2025: persons at start | 8,690,398 | 8,690,398 | match |
+| Enrollment limit_states dec2025 to Jul 2026: % change | -14.0 | -14.0 | match |
+| Enrollment other_states jan2025: persons at start | 32,714,366 | 32,714,366 | match |
+| Enrollment other_states jan2025 to Jul 2026: % change | -12.7 | -12.7 | match |
+| Enrollment other_states jul2025: persons at start | 32,185,665 | 32,185,665 | match |
+| Enrollment other_states jul2025 to Jul 2026: % change | -11.3 | -11.3 | match |
+| Enrollment other_states dec2025: persons at start | 30,456,215 | 30,456,215 | match |
+| Enrollment other_states dec2025 to Jul 2026: % change | -6.2 | -6.2 | match |
+| Enrollment ny_state_usda jan2025: persons at start | 2,974,909 | 2,974,909 | match |
+| Enrollment ny_state_usda jan2025 to Jul 2026: % change | -10.3 | -10.3 | match |
+| Enrollment ny_state_usda jul2025: persons at start | 2,940,513 | 2,940,513 | match |
+| Enrollment ny_state_usda jul2025 to Jul 2026: % change | -9.3 | -9.3 | match |
+| Enrollment ny_state_usda dec2025: persons at start | 2,839,867 | 2,839,867 | match |
+| Enrollment ny_state_usda dec2025 to Jul 2026: % change | -6.1 | -6.1 | match |
+| Enrollment ny_state_otda jan2025: persons at start | 2,974,909 | 2,974,909 | match |
+| Enrollment ny_state_otda jan2025 to Jul 2026: % change | -10.3 | -10.3 | match |
+| Enrollment ny_state_otda jul2025: persons at start | 2,940,513 | 2,940,513 | match |
+| Enrollment ny_state_otda jul2025 to Jul 2026: % change | -9.3 | -9.3 | match |
+| Enrollment ny_state_otda dec2025: persons at start | 2,839,867 | 2,839,867 | match |
+| Enrollment ny_state_otda dec2025 to Jul 2026: % change | -6.1 | -6.1 | match |
+| Enrollment nyc_otda jan2025: persons at start | 1,801,636 | 1,801,636 | match |
+| Enrollment nyc_otda jan2025 to Jul 2026: % change | -9.4 | -9.4 | match |
+| Enrollment nyc_otda jul2025: persons at start | 1,787,477 | 1,787,477 | match |
+| Enrollment nyc_otda jul2025 to Jul 2026: % change | -8.7 | -8.7 | match |
+| Enrollment nyc_otda dec2025: persons at start | 1,735,341 | 1,735,341 | match |
+| Enrollment nyc_otda dec2025 to Jul 2026: % change | -6.0 | -6.0 | match |
+| Enrollment rest_of_ny_otda jan2025: persons at start | 1,173,273 | 1,173,273 | match |
+| Enrollment rest_of_ny_otda jan2025 to Jul 2026: % change | -11.7 | -11.7 | match |
+| Enrollment rest_of_ny_otda jul2025: persons at start | 1,153,036 | 1,153,036 | match |
+| Enrollment rest_of_ny_otda jul2025 to Jul 2026: % change | -10.2 | -10.2 | match |
+| Enrollment rest_of_ny_otda dec2025: persons at start | 1,104,526 | 1,104,526 | match |
+| Enrollment rest_of_ny_otda dec2025 to Jul 2026: % change | -6.3 | -6.3 | match |
+| Enrollment: US persons July 2026 | 36,087,667 | 36,087,667 | match |
+| Enrollment: NYC persons August 2026 | 1,613,318 | 1,613,318 | match |
+| Enrollment: 2020-2026 peak month | 2024-10 | 2024-10 | match |
 
 ## Words
 

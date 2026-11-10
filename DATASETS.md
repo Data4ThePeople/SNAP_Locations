@@ -281,6 +281,28 @@ file with an end date. In 2026 it shows up only by being absent from the feed.
 The address test can find a match at a multi-tenant address that is not a
 replacement, which makes "not replaced" counts lower, not higher.
 
+## SNAP Data Tables: monthly state participation (USDA Food and Nutrition Service)
+
+- **What:** people and households on SNAP each month, by state, with a "US Summary" sheet. One workbook per fiscal year, FY2019 to FY2026.
+- **Where:** USDA FNS, SNAP Data Tables, https://www.fns.usda.gov/pd/supplemental-nutrition-assistance-program-snap ("SNAP Monthly State Participation and Benefit Summary"). The site blocks scripted downloads, so Eric downloaded the files by hand. Copies are in `data/raw/snap_participation/FY19.xls` and `FY20.xlsx` to `FY26.xlsx`.
+- **Version:** FY2026 data as of October 9, 2026. The latest month is July 2026; August and September 2026 show "--" (not yet reported). USDA marks all data as subject to revision.
+- **Fields used:** total participation, persons. FY2020 to FY2026 are the "P-EBT/Other Excluded" versions, so pandemic school-meal benefits are not counted. FY2019 predates P-EBT. Total participation excludes disaster supplements.
+- **Layout:** seven regional sheets (NERO, MARO, SERO, MWRO, SWRO, MPRO, WRO), each with one block per state: a state-name row, then one row per month. The "US Summary" sheet has the same layout for the nation, including territories.
+- **Known issue:** a partial federal shutdown moved February 2019 benefits into January 2019, so USDA's February 2019 count (7.6 million people) is not a real drop. The chart starts in January 2020.
+- **Used in post 8** (`src/analysis/post8_enrollment.py`, `reports/data/post8_enrollment.json`, `post8-enrollment.png`):
+  - People on SNAP nationally each month, January 2020 to July 2026.
+  - Percent change in people on SNAP from January 2025, July 2025 and December 2025 to July 2026, for the US Summary, the ten states with soda or candy limits in 2026 (the same list as the restriction-state split), the other 40 states plus DC (territories left out), and New York State.
+  - These are patterns next to the store exits. They do not show that falling enrollment caused any store to leave SNAP.
+
+## SNAP Caseloads and Expenditures: Beginning 2002 (New York State OTDA)
+
+- **What:** people and households on SNAP each month, by New York social services district. New York City is one district; the other 57 are counties.
+- **Where:** data.ny.gov dataset `dq6j-8u8z`, pulled with `https://data.ny.gov/resource/dq6j-8u8z.csv?$limit=200000&$where=year>=2018` on November 10, 2026. Copy in `data/raw/snap_participation/ny-snap-caseloads-dq6j-8u8z.csv`.
+- **Version:** through August 2026.
+- **Fields used:** `year`, `month`, `district`, `total_snap_persons`.
+- **Check against USDA:** the 58 districts summed equal USDA's New York State figure in every start and end month used (for example, 2,667,525 people in July 2026 in both).
+- **Used in post 8:** percent change in people on SNAP in New York City and in the rest of New York State (all districts minus New York City), over the same months as the USDA figures. July 2026 is the end month so the city matches the national figures; the August 2026 city count is kept in the JSON for reference.
+
 ## Curated brand and parent-company files (Data 4 The People)
 
 **What it is.** `data/brands.csv` maps normalized store names to a brand and a

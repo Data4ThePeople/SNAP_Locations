@@ -411,6 +411,51 @@ def main():
     tie("NYC map: convenience and small groceries that left", bj["nyc_map"]["left_conv_small"],
         rate(2026, lambda f: f["format"].isin([CONV, SM]) & f["state"].eq("NY") & f["county"].isin(boro))["left"])
 
+
+    # Enrollment (USDA SNAP Data Tables, NY OTDA dq6j-8u8z), read with pandas.
+    ej = json.loads((ROOT / "reports/data/post8_enrollment.json").read_text())
+    praw = ROOT / "data/raw/snap_participation"
+    limit_st = {"Indiana", "Idaho", "Oklahoma", "Louisiana", "Texas", "Florida", "Utah",
+                "Iowa", "Nebraska", "West Virginia"}
+    terr = {"Guam", "Virgin Islands", "Puerto Rico", "American Samoa",
+            "Commonwealth of Northern Mariana Islands"}
+    mon = {m: i + 1 for i, m in enumerate("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split())}
+    recs = []
+    for f in sorted(praw.glob("FY*.xls*")):
+        for sh, df in pd.read_excel(f, sheet_name=None, header=None).items():
+            lab = df[0].astype(str).str.strip()
+            m = lab.str.extract(r"^(\w{3}) (\d{4})")
+            is_month = m[0].isin(mon.keys())
+            name = lab.where(~is_month & df[1].isna() & df[0].notna()).ffill()
+            d = pd.DataFrame({"name": name, "y": pd.to_numeric(m[1], errors="coerce"),
+                              "m": m[0].map(mon), "p": pd.to_numeric(df[2], errors="coerce")})
+            recs.append(d[is_month & d["p"].notna()])
+    P = pd.concat(recs).drop_duplicates(["name", "y", "m"])
+    piv = P.pivot_table(index=["y", "m"], columns="name", values="p", aggfunc="sum")
+    states_cols = [c for c in piv.columns if c not in terr and c != "US Summary"
+                   and c not in {"NERO", "MARO", "SERO", "MWRO", "SWRO", "MPRO", "WRO"}
+                   and c in set(P["name"]) and P[P["name"] == c]["p"].max() > 10000]
+    tie("Enrollment: states plus DC found in USDA files", 51, len(states_cols))
+    grp = {"us": piv["US Summary"],
+           "limit_states": piv[[c for c in states_cols if c in limit_st]].sum(axis=1),
+           "other_states": piv[[c for c in states_cols if c not in limit_st]].sum(axis=1),
+           "ny_state_usda": piv["New York"]}
+    ny = pd.read_csv(praw / "ny-snap-caseloads-dq6j-8u8z.csv")
+    ny["m"] = pd.to_datetime(ny["month"], format="%B").dt.month
+    nyt = ny.groupby(["year", "m"])["total_snap_persons"].sum()
+    nyc_s = ny[ny["district"] == "New York City"].set_index(["year", "m"])["total_snap_persons"]
+    grp.update({"ny_state_otda": nyt, "nyc_otda": nyc_s, "rest_of_ny_otda": nyt - nyc_s})
+    for g, ser in grp.items():
+        for k, (yy, mm) in {"jan2025": (2025, 1), "jul2025": (2025, 7), "dec2025": (2025, 12)}.items():
+            a, b = int(ser.loc[(yy, mm)]), int(ser.loc[(2026, 7)])
+            tie(f"Enrollment {g} {k}: persons at start", ej[g][k]["from"], a)
+            tie(f"Enrollment {g} {k} to Jul 2026: % change", ej[g][k]["pct"], r1(100 * (b - a) / a))
+    tie("Enrollment: US persons July 2026", ej["us"]["jul2025"]["to"], int(piv["US Summary"].loc[(2026, 7)]))
+    tie("Enrollment: NYC persons August 2026", ej["nyc_latest"]["persons"], int(nyc_s.loc[(2026, 8)]))
+    us20 = piv["US Summary"].loc[(2020, 1):(2026, 7)]
+    tie("Enrollment: 2020-2026 peak month", ej["us_peak_2020_2026"][1],
+        "%d-%02d" % us20.idxmax())
+
     fmt = lambda v: f"{v:,}" if isinstance(v, int) else str(v)
     lines = ["# Tie-out, post 8", "",
              f"Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and "
