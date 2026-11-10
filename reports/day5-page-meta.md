@@ -4,6 +4,10 @@ Copy blocks for the Prismic page carrying Day 5 of the series (post4, the chain
 pharmacy collapse). Companion files: `reports/day0-page-meta.md` through
 `day4-page-meta.md` and `reports/visualization-page-meta.md`.
 
+Corrected November 10, 2026: ZIP codes are now padded to 5 digits, which adds places
+in New England, New Jersey and the Virgin Islands. Numbers below are the corrected ones;
+the live page carries a correction note at the top.
+
 Fill the three placeholders before publishing: `[[slug]]`, `[[PRISMIC HERO URL]]`,
 and the two timestamps. Everything else is final. Every figure here matches
 `reports/post4/post4.md` as generated; if the post is rebuilt, re-check the
@@ -20,7 +24,7 @@ The one chain format that did not work
 ## 2. Page subtitle
 
 ```
-Dollar stores and gas stations kept growing. Chain pharmacies fell 24.3% in four years — because a pharmacy sets neither the price it is paid nor the price it pays. 976 ZIP codes lost their last one.
+Dollar stores and gas stations kept growing. Chain pharmacies fell 24.3% in four years — because a pharmacy sets neither the price it is paid nor the price it pays. 1,068 ZIP codes lost their last one.
 ```
 
 ## 3. Hero image
@@ -108,7 +112,7 @@ the shape, so a screen reader gets the same facts a sighted reader does.
 ### `images/00-key-figures.png` (1720×422) — headline figures
 
 ```
-Three headline figures: a 24.3% fall in authorized drug chain stores between 2021 and 2025. 5,054 drug chain authorizations ended over 2022 to 2025. 976 ZIP codes lost their last SNAP-authorized chain pharmacy since 2021.
+Three headline figures: a 24.3% fall in authorized drug chain stores between 2021 and 2025. 5,054 drug chain authorizations ended over 2022 to 2025. 1,068 ZIP codes lost their last SNAP-authorized chain pharmacy since 2021.
 ```
 
 ### `images/01-drug-chain-arc.png` (1158×688) — the arc

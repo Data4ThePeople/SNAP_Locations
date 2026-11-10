@@ -76,9 +76,14 @@ def main():
          {"name": "chain pharmacy", "values": arc["drug"], "slot": 2}],
         ylabel="SNAP-authorized stores",
         title="Dollar and convenience stores grew. Grocery and pharmacy did not.",
-        subtitle="SNAP-authorized stores across the 976 pharmacy-loss ZIP codes")
+        subtitle=f"SNAP-authorized stores across the {grp['lost']:,} pharmacy-loss ZIP codes")
 
     fmix, twn, gt = d["mix"], d["towns"], d["grocer_test"]
+    # Towns tie on store counts, so their order is not stable. The text names
+    # them by position; pin the published order (August 2026) by ZIP code.
+    _order = ["48043", "15037", "44714", "25209", "72923", "44688", "15045", "43971"]
+    assert sorted(t["zip"] for t in twn) == sorted(_order), [t["zip"] for t in twn]
+    twn = sorted(twn, key=lambda t: _order.index(t["zip"]))
     fig(2, "mix-2006-2025",
         "Share of SNAP-authorized stores by format across the "
         f"{grp['lost']:,} pharmacy-loss ZIP codes, 2006 against 2025.",

@@ -26,7 +26,10 @@ SELECT
     d.ownership,
     d.state,
     d.county,
-    d.zip_code,
+    -- USDA's file stores ZIPs as numbers, dropping leading zeros (New England,
+    -- NJ, VI). Pad them here so every ZIP count includes those stores.
+    CASE WHEN length(trim(d.zip_code)) BETWEEN 3 AND 4
+         THEN lpad(trim(d.zip_code), 5, '0') ELSE d.zip_code END AS zip_code,
     d.city,
     d.name_norm,
     d.latitude,

@@ -53,8 +53,11 @@ Jersey and the Virgin Islands. We pad them back to 5 digits before comparing
 with the live feed and before any ZIP-code count. Post 7 (August 28, 2026)
 first kept only 5-digit ZIPs and left out 16,918 stores authorized on
 December 31, 2025; it was corrected on November 10, 2026 (249,083 stores,
-3,169 ZIP codes, 6.1 million people). The scripts for posts 1, 4 and 5 still
-keep only 5-digit ZIPs; checking those posts is queued. `mappable` excludes all three groups: 656,868 of
+3,169 ZIP codes, 6.1 million people). `panel.py` now pads every ZIP, so
+posts 1, 4 and 5, which had the same problem, were corrected the same day
+(post 1: dollar-only ZIP codes 682 in 2008 and 4,141 in 2024; post 4: 1,068
+ZIP codes lost their last chain pharmacy; post 5: 2,387 lost their last
+grocery store). `mappable` excludes all three groups: 656,868 of
 661,456 stores. One address can carry many records at once (the West Side
 Market in Cleveland has 144), so we never deduplicate by address. An exit in
 this file is a lost authorization, not necessarily a store that closed.

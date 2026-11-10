@@ -223,8 +223,8 @@ def main():
     zz = out["zips"]
     print(f"     metro:    {lost_m:>4,} of {base_m:>5,} ZIPs went to zero  ({zz['rate_metro']}%)")
     print(f"     nonmetro: {lost_nm:>4,} of {base_nm:>5,} ZIPs went to zero  ({zz['rate_nonmetro']}%)")
-    check("metro ZIP loss rate %", zz["rate_metro"], 10.8, tol=0.3)
-    check("nonmetro ZIP loss rate %", zz["rate_nonmetro"], 16.7, tol=0.3)
+    check("metro ZIP loss rate %", zz["rate_metro"], 10.5, tol=0.3)
+    check("nonmetro ZIP loss rate %", zz["rate_nonmetro"], 16.9, tol=0.3)
     # The claim the piece makes from this is the ordering, not the levels.
     if zz["rate_nonmetro"] <= zz["rate_metro"]:
         FAILURES.append("nonmetro ZIP loss rate no longer exceeds metro")

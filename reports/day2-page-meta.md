@@ -4,6 +4,10 @@ Copy blocks for the Prismic page carrying Day 2 of the series (post1, dollar
 stores). Companion files: `reports/day0-page-meta.md`, `reports/day1-page-meta.md`,
 and `reports/visualization-page-meta.md`.
 
+Corrected November 10, 2026: ZIP codes are now padded to 5 digits, which adds places
+in New England, New Jersey and the Virgin Islands. Numbers below are the corrected ones;
+the live page carries a correction note at the top.
+
 Fill the three placeholders before publishing: `[[slug]]`, `[[PRISMIC HERO URL]]`,
 and the two timestamps. Everything else is final. Every figure here matches
 `reports/post1/post1.md` as generated; if the post is rebuilt, re-check the
@@ -127,13 +131,13 @@ Horizontal bar chart of the share of the 2008–2012 entry cohort still authoriz
 ### `images/03-dollar-only-zips.png` (1158×687) — dollar-only ZIP codes
 
 ```
-Line chart of ZIP codes that have a SNAP-authorized dollar store and no grocery store — no supermarket, super store, or large, medium, or small grocery store — from 2008 to 2024. The line rises steadily from 675 ZIP codes to 4,024. Title: More places now have a dollar store and no grocery store.
+Line chart of ZIP codes that have a SNAP-authorized dollar store and no grocery store — no supermarket, super store, or large, medium, or small grocery store — from 2008 to 2024. The line rises steadily from 682 ZIP codes to 4,141. Title: More places now have a dollar store and no grocery store.
 ```
 
 ### `images/04-dollar-only-split.png` (1618×434) — how the ZIP codes joined
 
 ```
-Horizontal bar chart splitting the 3,552 ZIP codes that joined the dollar-store-only list between 2008 and 2024. Never had an authorized grocery, in orange: 2,115. Had one that left SNAP by 2024, in blue: 1,437. Title: Most of these places never had an authorized grocery.
+Horizontal bar chart splitting the 3,664 ZIP codes that joined the dollar-store-only list between 2008 and 2024. Never had an authorized grocery, in orange: 2,181. Had one that left SNAP by 2024, in blue: 1,483. Title: Most of these places never had an authorized grocery.
 ```
 
 ### `images/05-dollar-only-states.png` (1397×935) — the state walk

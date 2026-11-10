@@ -95,7 +95,7 @@ def main():
     out["groups"] = {k: int(v) for k, v in sizes.items()}
     print(f"\n1. Groups: {sizes['lost']:,} ZIPs lost their last chain pharmacy, "
           f"{sizes['kept']:,} kept one")
-    check("lost-pharmacy ZIPs", int(sizes["lost"]), 976, tol=5)
+    check("lost-pharmacy ZIPs", int(sizes["lost"]), 1068, tol=5)
 
     print("\n2. What is there in 2025 — treatment against control")
     rows = []
@@ -304,8 +304,8 @@ def main():
         check("median population, kept grocery",
               out["grocer_test"]["kept_median_pop"], 15716, tol=200)
 
-    check("ZIPs that lost their last grocery", lg["total"], 2267, tol=25)
-    check("share of those that never had a dollar store", lg["never_pct"], 40.5, tol=1.0)
+    check("ZIPs that lost their last grocery", lg["total"], 2387, tol=25)
+    check("share of those that never had a dollar store", lg["never_pct"], 41.8, tol=1.0)
     # The load-bearing claim: grocery did not fare worse where dollar stores came.
     if g["gained"]["pct"] < g["none"]["pct"]:
         FAILURES.append("grocery now falls faster where dollar stores arrived")
@@ -352,9 +352,9 @@ def main():
             print(f"     {lab:15} n={s['n']:>6,}  p10 {s['p10']:>6,}  p25 {s['p25']:>6,}  "
                   f"median {s['median']:>6,}  p75 {s['p75']:>6,}  p90 {s['p90']:>6,}")
         sp = out["spread"]
-        check("median, lost pharmacy (2006 base)", sp["lost_pharmacy"]["median"], 16082, tol=200)
-        check("median, lost grocer", sp["lost_grocer"]["median"], 1955, tol=40)
-        check("p75, lost grocer", sp["lost_grocer"]["p75"], 3740, tol=80)
+        check("median, lost pharmacy (2006 base)", sp["lost_pharmacy"]["median"], 15391, tol=200)
+        check("median, lost grocer", sp["lost_grocer"]["median"], 1984, tol=40)
+        check("p75, lost grocer", sp["lost_grocer"]["p75"], 3883, tol=80)
         # The claim each chart makes: the losing group sits lower throughout.
         for a_, b_ in (("lost_pharmacy", "kept_pharmacy"), ("lost_grocer", "kept_grocer")):
             if sp[a_]["median"] >= sp[b_]["median"] or sp[a_]["p75"] >= sp[b_]["p75"]:
@@ -474,7 +474,7 @@ def main():
 
     out["rural"] = ru
     check("nonmetro share, pharmacy-loss ZIPs", ru["lost"]["nonmetro_pct"], 22.1, tol=0.5)
-    check("nonmetro share, control ZIPs", ru["kept"]["nonmetro_pct"], 14.7, tol=0.5)
+    check("nonmetro share, control ZIPs", ru["kept"]["nonmetro_pct"], 14.0, tol=0.5)
     # The claim is the ordering; the levels are context.
     if ru["lost"]["nonmetro_pct"] <= ru["kept"]["nonmetro_pct"]:
         FAILURES.append("pharmacy-loss ZIPs no longer more rural than control")
