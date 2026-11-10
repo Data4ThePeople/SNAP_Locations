@@ -51,7 +51,8 @@ HUE = {0: S[0],   # blue        every store
        4: S[6],   # violet      the size ladder
        5: S[3],   # gold        chain pharmacies
        6: S[0],   # blue        the synthesis
-       7: S[4]}   # pink        the new rule
+       7: S[4],   # pink        the new rule
+       8: S[1]}   # orange-red  convenience stores that left (matches the post's map)
 
 # Grey carries context on every frame: the layer a chapter is NOT about. Keeping
 # it hue-free means the signature is never competing with a second colour.
@@ -117,7 +118,7 @@ def split(con, where, then, now):
     return out
 
 
-def render(path, day, layers, caption):
+def render(path, day, layers, caption, kicker=None, big=None):
     """`layers` = [{xy, color, size, alpha}] drawn in order, first at the back."""
     fig = plt.figure(figsize=(W_PX / DPI, H_PX / DPI), dpi=DPI, facecolor=PAPER)
     ax = fig.add_axes([0, 0, 1, 1])
@@ -160,8 +161,10 @@ def render(path, day, layers, caption):
     # backing narrower than the type it was meant to sit behind.
     import textwrap
     PT = 200 / 72 / H_PX          # one point, as a fraction of frame height
-    block = [(" ".join(SERIES.split(" ")), 13, INK_SOFT, 2.4),
-             (f"DAY {day}" if day else "THE MAP", 24, HUE.get(day, S[0]), 2.0)]
+    # `kicker` and `big` override the series lockup for a post outside the
+    # seven-day series (post 8 keeps the frame but not the "DAY n" label).
+    block = [(kicker or " ".join(SERIES.split(" ")), 13, INK_SOFT, 2.4),
+             (big or (f"DAY {day}" if day else "THE MAP"), 24, HUE.get(day, S[0]), 2.0)]
     for L in [q for q in layers if q.get("label")]:
         block.append(("\u25cf  " + L["label"], 14, L["color"], 1.55))
     for i, line in enumerate(textwrap.wrap(caption, 24)):
@@ -417,6 +420,20 @@ def main():
                 {"xy": small, "color": HUE[7], "size": 3.4,
                  "label": f"ZIP codes left with no SNAP retailer  {ns:,}"}],
                "If the convenience stores go")
+
+    if want is None or 8 in want:
+        # Post 8: independent convenience stores that left SNAP by November 5,
+        # 2026, over every store still in SNAP. The dot fields come from
+        # post8_beats (the post's own map, chart 04), so the two match exactly.
+        import numpy as np
+        z = np.load(ROOT / "reports" / "data" / "post8_independents_map_points.npz")
+        xy = lambda a: usmap.albers(a[:, 0].tolist(), a[:, 1].tolist())
+        render(OUT / "day-8.png", 8,
+               [{"xy": xy(z["still"]), "color": MUTED, "size": 0.35, "alpha": 0.40},
+                {"xy": xy(z["left"]), "color": HUE[8], "size": 1.6, "alpha": 0.9, "z": 3,
+                 "label": f"left SNAP  {int(z['n_left']):,}"}],
+               "Independent convenience stores that left SNAP by November 5",
+               kicker="SNAP STORES", big="2026")
 
 
 if __name__ == "__main__":

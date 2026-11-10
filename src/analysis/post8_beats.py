@@ -54,6 +54,7 @@ OUT = ROOT / "reports" / "data" / "post8_beats.json"
 IMG = ROOT / "reports" / "post8" / "images"
 LIVE_DIR = ROOT / "data" / "raw" / "live"
 CTY_ZIP = ROOT / "data" / "raw" / "cb_2024_us_county_500k.zip"
+HERO_PTS = ROOT / "reports" / "data" / "post8_independents_map_points.npz"
 POP_CSV = ROOT / "data" / "raw" / "census" / "co-est2025-alldata.csv"
 CTY_URL = "https://www2.census.gov/geo/tiger/GENZ2024/shp/cb_2024_us_county_500k.zip"
 YEARS = list(range(2019, 2027))
@@ -348,6 +349,9 @@ def main():
     g48 = [p for p in ground if in48(*p)]
     p48 = [(p["longitude"], p["latitude"]) for p in pts if in48(p["longitude"], p["latitude"])]
     xy = lambda rows: usmap.albers([r[0] for r in rows], [r[1] for r in rows])
+    # The same two dot fields, saved for the post 8 hero (analysis.hero 8).
+    np.savez_compressed(HERO_PTS, still=np.array(g48, dtype=float), left=np.array(p48, dtype=float),
+                        n_left=len(pts))
     figures.map_pair_png(
         IMG / "post8-independents-map.png",
         [{"title": "", "layers": [
