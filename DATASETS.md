@@ -215,8 +215,10 @@ averages. The groups do not overlap: independent convenience stores; other
 convenience stores (chain or owner unknown); grocery stores of any size;
 everything else.
 
-**Exits for every new store (post 8).** New authorizations are stores in the
-universe on November 5 that were not authorized on the December 31 before
+**Exits for every new store (post 8).** The store universe on a date is the
+map's: on a historical date, stores authorized and mappable in the historical
+file; on November 5, 2026, the live feed's map layer. New authorizations are
+stores in the universe on November 5 that were not authorized on the December 31 before
 (historical years: authorized and mappable on November 5 in the historical
 file; 2026: the live feed's map layer, so no Restaurant Meals sites and no
 farmers-market entities the historical file never carried). A new store at the
