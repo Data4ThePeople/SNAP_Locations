@@ -279,6 +279,15 @@ def main():
         b = len(lv_keep) if y == 2026 else len(U(date(y, snap.month, snap.day)))
         tie(f"Net change {y}: Dec 31, Nov 5, net", (bj["net"][str(y)]["dec31"], bj["net"][str(y)]["nov5"],
             bj["net"][str(y)]["net"]), (a, b, b - a))
+    # Social GIF: independent convenience stores in SNAP on each date.
+    gc = json.loads((ROOT / "posts/snap-stores-leaving-2026/social/"
+                     "snap-stores-leaving-2026-independents-in-snap-counts.json").read_text())
+    ind_ids = set(ds.index[ds["format"].eq(CONV) & ds["ownership"].eq("independent")])
+    for y in range(2005, 2026):
+        tie(f"GIF: independent convenience stores in SNAP, Dec 31, {y}", gc[f"Dec 31, {y}"], len(U(date(y, 12, 31)) & ind_ids))
+    lk_ind = lmap.index[lmap["excluded"].isna() & lmap["mappable"] & lmap["format"].eq(CONV) & lmap["ownership"].eq("independent")]
+    tie("GIF: independent convenience stores in SNAP, Nov 5, 2026", gc[f"{snap:%b} {snap.day}, {snap.year}"],
+        int(lv_keep["rid"].isin(lk_ind).sum()))
     boro = {"NEW YORK", "KINGS", "QUEENS", "BRONX", "RICHMOND"}
     def grp(state, county, fm, own):
         if fm == CONV: return "Independent convenience" if own == "independent" else "Other convenience"
