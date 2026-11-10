@@ -5,15 +5,15 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 
 ## Current
 
-Post: post 8, stores that left SNAP in 2026 and what the stocking rule has not touched yet (slug set at 2a; posts 0 to 7 in `reports/` were published before this file existed)
-Step: 1
-Since: 2026-11-09
+Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
+Step: 2a
+Since: 2026-11-10
 
 ## Steps
 
 | Step | What | Confirmed | Notes |
 |---|---|---|---|
-| 1  | Exploration and analysis | | Reopened for the November 5, 2026 live-feed layer and a static map of 2026 exits |
+| 1  | Exploration and analysis | 2026-11-10 | Reopened for the November 5, 2026 live-feed layer and a static map of 2026 exits |
 | 2a | Draft with brackets resolved | | |
 | 2b | Eric's edit, Claude's look-over | | |
 | 2c | Slice markup | | |
@@ -45,3 +45,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Eric refocused post 8 on exits. Replaced the net-change chart with exits by year (`post8-exits`: 21,923 in 2026 vs 8,872 to 15,224); the waterfall now runs from the 2019-2025 average exits (11,682) to 2026 by store type (independent convenience +4,714, other convenience +2,827, grocery +2,150, all other +550); new last beat `post8-ratio`: exits per new store 2.50 in 2026 vs 0.64 to 1.42 (3.15 without older-ID live-only stores; 2.02 counting every exit and entry). Own tie-out 171 of 171.
 - 2026-11-10 Eric queued the post 7 correction (fixed numbers plus a highlighted correction note at the top) for after post 8. Independent tie-out of the post 8 beats started.
 - 2026-11-10 Independent tie-out of the post 8 beats: 254 of 255 match. Mismatch: the NYC map's grey layer and its count (45,133) used the first waterfall group (independent convenience, national) after NYC left the waterfall; fixed to the five boroughs (7,510). Chart wording fixed: NYC map note on the borough definition; places subtitle says the city comparison favors NYC, Miami-Dade spelling; independents trend notes owner-unknown stores are not shown; splits subtitle says where, not why, and points to methods; ratio subtitle names the live list and the 3.15 without older IDs; independents map key says all stores. DATASETS.md: exit-test details (street line, normalization, what can replace an exit, derived format, mappable bases), county list definitions. Added the NYC map count to the own tie-out, which had missed it; 172 of 172.
+- 2026-11-10 Step 1 confirmed by Eric (move to 2a once the independent tie-out was done). Slug `snap-stores-leaving-2026`. At Eric's request Claude writes the first draft from his six-beat outline (an exception to the usual 2a, where Eric writes the draft); Eric edits.
