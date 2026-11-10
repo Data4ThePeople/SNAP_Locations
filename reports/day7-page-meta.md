@@ -9,6 +9,10 @@ and the two timestamps. Everything else is final. Every figure here matches
 `reports/post7/post7.md` as generated; if the post is rebuilt, re-check the
 numbers quoted in the alt text below.
 
+Corrected November 10, 2026: ZIP codes are now padded to 5 digits, which adds
+16,918 stores in New England, New Jersey and the Virgin Islands. Every number
+below is the corrected one; the live page carries a correction note at the top.
+
 ---
 
 ## 1. Page title (H1)
@@ -33,13 +37,13 @@ An epilogue. A stocking standard twelve years in the making, the guidance that s
 **Hero alt text:**
 
 ```
-Dot map of the lower 48 states on a dark ground, one dot per ZIP code. A faint grey field shows the ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization, clustering into cities. Pink dots mark the ZIP codes that would have none, scattered across the interior West, the northern Plains and the rural East. Text on the map reads: The Stores That Stayed. Day 7. ZIP codes left with no SNAP retailer 2,871. If the convenience stores go.
+Dot map of the lower 48 states, one dot per ZIP code. A faint grey field shows the ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization, clustering into cities. Pink dots mark the ZIP codes that would have none, scattered across the interior West, the northern Plains, the rural East and New England. Text on the map reads: The Stores That Stayed. Day 7. ZIP codes left with no SNAP retailer 3,169. If the convenience stores go.
 ```
 
 Short version if the field is tight:
 
 ```
-Dot map of the lower 48 showing, in pink, the 2,871 ZIP codes that would be left with no SNAP retailer at all if every convenience store gave up its authorization.
+Dot map of the lower 48 showing, in pink, the 3,169 ZIP codes that would be left with no SNAP retailer at all if every convenience store gave up its authorization.
 ```
 
 ## 4. Meta title
@@ -58,7 +62,7 @@ The Imminent Stocking Rule and the Risk to SNAP
 157 characters.
 
 ```
-A new SNAP stocking standard takes effect November 4. Model the scenario and 2,871 ZIP codes, home to 5.3 million people, would have no SNAP retailer at all.
+A new SNAP stocking standard takes effect November 4. Model the scenario and 3,169 ZIP codes, home to 6.1 million people, would have no SNAP retailer at all.
 ```
 
 ## 6. Meta keywords
@@ -74,7 +78,7 @@ SNAP stocking standards, SNAP retailers, food access, convenience stores, rural 
   "@context": "https://schema.org",
   "@type": "Article",
   "headline": "Sizing the risk to SNAP of the imminent stocking rule changes",
-  "description": "A new SNAP stocking standard takes effect November 4. Model the scenario and 2,871 ZIP codes, home to 5.3 million people, would have no SNAP retailer at all.",
+  "description": "A new SNAP stocking standard takes effect November 4. Model the scenario and 3,169 ZIP codes, home to 6.1 million people, would have no SNAP retailer at all.",
   "image": "[[PRISMIC HERO URL]]?auto=format,compress",
   "datePublished": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
   "dateModified": "[[YYYY-MM-DDTHH:MM:SS-04:00]]",
@@ -109,19 +113,19 @@ the shape, so a screen reader gets the same facts a sighted reader does.
 ### `images/00-key-figures.png` (1720×422) — headline figures
 
 ```
-Three headline figures: 5.3 million people live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out. $407 is what USDA estimates it costs a small store to comply in the first year. November 4 is the 2026 date by which every SNAP retailer has to meet the new standard.
+Three headline figures: 6.1 million people live in a ZIP code that would have no SNAP retailer at all if convenience stores drop out. $407 is what USDA estimates it costs a small store to comply in the first year. November 4 is the 2026 date by which every SNAP retailer has to meet the new standard.
 ```
 
 ### `images/01-worst-case-map.png` (1615×1060) — the places left with no SNAP retailer
 
 ```
-Dot map of the lower 48, one dot per ZIP code. Faint grey marks the 19,074 ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization. Pink marks the 2,782 that would have none, scattered thickly across the interior, the Plains and the rural East while cities stay grey. Title: The places that would be left with no SNAP retailer. A note says this is a ceiling rather than a forecast, and that 2,871 ZIP codes are affected nationally.
+Dot map of the lower 48, one dot per ZIP code. Faint grey marks the 20,571 ZIP codes that would still have a SNAP-authorized retailer if every convenience store gave up its authorization. Pink marks the 3,077 that would have none, scattered across the interior, the Plains, the rural East and New England while cities stay grey. Title: The places that would be left with no SNAP retailer. A note says this is a ceiling rather than a forecast, and that 3,169 ZIP codes are affected nationally.
 ```
 
 ### `images/02-worst-case-bands.png` (1547×694) — by ZIP code population
 
 ```
-Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-authorized retailer if every convenience store gave up its authorization, by 2020 census population. Under 1,000 people: 49.8%, or 1,310 of 2,628. 1,000 to 2,500: 22.8%, 924 of 4,061. 2,500 to 5,000: 9.1%, 305 of 3,335. 5,000 to 10,000: 5.6%, 167 of 2,999. 10,000 to 25,000: 1.3%, 58 of 4,338. 25,000 and up: 0.1%, 5 of 4,558. Title: It lands almost entirely on the smallest places.
+Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-authorized retailer if every convenience store gave up its authorization, by 2020 census population. Under 1,000 people: 50.4%, or 1,385 of 2,746. 1,000 to 2,500: 23.8%, 1,029 of 4,317. 2,500 to 5,000: 10.2%, 367 of 3,609. 5,000 to 10,000: 6.3%, 212 of 3,342. 10,000 to 25,000: 1.3%, 61 of 4,817. 25,000 and up: 0.1%, 6 of 4,867. Title: It lands almost entirely on the smallest places.
 ```
 
 ## Notes
@@ -136,7 +140,7 @@ Horizontal bar chart of the share of ZIP codes that would be left with no SNAP-a
 - The headline figures also appear as live text above the image on the page;
   keep both so the numbers survive images-off rendering.
 - **Two numbers differ on purpose and should not be "corrected" to match.** The
-  map key reads 2,782 ZIP codes while the body says 2,871. The map draws the
+  map key reads 3,077 ZIP codes while the body says 3,169. The map draws the
   lower 48; the count is national. The gap is Alaska, Hawaii and stores without
   usable coordinates, and it is stated in the map's corner note and again in
   Limits.

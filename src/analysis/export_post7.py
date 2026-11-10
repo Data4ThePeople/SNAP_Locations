@@ -71,11 +71,11 @@ def main():
           "(f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')")
 
     _con.execute(f"""CREATE OR REPLACE TEMP TABLE _wc AS
-        SELECT DISTINCT p.record_id, p.zip_code AS zip, p.format,
+        SELECT DISTINCT p.record_id, lpad(trim(p.zip_code), 5, '0') AS zip, p.format,
                p.longitude AS lon, p.latitude AS lat
         FROM panel p JOIN fact_spell f
           ON f.record_id = p.record_id AND NOT f.date_anomaly
-        WHERE {_A} AND p.zip_code IS NOT NULL AND length(p.zip_code) = 5""")
+        WHERE {_A} AND p.zip_code IS NOT NULL AND length(trim(p.zip_code)) BETWEEN 3 AND 5""")
 
     # Convenience stores only. Chain pharmacies show no exposure to this rule
     # and adding them moves the count by 90 ZIP codes; dollar stores are the
@@ -153,7 +153,26 @@ def main():
         subtitle="share of ZIP codes left with no SNAP retailer if convenience stores "
                  "drop from SNAP program, by population")
 
+    # Correction added November 10, 2026. The first version kept only 5-digit
+    # ZIP codes, so stores whose ZIP lost its leading zero in USDA's file (New
+    # England, New Jersey, Virgin Islands) were dropped. The old figures are
+    # what was published on August 28 and stay fixed here.
+    _c = wc["stages"]["conv"]
+    correction = (
+        f"**Correction, November 10, 2026:** An earlier version of this post left out "
+        f"{wc['stores_total'] - 232165:,} SNAP stores in New England, New Jersey and the U.S. "
+        f"Virgin Islands. USDA's file lists some ZIP codes without their leading zero, and our "
+        f"count dropped those stores. We fixed the error. The post now counts "
+        f"{wc['stores_total']:,} SNAP-authorized stores, not 232,165, and "
+        f"{wc['stores_by_group']['conv']:,} convenience stores, not 109,791. The number of ZIP "
+        f"codes that would have no SNAP retailer if convenience stores left rose from 2,871 to "
+        f"{_c['zips_to_zero']:,}, and the people living in them from 5.3 million to "
+        f"{_c['population']/1e6:.1f} million. The charts and map are updated. The smallest ZIP "
+        f"codes would still be hit hardest.")
+
     md = f"""# Sizing the risk to SNAP of the imminent stocking rule changes
+
+{correction}
 
 *An epilogue. A stocking standard twelve years in the making, the guidance that still has not
 arrived, and a map of who would bear the risk if it goes wrong.*
@@ -286,8 +305,7 @@ Start with the format the evidence points at. Convenience stores are
 **{wc['stores_by_group']['conv']:,} of the {wc['stores_total']:,}** SNAP-authorized stores in the
 country — {100*wc['stores_by_group']['conv']/wc['stores_total']:.0f}% of them. They are the format the
 rule's own preamble singles out, the one whose trade association is asking Congress for a delay, and
-the one with the least room in a {i['cstore_sqft']:,}-square-foot box — where the perishable
-requirement bites hardest. So take them out, and see where the cuts hurt the most.
+the one with the least room in a {i['cstore_sqft']:,}-square-foot box. So take them out, and see where the cuts hurt the most.
 
 The map below shows this. There are {_n_gone:,} pink dots on this map, representing the {_n_gone:,}
 ZIP codes that would be left with no SNAP retailers if their convenience stores opted out of the SNAP
@@ -307,7 +325,7 @@ SNAP retailer holds {wc['median']['kept']['median_pop']:,}.
 
 ![{figs["worst-case-bands"]['caption']}](images/{figs["worst-case-bands"]['file']})
 
-This is the point of the model — it shows us that even if we don't end up with the worst case
+This is the point of this modeling exercise — it shows us that even if we don't end up with the worst case
 scenario, we are likely to end up with greater geographic inequality.
 
 ## Accountability is patriotism?

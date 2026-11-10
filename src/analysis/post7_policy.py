@@ -402,14 +402,14 @@ def main():
     _DRUG = ",".join(f"'{b}'" for b in DRUG_BRANDS)
     con.execute(f"""
         CREATE OR REPLACE TEMP TABLE cur AS
-        SELECT DISTINCT p.record_id, p.zip_code AS zip, p.state, p.county,
+        SELECT DISTINCT p.record_id, lpad(trim(p.zip_code), 5, '0') AS zip, p.state, p.county,
                CASE WHEN p.format = 'Convenience Store' THEN 'conv'
                     WHEN p.format = 'Dollar Store' THEN 'dollar'
                     WHEN p.brand IN ({_DRUG}) THEN 'rx' ELSE 'other' END AS grp
         FROM panel p JOIN fact_spell f ON f.record_id = p.record_id AND NOT f.date_anomaly
         WHERE f.auth_date <= DATE '2025-12-31'
           AND (f.end_date IS NULL OR f.end_date >= DATE '2025-12-31')
-          AND p.zip_code IS NOT NULL AND length(p.zip_code) = 5""")
+          AND p.zip_code IS NOT NULL AND length(trim(p.zip_code)) BETWEEN 3 AND 5""")
     con.execute("CREATE OR REPLACE TEMP TABLE zpop (zip VARCHAR, pop BIGINT)")
     con.executemany("INSERT INTO zpop VALUES (?, ?)", list(_pop.items()))
     stores = {g: int(n) for g, n in

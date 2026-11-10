@@ -387,11 +387,11 @@ def main():
         # piece no longer contains: it models convenience stores alone, having
         # found dollar-store and pharmacy exposure close to negligible.
         con.execute(f"""CREATE OR REPLACE TEMP TABLE _h7 AS
-            SELECT DISTINCT p.record_id, p.zip_code AS zip, p.format,
+            SELECT DISTINCT p.record_id, lpad(trim(p.zip_code), 5, '0') AS zip, p.format,
                    p.longitude AS lon, p.latitude AS lat
             FROM panel p JOIN fact_spell s USING(record_id)
             WHERE NOT s.date_anomaly AND {ACTIVE.format(y=2025)}
-              AND p.zip_code IS NOT NULL AND length(p.zip_code) = 5""")
+              AND p.zip_code IS NOT NULL AND length(trim(p.zip_code)) BETWEEN 3 AND 5""")
         KEEP = "zip IN (SELECT zip FROM _h7 WHERE format <> 'Convenience Store')"
 
         def zip_dots(where):
@@ -413,7 +413,7 @@ def main():
         # not already in the set, pink sits dE 19.3 from the nearest colour in
         # play against violet's 9.8 — violet is close to the very blue this is
         # separating from — and clears the contrast floor on this ground.
-        # Sized up from the store heroes: 2,782 dots on a 1680px frame, not
+        # Sized up from the store heroes: 3,077 dots on a 1680px frame, not
         # 150,000, so they have to carry at this scale to read at all.
         render(OUT / "day-7.png", 7,
                [{"xy": rest, "color": MUTED, "size": 1.6, "alpha": 0.45},

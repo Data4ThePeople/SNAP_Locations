@@ -50,7 +50,11 @@ Caracas, and a "China, Texas" Dollar General in Tibet) and 6 fall in the wrong
 state. ZIP codes are stored as numbers, so leading zeros are dropped: 48,413
 stores have 4-digit ZIPs and 335 have 3-digit ZIPs, mostly in New England, New
 Jersey and the Virgin Islands. We pad them back to 5 digits before comparing
-with the live feed. `mappable` excludes all three groups: 656,868 of
+with the live feed and before any ZIP-code count. Post 7 (August 28, 2026)
+first kept only 5-digit ZIPs and left out 16,918 stores authorized on
+December 31, 2025; it was corrected on November 10, 2026 (249,083 stores,
+3,169 ZIP codes, 6.1 million people). The scripts for posts 1, 4 and 5 still
+keep only 5-digit ZIPs; checking those posts is queued. `mappable` excludes all three groups: 656,868 of
 661,456 stores. One address can carry many records at once (the West Side
 Market in Cleveland has 144), so we never deduplicate by address. An exit in
 this file is a lost authorization, not necessarily a store that closed.
