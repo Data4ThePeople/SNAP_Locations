@@ -124,6 +124,11 @@ The chart below shows the number of people on SNAP each month since January 2020
 ![People on SNAP each month, January 2020 to July 2026](images/10-enrollment.png)
 *Source: USDA, SNAP Data Tables, data as of October 9, 2026. Pandemic school-meal benefits (P-EBT) are not counted.*
 
+The next chart shows how much enrollment changed from July 2025 to July 2026.
+
+![Change in people on SNAP, July 2025 to July 2026](images/11-enrollment-change.png)
+*Source: USDA, SNAP Data Tables, data as of October 9, 2026; New York State Office of Temporary and Disability Assistance for New York City.*
+
 We cannot know which of these matter most, or prove any of them. But the data is the data. About 22,000 stores left SNAP in ten months, nearly all of it before the November 4 compliance date. If we care about SNAP, we have to pay attention to this.
 
 ::: divider

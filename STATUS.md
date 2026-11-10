@@ -51,3 +51,4 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 Eric accepted edits 1 to 3: enrollment bullet now cites USDA (replaces Tufts), enrollment chart added as `images/10-enrollment.png`, enrollment sources added to How we did this.
 - 2026-11-10 Step 2a confirmed by Eric. Step 2b started: Eric edits POST.md, then Claude looks it over.
 - 2026-11-10 Eric asked for a chart of the enrollment changes in the why section: `post8-enrollment-change.png` (July 2025 to July 2026: limit states -20.1%, US -13.2%, other states and DC -11.3%, NYC -8.7%), copied to `images/11-enrollment-change.png`. Values are the tied-out JSON figures. Placement in POST.md proposed to Eric, not applied.
+- 2026-11-10 Eric accepted edit 4: enrollment change chart placed after the monthly enrollment chart.
