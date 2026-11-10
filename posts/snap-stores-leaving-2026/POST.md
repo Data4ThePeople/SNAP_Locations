@@ -2,7 +2,8 @@
 title: 8.8% of authorized SNAP stores have left the program in 2026
 subtitle: Between January 1 and November 5, 2026, almost 22,000 stores left SNAP, 88% more than the 2019 to 2025 average. Nearly all of it happened before the new stocking standard took effect.
 slug: snap-stores-leaving-2026
-date:
+date: 2026-11-10
+time: 07:45:00-05:00
 section: Data 4 Thought
 hero: images/snap-stores-leaving-2026-hero-1680x1080.png
 hero_alt: Dark map of the lower 48 states. Faint gray dots mark every store still authorized to accept SNAP. Orange dots mark the 9,290 independent convenience stores that left SNAP between January 1 and November 5, 2026. The orange clusters are thickest in large metro areas, including New York, Houston, Los Angeles, Chicago and South Florida. Text on the left reads: SNAP stores, 2026, left SNAP 9,290, Independent convenience stores, January 1 to November 5.
