@@ -1,6 +1,9 @@
 {
   "page_title": "8.8% of authorized SNAP stores have left the program in 2026",
   "page_subtitle": "Between January 1 and November 5, 2026, almost 22,000 stores left SNAP, 88% more than the 2019 to 2025 average. Nearly all of it happened before the new stocking standard took effect.",
+  "meta_title": "SNAP Stores Leaving in 2026: 8.8% Left the Program",
+  "meta_description": "Almost 22,000 stores left SNAP from January 1 to November 5, 2026, 88% more than usual, before the stocking rule took effect. See where.",
+  "meta_keywords": "SNAP stores leaving 2026, SNAP retailer stocking rule 2026, stores no longer accepting SNAP EBT, convenience stores dropping SNAP, New York bodegas SNAP, SNAP enrollment drop 2026, SNAP enrollment by state, counties with no SNAP retailer",
   "make_this_main_post": false,
   "slices": [
     {
@@ -77,11 +80,11 @@
           },
           {
             "type": "paragraph",
-            "text": "But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our interactive map.",
+            "text": "But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our free interactive map.",
             "spans": [
               {
-                "start": 252,
-                "end": 267,
+                "start": 257,
+                "end": 272,
                 "type": "hyperlink",
                 "data": {
                   "link_type": "Web",
@@ -458,7 +461,7 @@
         "paragraph_text": [
           {
             "type": "paragraph",
-            "text": "No place lost more convenience stores and small groceries from SNAP than New York City. The chart below ranks the places with the most exits of those two store types. New York City had 1,368. Harris County, Texas, was next, with 518.",
+            "text": "No place lost more convenience stores and small groceries from SNAP than New York City, where many of them are the corner stores known as bodegas. The chart below ranks the places with the most exits of those two store types. New York City had 1,368. Harris County, Texas, was next, with 518.",
             "spans": [],
             "direction": "ltr"
           }
@@ -1050,6 +1053,198 @@
         "paragraph_text": [
           {
             "type": "heading2",
+            "text": "Common questions",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "5px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "How many stores left SNAP in 2026?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "Between January 1 and November 5, 2026, 21,923 stores left SNAP. That is 8.8% of the stores authorized at the start of the year. The 2019 to 2025 average was 11,682.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "Did the stocking rule cause stores to leave SNAP?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "The rule's compliance date was November 4, 2026, so nearly all of these exits came before it. The data shows which stores left and where, but not why.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "How much did SNAP enrollment drop in 2026?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "USDA counts 36.1 million people on SNAP in July 2026, down 13.2% from July 2025.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "Which states had the largest drops in SNAP enrollment?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "From July 2025 to July 2026, Arizona fell 50.8%, Louisiana and Nevada 23.3%, Oklahoma 22.5%, and Florida 22.1%. Alaska was the only state that rose, by 3.5%.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading3",
+            "text": "Which counties have no SNAP store?",
+            "spans": [],
+            "direction": "ltr"
+          },
+          {
+            "type": "paragraph",
+            "text": "On November 5, 2026, 22 counties had no SNAP store. Two of them, Hayes County, Nebraska, and Harding County, New Mexico, lost their last one in 2026.",
+            "spans": [],
+            "direction": "ltr"
+          }
+        ]
+      }
+    },
+    {
+      "slice_type": "spacer",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "spacer_value": "20px"
+      }
+    },
+    {
+      "slice_type": "paragarph_text",
+      "slice_label": null,
+      "variation": "default",
+      "version": "initial",
+      "items": [],
+      "primary": {
+        "paragraph_text": [
+          {
+            "type": "heading2",
             "text": "How we did this",
             "spans": [],
             "direction": "ltr"
@@ -1192,5 +1387,5 @@
       }
     }
   ],
-  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"8.8% of authorized SNAP stores have left the program in 2026\",\n  \"description\": \"\",\n  \"articleSection\": \"Data 4 Thought\",\n  \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n  \"inLanguage\": \"en-US\",\n  \"isAccessibleForFree\": true,\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Eric Pachman\",\n    \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Data 4 The People\",\n    \"url\": \"https://data4thepeople.com\"\n  },\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": \"https://www.data4thepeople.com/p/snap-stores-leaving-2026\"\n  }\n}"
+  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@graph\": [\n    {\n      \"@type\": \"Article\",\n      \"headline\": \"8.8% of authorized SNAP stores have left the program in 2026\",\n      \"description\": \"Almost 22,000 stores left SNAP from January 1 to November 5, 2026, 88% more than usual, before the stocking rule took effect. See where.\",\n      \"articleSection\": \"Data 4 Thought\",\n      \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n      \"inLanguage\": \"en-US\",\n      \"isAccessibleForFree\": true,\n      \"keywords\": [\n        \"SNAP stores leaving 2026\",\n        \"SNAP retailer stocking rule 2026\",\n        \"stores no longer accepting SNAP EBT\",\n        \"convenience stores dropping SNAP\",\n        \"New York bodegas SNAP\",\n        \"SNAP enrollment drop 2026\",\n        \"SNAP enrollment by state\",\n        \"counties with no SNAP retailer\"\n      ],\n      \"author\": {\n        \"@type\": \"Person\",\n        \"name\": \"Eric Pachman\",\n        \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n      },\n      \"publisher\": {\n        \"@type\": \"Organization\",\n        \"name\": \"Data 4 The People\",\n        \"url\": \"https://data4thepeople.com\"\n      },\n      \"mainEntityOfPage\": {\n        \"@type\": \"WebPage\",\n        \"@id\": \"https://www.data4thepeople.com/p/snap-stores-leaving-2026\"\n      },\n      \"@id\": \"https://www.data4thepeople.com/p/snap-stores-leaving-2026#article\"\n    },\n    {\n      \"@type\": \"FAQPage\",\n      \"@id\": \"https://www.data4thepeople.com/p/snap-stores-leaving-2026#faq\",\n      \"mainEntity\": [\n        {\n          \"@type\": \"Question\",\n          \"name\": \"How many stores left SNAP in 2026?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"Between January 1 and November 5, 2026, 21,923 stores left SNAP. That is 8.8% of the stores authorized at the start of the year. The 2019 to 2025 average was 11,682.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"Did the stocking rule cause stores to leave SNAP?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"The rule's compliance date was November 4, 2026, so nearly all of these exits came before it. The data shows which stores left and where, but not why.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"How much did SNAP enrollment drop in 2026?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"USDA counts 36.1 million people on SNAP in July 2026, down 13.2% from July 2025.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"Which states had the largest drops in SNAP enrollment?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"From July 2025 to July 2026, Arizona fell 50.8%, Louisiana and Nevada 23.3%, Oklahoma 22.5%, and Florida 22.1%. Alaska was the only state that rose, by 3.5%.\"\n          }\n        },\n        {\n          \"@type\": \"Question\",\n          \"name\": \"Which counties have no SNAP store?\",\n          \"acceptedAnswer\": {\n            \"@type\": \"Answer\",\n            \"text\": \"On November 5, 2026, 22 counties had no SNAP store. Two of them, Hayes County, Nebraska, and Harding County, New Mexico, lost their last one in 2026.\"\n          }\n        }\n      ]\n    }\n  ]\n}"
 }

@@ -6,9 +6,9 @@ date:
 section: Data 4 Thought
 hero: images/snap-stores-leaving-2026-hero-1680x1080.png
 hero_alt: Dark map of the lower 48 states. Faint gray dots mark every store still authorized to accept SNAP. Orange dots mark the 9,290 independent convenience stores that left SNAP between January 1 and November 5, 2026. The orange clusters are thickest in large metro areas, including New York, Houston, Los Angeles, Chicago and South Florida. Text on the left reads: SNAP stores, 2026, left SNAP 9,290, Independent convenience stores, January 1 to November 5.
-meta_title:
-description:
-keywords:
+meta_title: SNAP Stores Leaving in 2026: 8.8% Left the Program
+description: Almost 22,000 stores left SNAP from January 1 to November 5, 2026, 88% more than usual, before the stocking rule took effect. See where.
+keywords: SNAP stores leaving 2026, SNAP retailer stocking rule 2026, stores no longer accepting SNAP EBT, convenience stores dropping SNAP, New York bodegas SNAP, SNAP enrollment drop 2026, SNAP enrollment by state, counties with no SNAP retailer
 schema_type: article
 drop_cap: true
 heading_spacer: 20px
@@ -29,7 +29,7 @@ The rule took effect on November 4. Here is what it requires:
 
 USDA estimated that about 5,000 stores could be denied under the new standard, and that about 500 of them would not come back.
 
-But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our [interactive map](https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html).
+But it turns out that while we were bracing ourselves for the fallout from the stocking rule, stores were already leaving SNAP faster than usual in 2026. So we checked USDA's list again. You can see every SNAP store, updated through November 5, on our free [interactive map](https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html).
 
 This post shows what has transpired throughout 2026. To be clear, there is no single answer for what has caused the unusually large drop in stores authorized to accept SNAP this year. Rather, it seems to be many drivers coming together at once, and they affect Americans who rely on food assistance. 
 
@@ -71,7 +71,7 @@ The map shows where those 9,290 stores were. They are spread across the country,
 
 ::: spacer 5px
 
-No place lost more convenience stores and small groceries from SNAP than New York City. The chart below ranks the places with the most exits of those two store types. New York City had 1,368. Harris County, Texas, was next, with 518.
+No place lost more convenience stores and small groceries from SNAP than New York City, where many of them are the corner stores known as bodegas. The chart below ranks the places with the most exits of those two store types. New York City had 1,368. Harris County, Texas, was next, with 518.
 
 ![Places with the most convenience stores and small groceries leaving SNAP, 2026](images/05-places.png)
 *New York City's five boroughs are counted as one place, which favors it against single counties. Source: USDA.*
@@ -137,6 +137,25 @@ We cannot know which of these changes matter most. Ideally, we would make one ch
 But we can say this. Whatever the causes, 2026 brought major changes to both the stores in SNAP and the number of people receiving the benefit. There is a lot of talk about how to make life more affordable for Americans right now, especially our most vulnerable Americans. If you are working on this, start here with SNAP, and use the map to see what happened in your community. This also could help you understand what could be coming soon in Medicaid.
 
 ::: divider
+
+## Common questions
+
+::: spacer 5px
+
+### How many stores left SNAP in 2026?
+Between January 1 and November 5, 2026, 21,923 stores left SNAP. That is 8.8% of the stores authorized at the start of the year. The 2019 to 2025 average was 11,682.
+
+### Did the stocking rule cause stores to leave SNAP?
+The rule's compliance date was November 4, 2026, so nearly all of these exits came before it. The data shows which stores left and where, but not why.
+
+### How much did SNAP enrollment drop in 2026?
+USDA counts 36.1 million people on SNAP in July 2026, down 13.2% from July 2025.
+
+### Which states had the largest drops in SNAP enrollment?
+From July 2025 to July 2026, Arizona fell 50.8%, Louisiana and Nevada 23.3%, Oklahoma 22.5%, and Florida 22.1%. Alaska was the only state that rose, by 3.5%.
+
+### Which counties have no SNAP store?
+On November 5, 2026, 22 counties had no SNAP store. Two of them, Hayes County, Nebraska, and Harding County, New Mexico, lost their last one in 2026.
 
 ## How we did this
 

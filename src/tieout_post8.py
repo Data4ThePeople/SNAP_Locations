@@ -456,7 +456,8 @@ def main():
             a, b = int(ser.loc[(yy, mm)]), int(ser.loc[(2026, 7)])
             tie(f"Enrollment {g} {k}: persons at start", ej[g][k]["from"], a)
             tie(f"Enrollment {g} {k} to Jul 2026: % change", ej[g][k]["pct"], r1(100 * (b - a) / a))
-    for st_name, code in (("Texas", "TX"), ("Florida", "FL")):
+    for st_name, code in (("Texas", "TX"), ("Florida", "FL"), ("Louisiana", "LA"), ("Nevada", "NV"),
+                          ("Oklahoma", "OK"), ("Alaska", "AK")):
         ser = piv[st_name]
         tie(f"Enrollment: {st_name} Jul 2025 to Jul 2026 % change (post: about 20%)",
             ej["states_jul2025_jul2026"][code],
@@ -492,6 +493,12 @@ def main():
                       - nyc_s.reindex(piv.index)),
                      ("New York City", nyc_s)):
         tie(f"Enrollment chart: {lab}, people fewer Jul 2025 to Jul 2026", ej["chart_people_lost"][lab], lost(ser))
+    yoy_all = {c: r1(100 * (piv[c].loc[(2026, 7)] - piv[c].loc[(2025, 7)]) / piv[c].loc[(2025, 7)])
+               for c in states_cols}
+    top5 = sorted(yoy_all, key=yoy_all.get)[:5]
+    tie("Enrollment FAQ: five largest state drops, Jul 2025 to Jul 2026",
+        ["Arizona", "Louisiana", "Nevada", "Oklahoma", "Florida"], sorted(top5, key=lambda c: (yoy_all[c], c)))
+    tie("Enrollment FAQ: states that rose (post: Alaska only)", ["Alaska"], sorted(c for c, v in yoy_all.items() if v > 0))
     tie("Enrollment: US persons July 2026", ej["us"]["jul2025"]["to"], int(piv["US Summary"].loc[(2026, 7)]))
     tie("Enrollment: NYC persons August 2026", ej["nyc_latest"]["persons"], int(nyc_s.loc[(2026, 8)]))
     us20 = piv["US Summary"].loc[(2020, 1):(2026, 7)]

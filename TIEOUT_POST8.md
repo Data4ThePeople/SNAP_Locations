@@ -213,6 +213,10 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment rest_of_ny_otda dec2025 to Jul 2026: % change | -6.3 | -6.3 | match |
 | Enrollment: Texas Jul 2025 to Jul 2026 % change (post: about 20%) | -19.8 | -19.8 | match |
 | Enrollment: Florida Jul 2025 to Jul 2026 % change (post: about 20%) | -22.1 | -22.1 | match |
+| Enrollment: Louisiana Jul 2025 to Jul 2026 % change (post: about 20%) | -23.3 | -23.3 | match |
+| Enrollment: Nevada Jul 2025 to Jul 2026 % change (post: about 20%) | -23.3 | -23.3 | match |
+| Enrollment: Oklahoma Jul 2025 to Jul 2026 % change (post: about 20%) | -22.5 | -22.5 | match |
+| Enrollment: Alaska Jul 2025 to Jul 2026 % change (post: about 20%) | 3.5 | 3.5 | match |
 | Enrollment trifecta_2026 Republican (23 states): Jul 2025 to Jul 2026 % change | -16.1 | -16.1 | match |
 | Enrollment trifecta_2026 Democratic (16 states): Jul 2025 to Jul 2026 % change | -10.1 | -10.1 | match |
 | Enrollment trifecta_2026 Divided (11 states): Jul 2025 to Jul 2026 % change | -14.9 | -14.9 | match |
@@ -231,6 +235,8 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment chart: Divided states, people fewer Jul 2025 to Jul 2026 | 1,228,514 | 1,228,514 | match |
 | Enrollment chart: Democratic trifecta states*, people fewer Jul 2025 to Jul 2026 | 1,564,460 | 1,564,460 | match |
 | Enrollment chart: New York City, people fewer Jul 2025 to Jul 2026 | 155,393 | 155,393 | match |
+| Enrollment FAQ: five largest state drops, Jul 2025 to Jul 2026 | ['Arizona', 'Louisiana', 'Nevada', 'Oklahoma', 'Florida'] | ['Arizona', 'Louisiana', 'Nevada', 'Oklahoma', 'Florida'] | match |
+| Enrollment FAQ: states that rose (post: Alaska only) | ['Alaska'] | ['Alaska'] | match |
 | Enrollment: US persons July 2026 | 36,087,667 | 36,087,667 | match |
 | Enrollment: NYC persons August 2026 | 1,613,318 | 1,613,318 | match |
 | Enrollment: 2020-2026 peak month | 2024-10 | 2024-10 | match |
