@@ -462,6 +462,24 @@ def main():
     tie("Enrollment: Texas and Florida share of limit-state loss (%)",
         ej["tx_fl_share_of_limit_loss_jul2025_jul2026"],
         int(Decimal(100 * txfl / (lim.loc[(2025, 7)] - lim.loc[(2026, 7)])).quantize(Decimal("1"), ROUND_HALF_UP)))
+    tri = pd.read_csv(ROOT / "data/raw/ballotpedia/trifectas-2025-2026.csv")
+    for yr, key in ((2026, "trifecta_2026"), (2025, "trifecta_2025_check")):
+        t = tri[tri["year"] == yr].set_index("state")["trifecta"]
+        t = t.map({"R": "Republican", "D": "Democratic"}).fillna("Divided")
+        for party in ("Republican", "Democratic", "Divided"):
+            cols = list(t[t == party].index)
+            ser = piv[cols].sum(axis=1)
+            if "New York" in cols:
+                ser = ser - nyc_s.reindex(ser.index)
+            a, b = ser.loc[(2025, 7)], ser.loc[(2026, 7)]
+            tie(f"Enrollment {key} {party} ({len(cols)} states): Jul 2025 to Jul 2026 % change",
+                ej[key][party]["jul2025"]["pct"], r1(100 * (b - a) / a))
+        for lab, party, drop in (("Divided_excl_AZ", "Divided", {"Arizona"}),
+                                 ("Republican_excl_TX_FL", "Republican", {"Texas", "Florida"})):
+            ser = piv[[c for c in t[t == party].index if c not in drop]].sum(axis=1)
+            a, b = ser.loc[(2025, 7)], ser.loc[(2026, 7)]
+            tie(f"Enrollment {key} {lab}: Jul 2025 to Jul 2026 % change",
+                ej[key][lab]["jul2025"]["pct"], r1(100 * (b - a) / a))
     tie("Enrollment: US persons July 2026", ej["us"]["jul2025"]["to"], int(piv["US Summary"].loc[(2026, 7)]))
     tie("Enrollment: NYC persons August 2026", ej["nyc_latest"]["persons"], int(nyc_s.loc[(2026, 8)]))
     us20 = piv["US Summary"].loc[(2020, 1):(2026, 7)]

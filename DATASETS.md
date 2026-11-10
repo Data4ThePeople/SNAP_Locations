@@ -291,7 +291,7 @@ replacement, which makes "not replaced" counts lower, not higher.
 - **Known issue:** a partial federal shutdown moved February 2019 benefits into January 2019, so USDA's February 2019 count (7.6 million people) is not a real drop. The chart starts in January 2020.
 - **Used in post 8** (`src/analysis/post8_enrollment.py`, `reports/data/post8_enrollment.json`, `post8-enrollment.png`):
   - People on SNAP nationally each month, January 2020 to July 2026.
-  - Percent change in people on SNAP from January 2025, July 2025 and December 2025 to July 2026, for the US Summary, the ten states with soda or candy limits in 2026 (the same list as the restriction-state split), the other 40 states plus DC (territories left out), and New York State. The post uses July 2025 to July 2026 in `post8-enrollment-change.png`: limit states -20.1%, US -13.2%, other states and DC -11.3%, New York City -8.7% (from the OTDA file below). Arizona, which has no soda or candy limit, is in the other-states group; without it that group fell 10.2%. Texas and Florida account for 70% of the people the limit-state group lost.
+  - Percent change in people on SNAP from January 2025, July 2025 and December 2025 to July 2026, for the US Summary, the ten states with soda or candy limits in 2026 (the same list as the restriction-state split), the other 40 states plus DC (territories left out), and New York State. The post text cites July 2025 to July 2026 for limit states (-20.1%) and other states and DC (-11.3%). The chart `post8-enrollment-change.png` groups states by party control of state government in 2026 (see the Ballotpedia section): Republican trifecta states -16.1%, US -13.2%, divided states -14.9%, Democratic trifecta states not counting New York City -10.1%, New York City -8.7% (from the OTDA file below). Arizona is a divided state; without it that group fell 10.6%. Without Texas and Florida, Republican trifecta states fell 12.9%. With 2025 status instead (Virginia divided, not Democratic), the groups are -16.1%, -14.4% and -10.1%. Arizona, which has no soda or candy limit, is in the other-states group; without it that group fell 10.2%. Texas and Florida account for 70% of the people the limit-state group lost.
   - The change for each state and DC from July 2025 to July 2026 is kept in the JSON for reference. Arizona's -50.8% is real, not a file error: the Center on Budget and Policy Priorities reports the same figure ("nearly 51 percent lower"), and Arizona's Department of Economic Security has tied it to verification and processing problems in putting the 2025 law in place.
   - Outside check: CBPP's SNAP Tracker reports a national drop of 5.5 million people (13 percent) from July 2025 to July 2026, with every state but Alaska down. Our figures match (5,511,740 people; Alaska +3.5%).
   - These are patterns next to the store exits. They do not show that falling enrollment caused any store to leave SNAP.
@@ -304,6 +304,15 @@ replacement, which makes "not replaced" counts lower, not higher.
 - **Fields used:** `year`, `month`, `district`, `total_snap_persons`.
 - **Check against USDA:** the 58 districts summed equal USDA's New York State figure in every start and end month used (for example, 2,667,525 people in July 2026 in both).
 - **Used in post 8:** percent change in people on SNAP in New York City and in the rest of New York State (all districts minus New York City), over the same months as the USDA figures. July 2026 is the end month so the city matches the national figures; the August 2026 city count is kept in the JSON for reference.
+
+## Party control of state government (Ballotpedia)
+
+- **What:** for each state and year, the party of the governor and of each legislative chamber, and whether one party holds all three (a trifecta).
+- **Where:** Ballotpedia's "Party control of [state] state government" pages and "Historical and potential changes in trifectas", pulled for Eric's earlier analysis in the SUD_V3 project (`scripts/build_trifectas.py`, checked against Ballotpedia's yearly totals). The 2025 and 2026 rows are copied to `data/raw/ballotpedia/trifectas-2025-2026.csv`.
+- **Fields used:** `state`, `year`, `trifecta` (R, D or divided).
+- **Rules:** Nebraska's one-house legislature is nonpartisan, and Ballotpedia counts its trifecta by the governor's party (Republican). A year is the year officeholders served, so Virginia shows as divided in 2025 and Democratic in 2026. DC has no state government and is in no group; territories are left out.
+- **2026 groups:** 23 Republican, 16 Democratic, 11 divided (Alaska, Arizona, Kansas, Kentucky, Michigan, Minnesota, Nevada, North Carolina, Pennsylvania, Vermont, Wisconsin).
+- **Used in post 8:** the enrollment change chart groups states this way. It shows where enrollment fell more. It does not show that party control, or any one policy, caused it.
 
 ## Curated brand and parent-company files (Data 4 The People)
 

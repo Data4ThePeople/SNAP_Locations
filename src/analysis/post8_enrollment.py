@@ -24,6 +24,16 @@ Groups: limit states are the ten states with SNAP soda or candy limits in
 2026 (post8_left2026.RESTRICTED); other states are the remaining 40 states
 and DC. Territories are left out.
 
+Trifectas: Ballotpedia party control of state government (copied from Eric's
+earlier analysis to data/raw/ballotpedia/trifectas-2025-2026.csv). A state is
+a Republican or Democratic trifecta when one party holds the governor's office
+and both legislative chambers; otherwise divided. Nebraska's one-house
+legislature is nonpartisan and Ballotpedia counts it by the governor's party.
+Groups use 2026 status (Virginia became a Democratic trifecta in January 2026;
+2025 status is kept as a check). New York City is split out of New York, a
+Democratic trifecta, using the OTDA file; DC has no state government and is in
+no trifecta group.
+
 Writes reports/data/post8_enrollment.json and post8-enrollment.png.
 
     python -m analysis.post8_enrollment      (from src/)
@@ -62,6 +72,7 @@ STATE_ABBR = {
     "West Virginia": "WV", "Wisconsin": "WI", "Wyoming": "WY"}
 STARTS = {"jan2025": (2025, 1), "jul2025": (2025, 7), "dec2025": (2025, 12)}
 END = (2026, 7)
+TRIFECTAS = ROOT / "data" / "raw" / "ballotpedia" / "trifectas-2025-2026.csv"
 
 
 def pct1(a, b):
@@ -128,6 +139,14 @@ def load_ny():
     return nyc, nys
 
 
+def load_trifectas(year):
+    with open(TRIFECTAS, newline="") as f:
+        rows = [r for r in csv.DictReader(f) if r["year"] == str(year)]
+    assert len(rows) == 50
+    return {STATE_ABBR[r["state"]]: {"R": "Republican", "D": "Democratic"}.get(r["trifecta"], "Divided")
+            for r in rows}
+
+
 def changes(series):
     return {name: {"from": series[s], "to": series[END], "pct": pct1(series[s], series[END])}
             for name, s in STARTS.items()}
@@ -143,6 +162,19 @@ def main():
     other = sum_of(sorted(set(states) - RESTRICTED))
     rest_ny = {k: nys[k] - nyc[k] for k in nyc}
 
+    def trifecta_groups(year):
+        tri = load_trifectas(year)
+        g = {}
+        for party in ("Republican", "Democratic", "Divided"):
+            codes = sorted(c for c, t in tri.items() if t == party)
+            ser = sum_of(codes)
+            if "NY" in codes:   # New York City is shown on its own
+                ser = {k: v - nyc[k] for k, v in ser.items() if k in nyc}
+            g[party] = {"states": codes, **changes(ser)}
+        g["Divided_excl_AZ"] = changes(sum_of(sorted(set(g["Divided"]["states"]) - {"AZ"})))
+        g["Republican_excl_TX_FL"] = changes(sum_of(sorted(set(g["Republican"]["states"]) - {"TX", "FL"})))
+        return g
+
     months = sorted(k for k in us if (2019, 1) <= k <= END)
     chart_months = [k for k in months if k >= (2020, 1)]
     out = {
@@ -157,6 +189,8 @@ def main():
         "tx_fl_share_of_limit_loss_jul2025_jul2026": round(100 * sum(
             states[c][(2025, 7)] - states[c][END] for c in ("TX", "FL"))
             / (limit[(2025, 7)] - limit[END])),
+        "trifecta_2026": trifecta_groups(2026),
+        "trifecta_2025_check": trifecta_groups(2025),
         "ny_state_usda": changes(states["NY"]),
         "ny_state_otda": changes(nys),
         "nyc_otda": changes(nyc),
@@ -182,16 +216,18 @@ def main():
     print(f"wrote {IMG / 'post8-enrollment.png'}")
 
     yoy = lambda k: out[k]["jul2025"]["pct"]
+    tri = lambda p: out["trifecta_2026"][p]["jul2025"]["pct"]
     figures.hbar_png(
         IMG / "post8-enrollment-change.png",
-        [{"label": "States with soda or candy limits", "value": yoy("limit_states"), "slot": 1},
+        [{"label": "Republican trifecta states", "value": tri("Republican"), "slot": 1},
          {"label": "United States", "value": yoy("us"), "slot": 0},
-         {"label": "Other states and DC", "value": yoy("other_states"), "slot": 1},
+         {"label": "Divided states", "value": tri("Divided"), "slot": 1},
+         {"label": "Democratic trifecta states*", "value": tri("Democratic"), "slot": 1},
          {"label": "New York City", "value": yoy("nyc_otda"), "slot": 1}],
         suffix="%", direction="left",
         title="Change in people on SNAP, July 2025 to July 2026",
-        subtitle="Source: USDA, SNAP Data Tables, data as of October 9, 2026;\n"
-                 "New York State OTDA for New York City.")
+        subtitle="By party control of state government in 2026. *Not counting New York City.\n"
+                 "Source: USDA; New York State OTDA; Ballotpedia.")
     print(f"wrote {IMG / 'post8-enrollment-change.png'}")
 
 

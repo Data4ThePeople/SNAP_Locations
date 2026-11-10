@@ -1,0 +1,101 @@
+state,year,governor,senate,house,trifecta
+Alabama,2025,R,R,R,R
+Alabama,2026,R,R,R,R
+Alaska,2025,R,S,S,divided
+Alaska,2026,R,S,S,divided
+Arizona,2025,D,R,R,divided
+Arizona,2026,D,R,R,divided
+Arkansas,2025,R,R,R,R
+Arkansas,2026,R,R,R,R
+California,2025,D,D,D,D
+California,2026,D,D,D,D
+Colorado,2025,D,D,D,D
+Colorado,2026,D,D,D,D
+Connecticut,2025,D,D,D,D
+Connecticut,2026,D,D,D,D
+Delaware,2025,D,D,D,D
+Delaware,2026,D,D,D,D
+Florida,2025,R,R,R,R
+Florida,2026,R,R,R,R
+Georgia,2025,R,R,R,R
+Georgia,2026,R,R,R,R
+Hawaii,2025,D,D,D,D
+Hawaii,2026,D,D,D,D
+Idaho,2025,R,R,R,R
+Idaho,2026,R,R,R,R
+Illinois,2025,D,D,D,D
+Illinois,2026,D,D,D,D
+Indiana,2025,R,R,R,R
+Indiana,2026,R,R,R,R
+Iowa,2025,R,R,R,R
+Iowa,2026,R,R,R,R
+Kansas,2025,D,R,R,divided
+Kansas,2026,D,R,R,divided
+Kentucky,2025,D,R,R,divided
+Kentucky,2026,D,R,R,divided
+Louisiana,2025,R,R,R,R
+Louisiana,2026,R,R,R,R
+Maine,2025,D,D,D,D
+Maine,2026,D,D,D,D
+Maryland,2025,D,D,D,D
+Maryland,2026,D,D,D,D
+Massachusetts,2025,D,D,D,D
+Massachusetts,2026,D,D,D,D
+Michigan,2025,D,D,R,divided
+Michigan,2026,D,D,R,divided
+Minnesota,2025,D,D,S,divided
+Minnesota,2026,D,D,S,divided
+Mississippi,2025,R,R,R,R
+Mississippi,2026,R,R,R,R
+Missouri,2025,R,R,R,R
+Missouri,2026,R,R,R,R
+Montana,2025,R,R,R,R
+Montana,2026,R,R,R,R
+Nebraska,2025,R,-,-,R
+Nebraska,2026,R,-,-,R
+Nevada,2025,R,D,D,divided
+Nevada,2026,R,D,D,divided
+New Hampshire,2025,R,R,R,R
+New Hampshire,2026,R,R,R,R
+New Jersey,2025,D,D,D,D
+New Jersey,2026,D,D,D,D
+New Mexico,2025,D,D,D,D
+New Mexico,2026,D,D,D,D
+New York,2025,D,D,D,D
+New York,2026,D,D,D,D
+North Carolina,2025,D,R,R,divided
+North Carolina,2026,D,R,R,divided
+North Dakota,2025,R,R,R,R
+North Dakota,2026,R,R,R,R
+Ohio,2025,R,R,R,R
+Ohio,2026,R,R,R,R
+Oklahoma,2025,R,R,R,R
+Oklahoma,2026,R,R,R,R
+Oregon,2025,D,D,D,D
+Oregon,2026,D,D,D,D
+Pennsylvania,2025,D,R,D,divided
+Pennsylvania,2026,D,R,D,divided
+Rhode Island,2025,D,D,D,D
+Rhode Island,2026,D,D,D,D
+South Carolina,2025,R,R,R,R
+South Carolina,2026,R,R,R,R
+South Dakota,2025,R,R,R,R
+South Dakota,2026,R,R,R,R
+Tennessee,2025,R,R,R,R
+Tennessee,2026,R,R,R,R
+Texas,2025,R,R,R,R
+Texas,2026,R,R,R,R
+Utah,2025,R,R,R,R
+Utah,2026,R,R,R,R
+Vermont,2025,R,D,D,divided
+Vermont,2026,R,D,D,divided
+Virginia,2025,R,D,D,divided
+Virginia,2026,D,D,D,D
+Washington,2025,D,D,D,D
+Washington,2026,D,D,D,D
+West Virginia,2025,R,R,R,R
+West Virginia,2026,R,R,R,R
+Wisconsin,2025,D,R,R,divided
+Wisconsin,2026,D,R,R,divided
+Wyoming,2025,R,R,R,R
+Wyoming,2026,R,R,R,R

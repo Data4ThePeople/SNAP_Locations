@@ -223,6 +223,16 @@ Recomputed by `src/tieout_post8.py` from `data/raw/hist.csv` and `data/raw/live/
 | Enrollment rest_of_ny_otda dec2025 to Jul 2026: % change | -6.3 | -6.3 | match |
 | Enrollment: other states and DC without Arizona, Jul 2025 to Jul 2026 % change | -10.2 | -10.2 | match |
 | Enrollment: Texas and Florida share of limit-state loss (%) | 70 | 70 | match |
+| Enrollment trifecta_2026 Republican (23 states): Jul 2025 to Jul 2026 % change | -16.1 | -16.1 | match |
+| Enrollment trifecta_2026 Democratic (16 states): Jul 2025 to Jul 2026 % change | -10.1 | -10.1 | match |
+| Enrollment trifecta_2026 Divided (11 states): Jul 2025 to Jul 2026 % change | -14.9 | -14.9 | match |
+| Enrollment trifecta_2026 Divided_excl_AZ: Jul 2025 to Jul 2026 % change | -10.6 | -10.6 | match |
+| Enrollment trifecta_2026 Republican_excl_TX_FL: Jul 2025 to Jul 2026 % change | -12.9 | -12.9 | match |
+| Enrollment trifecta_2025_check Republican (23 states): Jul 2025 to Jul 2026 % change | -16.1 | -16.1 | match |
+| Enrollment trifecta_2025_check Democratic (15 states): Jul 2025 to Jul 2026 % change | -10.1 | -10.1 | match |
+| Enrollment trifecta_2025_check Divided (12 states): Jul 2025 to Jul 2026 % change | -14.4 | -14.4 | match |
+| Enrollment trifecta_2025_check Divided_excl_AZ: Jul 2025 to Jul 2026 % change | -10.5 | -10.5 | match |
+| Enrollment trifecta_2025_check Republican_excl_TX_FL: Jul 2025 to Jul 2026 % change | -12.9 | -12.9 | match |
 | Enrollment: US persons July 2026 | 36,087,667 | 36,087,667 | match |
 | Enrollment: NYC persons August 2026 | 1,613,318 | 1,613,318 | match |
 | Enrollment: 2020-2026 peak month | 2024-10 | 2024-10 | match |
