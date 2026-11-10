@@ -177,6 +177,19 @@ def main():
         xticks=[(y, str(y)) for y in range(2020, 2027)])
     print(f"wrote {IMG / 'post8-enrollment.png'}")
 
+    yoy = lambda k: out[k]["jul2025"]["pct"]
+    figures.hbar_png(
+        IMG / "post8-enrollment-change.png",
+        [{"label": "States with soda or candy limits", "value": yoy("limit_states"), "slot": 1},
+         {"label": "United States", "value": yoy("us"), "slot": 0},
+         {"label": "Other states and DC", "value": yoy("other_states"), "slot": 1},
+         {"label": "New York City", "value": yoy("nyc_otda"), "slot": 1}],
+        suffix="%", direction="left",
+        title="Change in people on SNAP, July 2025 to July 2026",
+        subtitle="Source: USDA, SNAP Data Tables, data as of October 9, 2026;\n"
+                 "New York State OTDA for New York City.")
+    print(f"wrote {IMG / 'post8-enrollment-change.png'}")
+
 
 if __name__ == "__main__":
     main()
