@@ -6,7 +6,7 @@ Process: ~/.claude/d4tp-process/PROCESS.md
 ## Current
 
 Post: post 8, `snap-stores-leaving-2026` (posts 0 to 7 in `reports/` were published before this file existed)
-Step: 2g
+Step: complete (social posts in progress)
 Since: 2026-11-10
 
 ## Steps
@@ -20,7 +20,7 @@ Since: 2026-11-10
 | 2d | Hero 1680x1080 + alt text | 2026-11-10 | From chart 04, series frame |
 | 2e | SEO | 2026-11-10 | FAQ, 8 keywords, 3 internal links |
 | 2f | Pushed to Prismic (draft) | 2026-11-10 | avMNtREAAC4AXEpG; Eric published it Nov 10 |
-| 2g | Mailchimp teaser | | |
+| 2g | Mailchimp teaser | 2026-11-10 | Approved |
 
 ## Queued after post 8
 
@@ -82,3 +82,5 @@ None. No later step had been confirmed under this file.
 - 2026-11-10 2g: at Eric's request the email ends on his two conclusion paragraphs (verbatim from the post) in place of the Hayes County paragraph.
 - 2026-11-10 2g: Eric accepted email edits 23 and 24 (conclusion reworded to stand on its own in the email; map pointed to the full report).
 - 2026-11-10 2g: at Eric's request, the email's last two paragraphs are now Claude's short transition carrying the conclusion's message (many changes at once; big changes to stores and enrollment; the map for your community; Arizona and Medicaid) instead of the conclusion verbatim.
+- 2026-11-10 Step 2g confirmed by Eric. Post 8 complete. Social posts started (X as a thread, per Eric).
+- 2026-11-10 Social: `SOCIAL.md` drafted (X thread of 7, LinkedIn with link in first comment, alt text). Eric's GIF idea: a map over time showing the 2026 drop-off.
