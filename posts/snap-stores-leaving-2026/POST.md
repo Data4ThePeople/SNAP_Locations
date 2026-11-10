@@ -112,7 +112,7 @@ The 2026 ratio rose on both sides. Exits went up, and new stores went down, from
 The data shows which stores left and where. It cannot show why. Several things changed for SNAP stores at about the same time, and any of them could be part of it:
 
 - **State limits on buying soda and candy with SNAP.** Ten states had these limits in effect at some point in 2026. Convenience stores left SNAP at a higher rate in those states than in the rest of the country, as the chart below shows. A peer-reviewed study of the same USDA list found about 1.4% fewer convenience stores in SNAP in states with the limits than would have been expected. That is a real difference, but smaller than the rise we see, and the rise happened in states without limits too.
-- **Fewer people on SNAP.** The July 2025 budget law changed who qualifies for SNAP. USDA's numbers show 36.1 million people on SNAP in July 2026, down 13.2% from July 2025. Enrollment fell 20.1% in the states with soda or candy limits and 11.3% in the other states. In New York City, where stores left at the highest rate, enrollment fell 8.7%, less than the national drop. Fewer SNAP shoppers would mean less SNAP business for stores, and USDA's own analysis says stores with the lowest SNAP sales may be the most likely to drop out.
+- **Fewer people on SNAP.** The July 2025 budget law changed who qualifies for SNAP. USDA's numbers show 36.1 million people on SNAP in July 2026, down 13.2% from July 2025. In New York City, where stores left at the highest rate, enrollment fell 8.7%, less than the national drop. Fewer SNAP shoppers would mean less SNAP business for stores, and USDA's own analysis says stores with the lowest SNAP sales may be the most likely to drop out.
 - **Stores leaving ahead of the stocking rule.** The rule was published on May 8, and USDA's guidance came in September. Some stores may have decided not to restock and left early. The data cannot test this.
 - **USDA enforcement.** USDA could have removed more stores for rule violations. We did not test this.
 
@@ -124,7 +124,7 @@ The chart below shows the number of people on SNAP each month since January 2020
 ![People on SNAP each month, January 2020 to July 2026](images/10-enrollment.png)
 *Source: USDA, SNAP Data Tables, data as of October 9, 2026. Pandemic school-meal benefits (P-EBT) are not counted.*
 
-The next chart shows how much enrollment changed from July 2025 to July 2026.
+The next chart compares the change in enrollment from July 2025 to July 2026 in the United States and New York City.
 
 ![Change in people on SNAP, July 2025 to July 2026](images/11-enrollment-change.png)
 *Source: USDA, SNAP Data Tables, data as of October 9, 2026; New York State Office of Temporary and Disability Assistance for New York City.*

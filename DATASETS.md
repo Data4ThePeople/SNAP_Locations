@@ -291,7 +291,9 @@ replacement, which makes "not replaced" counts lower, not higher.
 - **Known issue:** a partial federal shutdown moved February 2019 benefits into January 2019, so USDA's February 2019 count (7.6 million people) is not a real drop. The chart starts in January 2020.
 - **Used in post 8** (`src/analysis/post8_enrollment.py`, `reports/data/post8_enrollment.json`, `post8-enrollment.png`):
   - People on SNAP nationally each month, January 2020 to July 2026.
-  - Percent change in people on SNAP from January 2025, July 2025 and December 2025 to July 2026, for the US Summary, the ten states with soda or candy limits in 2026 (the same list as the restriction-state split), the other 40 states plus DC (territories left out), and New York State.
+  - Percent change in people on SNAP from January 2025, July 2025 and December 2025 to July 2026, for the US Summary and New York State. The post uses July 2025 to July 2026 for the US (-13.2%) and New York City (-8.7%, from the OTDA file below), in `post8-enrollment-change.png`.
+  - The change for each state and DC from July 2025 to July 2026 is kept in the JSON for reference. Arizona's -50.8% is real, not a file error: the Center on Budget and Policy Priorities reports the same figure ("nearly 51 percent lower"), and Arizona's Department of Economic Security has tied it to verification and processing problems in putting the 2025 law in place.
+  - Outside check: CBPP's SNAP Tracker reports a national drop of 5.5 million people (13 percent) from July 2025 to July 2026, with every state but Alaska down. Our figures match (5,511,740 people; Alaska +3.5%).
   - These are patterns next to the store exits. They do not show that falling enrollment caused any store to leave SNAP.
 
 ## SNAP Caseloads and Expenditures: Beginning 2002 (New York State OTDA)

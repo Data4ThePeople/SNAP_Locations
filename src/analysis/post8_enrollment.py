@@ -20,9 +20,8 @@ the latest month USDA has published. The year-over-year change (July 2025 to
 July 2026) avoids seasonal swings; the January 2025 start matches the earlier
 draft language.
 
-Groups: limit states are the ten states with SNAP soda or candy limits in
-2026 (post8_left2026.RESTRICTED); other states are the remaining 40 states
-and DC. Territories are left out.
+States: the 50 states and DC are read into `states_jul2025_jul2026` for
+reference; territories are left out.
 
 Writes reports/data/post8_enrollment.json and post8-enrollment.png.
 
@@ -36,7 +35,6 @@ import openpyxl
 import xlrd
 
 from analysis import figures
-from analysis.post8_left2026 import RESTRICTED
 from config import ROOT
 
 RAW = ROOT / "data" / "raw" / "snap_participation"
@@ -137,10 +135,6 @@ def main():
     us, states = load_usda()
     assert len(states) == 51, sorted(states)
     nyc, nys = load_ny()
-    sum_of = lambda codes: {k: sum(states[c][k] for c in codes)
-                            for k in us if all(k in states[c] for c in codes)}
-    limit = sum_of(sorted(RESTRICTED))
-    other = sum_of(sorted(set(states) - RESTRICTED))
     rest_ny = {k: nys[k] - nyc[k] for k in nyc}
 
     months = sorted(k for k in us if (2019, 1) <= k <= END)
@@ -151,8 +145,6 @@ def main():
         "us_monthly": {f"{y}-{m:02d}": us[(y, m)] for y, m in months},
         "us": changes(us),
         "us_peak_2020_2026": max(((us[k], f"{k[0]}-{k[1]:02d}") for k in chart_months)),
-        "limit_states": changes(limit),
-        "other_states": changes(other),
         "ny_state_usda": changes(states["NY"]),
         "ny_state_otda": changes(nys),
         "nyc_otda": changes(nyc),
@@ -180,9 +172,7 @@ def main():
     yoy = lambda k: out[k]["jul2025"]["pct"]
     figures.hbar_png(
         IMG / "post8-enrollment-change.png",
-        [{"label": "States with soda or candy limits", "value": yoy("limit_states"), "slot": 1},
-         {"label": "United States", "value": yoy("us"), "slot": 0},
-         {"label": "Other states and DC", "value": yoy("other_states"), "slot": 1},
+        [{"label": "United States", "value": yoy("us"), "slot": 0},
          {"label": "New York City", "value": yoy("nyc_otda"), "slot": 1}],
         suffix="%", direction="left",
         title="Change in people on SNAP, July 2025 to July 2026",

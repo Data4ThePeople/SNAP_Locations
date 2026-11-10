@@ -415,8 +415,6 @@ def main():
     # Enrollment (USDA SNAP Data Tables, NY OTDA dq6j-8u8z), read with pandas.
     ej = json.loads((ROOT / "reports/data/post8_enrollment.json").read_text())
     praw = ROOT / "data/raw/snap_participation"
-    limit_st = {"Indiana", "Idaho", "Oklahoma", "Louisiana", "Texas", "Florida", "Utah",
-                "Iowa", "Nebraska", "West Virginia"}
     terr = {"Guam", "Virgin Islands", "Puerto Rico", "American Samoa",
             "Commonwealth of Northern Mariana Islands"}
     mon = {m: i + 1 for i, m in enumerate("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split())}
@@ -436,10 +434,10 @@ def main():
                    and c not in {"NERO", "MARO", "SERO", "MWRO", "SWRO", "MPRO", "WRO"}
                    and c in set(P["name"]) and P[P["name"] == c]["p"].max() > 10000]
     tie("Enrollment: states plus DC found in USDA files", 51, len(states_cols))
-    grp = {"us": piv["US Summary"],
-           "limit_states": piv[[c for c in states_cols if c in limit_st]].sum(axis=1),
-           "other_states": piv[[c for c in states_cols if c not in limit_st]].sum(axis=1),
-           "ny_state_usda": piv["New York"]}
+    grp = {"us": piv["US Summary"], "ny_state_usda": piv["New York"]}
+    az = piv["Arizona"]
+    tie("Enrollment: Arizona Jul 2025 to Jul 2026 % change (checked against CBPP, nearly 51%)",
+        ej["states_jul2025_jul2026"]["AZ"], r1(100 * (az.loc[(2026, 7)] - az.loc[(2025, 7)]) / az.loc[(2025, 7)]))
     ny = pd.read_csv(praw / "ny-snap-caseloads-dq6j-8u8z.csv")
     ny["m"] = pd.to_datetime(ny["month"], format="%B").dt.month
     nyt = ny.groupby(["year", "m"])["total_snap_persons"].sum()

@@ -167,8 +167,14 @@ September 25, 2025.)
 - **Fewer people on SNAP.** Tufts Now (Oct. 30) says enrollment "is falling
   fast" after the July 2025 budget law changed eligibility. Checked against
   USDA's SNAP Data Tables (data as of Oct. 9, 2026): 36.1 million people in
-  July 2026, down 13.2% from July 2025 and 14.9% from January 2025. Limit
-  states fell 20.1% from July 2025 to July 2026; other states and DC 11.3%.
+  July 2026, down 13.2% from July 2025 and 14.9% from January 2025 (CBPP's
+  SNAP Tracker reports the same 13%). Limit states fell 20.1% from July 2025
+  to July 2026 and other states and DC 11.3%, but limit states are spread
+  through the state ranking, and states without limits had some of the
+  largest drops; cut from the post as a likely confounded comparison.
+  Arizona fell 50.8%, the most of any state; Arizona DES points to
+  verification and processing problems (azfamily, July 23, 2026; KJZZ,
+  Aug. 24, 2026; CBPP SNAP Tracker).
   New York City (NY OTDA) fell 8.7%, less than the nation, though its store
   exit rate was the highest. See `reports/data/post8_enrollment.json`.
 
