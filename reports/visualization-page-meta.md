@@ -145,7 +145,8 @@ SNAP retailers, food stamp map, USDA SNAP data, food access, grocery store closu
           "license": "https://www.usda.gov/policies-and-links",
           "creator": {
             "@type": "Organization",
-            "name": "USDA Food and Nutrition Administration"
+            "name": "USDA Food and Nutrition Service",
+            "url": "https://www.fns.usda.gov"
           }
         }
       ]

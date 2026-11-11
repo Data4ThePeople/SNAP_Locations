@@ -1,0 +1,562 @@
+{
+ "uid": "snap-retailer-map",
+ "title": "Every Store That Accepted SNAP, 2006–2026",
+ "data": {
+  "make_this_main_post": false,
+  "page_title": "Every Store That Accepted SNAP, 2006–2026",
+  "page_subtitle": "An interactive map of all 673,325 retailers USDA authorized to accept food stamps over twenty years — by store type, by chain, and by the year each one arrived or left.",
+  "published_date": "2026-08-17",
+  "updated_date": "2026-11-11",
+  "featured_image": {
+   "id": "pjoHa92sUgFRjMVF",
+   "alt": "Dot map of 249,083 SNAP-authorized stores across the United States in 2025, chains in blue and independents in orange, dense east of the Mississippi and along the coasts, sparse across the interior West.",
+   "copyright": null,
+   "dimensions": {
+    "width": 1680,
+    "height": 1080
+   }
+  },
+  "author_details": {
+   "link_type": "Document",
+   "id": "aRNhChEAACMATbyE"
+  },
+  "slices": [
+   {
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null,
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "Updated, November 11, 2026",
+     "content": [
+      {
+       "type": "paragraph",
+       "text": "The map now ends on a new step: USDA's live list of SNAP stores on November 5, 2026. We also corrected the number of stores that never appear on the map because they opened and closed between two December 31sts. It is 14,520 (2.2%), not 45,704 (7.0%). The larger figure also counted 31,135 stores that left SNAP before the map's first step, December 31, 2006.",
+       "spans": [],
+       "direction": "ltr"
+      }
+     ]
+    }
+   },
+   {
+    "slice_type": "spacer",
+    "slice_label": null,
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    }
+   },
+   {
+    "variation": "fullWidth",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "html_content": [
+      {
+       "type": "preformatted",
+       "text": "<iframe                                                                                                                                                                    \n    src=\"https://data4thepeople.github.io/SNAP_Locations/dist/snap-map.html\"                                                                                                 \n    title=\"SNAP Retailers, 2006–2026\"                                                                                                                                        \n    width=\"100%\"                                                                                                                                                             \n    height=\"1200\"                                                                                                                                                            \n    style=\"width:100%;height:1200px;border:0;display:block\"                                                                                                                  \n    loading=\"lazy\"                                                                                                                                                           \n    allow=\"fullscreen\"                                                                                                                                                       \n    allowfullscreen></iframe> ",
+       "spans": [],
+       "direction": "ltr"
+      }
+     ],
+     "embed_height": "1200px"
+    },
+    "slice_type": "html_embed",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {},
+    "slice_type": "divider_dots",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "paragraph_text": [
+      {
+       "type": "heading1",
+       "text": "How this map was built",
+       "spans": [],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "paragarph_text",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "10px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "paragraph_text": [
+      {
+       "type": "paragraph",
+       "text": "A short version. Everything here is reproducible, and the full detail is linked at the end.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 91,
+         "type": "em"
+        }
+       ],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "paragarph_text",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "Where the data comes from",
+     "content": [
+      {
+       "type": "list-item",
+       "text": "USDA's SNAP Retailer Locator Historical Data, covering 2006–2025.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 44,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "USDA's live list of SNAP stores, saved November 5, 2026. It is the list behind USDA's online store locator. It shows every store authorized that day, with no dates.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 31,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "It is a public file. USDA lists every store it has authorized to accept SNAP, with an address and the dates the authorization started and ended.",
+       "spans": [],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "We add nothing to it. Every dot on the map is a row USDA published.",
+       "spans": [],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "What one dot means",
+     "content": [
+      {
+       "type": "list-item",
+       "text": "A store that was authorized on 31 December of the year you have selected.",
+       "spans": [
+        {
+         "start": 17,
+         "end": 42,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Move the year slider and the map redraws for that date.",
+       "spans": [],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "The last step is different. It shows the stores on USDA's live list on November 5, 2026, not a December 31.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 27,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "An authorization is not a storefront. When a record ends, the store may have closed — or it may still be open and simply stopped taking EBT. The file cannot tell those apart, and neither can we.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 37,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Because we use one date a year, 14,520 stores (2.2%) never appear at all. They opened and closed between two 31 Decembers.",
+       "spans": [
+        {
+         "start": 32,
+         "end": 72,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "How the file was cleaned",
+     "content": [
+      {
+       "type": "list-item",
+       "text": "703,441 rows became 661,456 stores. 37,941 stores hold more than one authorization, because authorizations lapse and restart. Counting rows instead of stores would double-count them.",
+       "spans": [
+        {
+         "start": 20,
+         "end": 34,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "We check every location against the borders of the US, its states and its territories. Three kinds of store fall out: 4,542 with no coordinates at all, 40 placed outside the country, and 6 whose coordinates disagree with their own listed state.",
+       "spans": [],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "656,868 stores have a location good enough to map. Of those, 611,213 appear on at least one year.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 14,
+         "type": "strong"
+        },
+        {
+         "start": 61,
+         "end": 68,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "The November 5, 2026 step adds 11,869 stores that are on the live list but not in the historical file. They are new to SNAP since the end of 2025 or missing from that file for other reasons. It leaves out Restaurant Meals Program sites and farmers' market entries the historical file has never carried.",
+       "spans": [
+        {
+         "start": 31,
+         "end": 44,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "The three ways a store is labelled",
+     "content": [
+      {
+       "type": "list-item",
+       "text": "Store format — USDA's own category, 18 of them, from supermarket to farmers' market. USDA assigns it and it never changes within a record.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 12,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Retailer — we match store names to 289 chains using a hand-checked list, and group those into 13 parent companies. Matching is on whole words, so \"Giant\" never matches inside \"Giants Deli\".",
+       "spans": [
+        {
+         "start": 0,
+         "end": 8,
+         "type": "strong"
+        },
+        {
+         "start": 35,
+         "end": 45,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Owner — chain, independent, or unknown: 192,307 / 341,325 / 123,236. A gas-station brand on the sign counts as unknown, not a chain, because a fuel brand is a supply contract and says nothing about who owns the store.",
+       "spans": [
+        {
+         "start": 0,
+         "end": 5,
+         "type": "strong"
+        },
+        {
+         "start": 111,
+         "end": 118,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "How we check our own work",
+     "content": [
+      {
+       "type": "list-item",
+       "text": "The map is rebuilt from the database on every run, and the code refuses to write it unless the counts match the database for all 20 years.",
+       "spans": [],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Store arrivals and departures have to add up exactly, every year, with nothing left over.",
+       "spans": [],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Where a claim depends on stores really closing, we test it against a source outside this file — a company's own reported store count, or the Census Bureau's count of business locations, which counts a store whether or not it takes EBT.",
+       "spans": [],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "What this data cannot tell you",
+     "content": [
+      {
+       "type": "list-item",
+       "text": "Nothing about prices, sales, floor space, or what is on the shelves. A dollar store and a supermarket each count as one dot.",
+       "spans": [
+        {
+         "start": 14,
+         "end": 67,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Nothing about how much SNAP money any store takes in. A 2019 Supreme Court case put those figures beyond public reach.",
+       "spans": [
+        {
+         "start": 14,
+         "end": 52,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      },
+      {
+       "type": "list-item",
+       "text": "Nothing about whether anyone has a car, which is often what decides if a store two towns over is reachable at all.",
+       "spans": [
+        {
+         "start": 14,
+         "end": 38,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "spacer_value": "20px"
+    },
+    "slice_type": "spacer",
+    "slice_label": null
+   },
+   {
+    "variation": "default",
+    "version": "initial",
+    "items": [],
+    "primary": {
+     "title": "The long version",
+     "content": [
+      {
+       "type": "paragraph",
+       "text": "Every figure, the pipeline that builds the map, the brand list, and the checks that have to pass before anything is published are all public:",
+       "spans": [],
+       "direction": "ltr"
+      },
+      {
+       "type": "paragraph",
+       "text": "github.com/Data4ThePeople/SNAP_Locations",
+       "spans": [
+        {
+         "start": 0,
+         "end": 40,
+         "type": "hyperlink",
+         "data": {
+          "link_type": "Web",
+          "url": "https://github.com/Data4ThePeople/SNAP_Locations",
+          "target": "_blank"
+         }
+        },
+        {
+         "start": 0,
+         "end": 40,
+         "type": "strong"
+        }
+       ],
+       "direction": "ltr"
+      }
+     ]
+    },
+    "slice_type": "highlited_page_blurb",
+    "slice_label": null
+   }
+  ],
+  "meta_description": "An interactive map of every store USDA authorized to accept SNAP from 2006 to 2026: 673,325 retailers by type, chain, and year. Free, sourced, reproducible.",
+  "meta_image": {
+   "id": "pjoHa92sUgFRjMVF",
+   "alt": "Dot map of 249,083 SNAP-authorized stores across the United States in 2025, chains in blue and independents in orange, dense east of the Mississippi and along the coasts, sparse across the interior West.",
+   "copyright": null,
+   "dimensions": {
+    "width": 2400,
+    "height": 1260
+   }
+  },
+  "meta_title": "SNAP Retailer Map: 673,325 Stores, 2006–2026",
+  "meta_keywords": "SNAP retailers, food stamp map, USDA SNAP data, food access, grocery store closures, dollar stores",
+  "schema": "{\n  \"@context\": \"https://schema.org\",\n  \"@graph\": [\n    {\n      \"@type\": \"Article\",\n      \"headline\": \"Every Store That Accepted SNAP, 2006–2026\",\n      \"description\": \"An interactive map of every store USDA authorized to accept SNAP from 2006 to 2026: 673,325 retailers by type, chain, and year. Free, sourced, reproducible.\",\n      \"image\": \"https://images.prismic.io/data4thepeople/pjoHa92sUgFRjMVF_snap-map-hero.png?auto=format,compress\",\n      \"datePublished\": \"2026-08-17T20:00:00-04:00\",\n      \"dateModified\": \"2026-11-11T14:00:00-05:00\",\n      \"articleSection\": \"Visualization\",\n      \"isPartOf\": { \"@type\": \"CreativeWorkSeries\", \"name\": \"The Stores That Stayed\" },\n      \"inLanguage\": \"en-US\",\n      \"isAccessibleForFree\": true,\n      \"keywords\": [\"SNAP retailers\", \"food stamp map\", \"USDA SNAP data\", \"food access\", \"grocery store closures\", \"dollar stores\"],\n      \"author\": {\n        \"@type\": \"Person\",\n        \"name\": \"Eric Pachman\",\n        \"url\": \"https://www.data4thepeople.com/authors/eric-pachman\"\n      },\n      \"publisher\": {\n        \"@type\": \"Organization\",\n        \"name\": \"Data 4 The People\",\n        \"url\": \"https://data4thepeople.com\"\n      },\n      \"mainEntityOfPage\": {\n        \"@type\": \"WebPage\",\n        \"@id\": \"https://www.data4thepeople.com/p/snap-retailer-map\"\n      }\n    },\n    {\n      \"@type\": \"Dataset\",\n      \"name\": \"SNAP-Authorized Retailers, United States, 2006–2026\",\n      \"description\": \"Every retail location USDA's Food and Nutrition Service authorized to accept SNAP benefits between 2006 and 2026, mapped by year. Derived from the SNAP Retailer Locator Historical Data, which runs through December 31, 2025, by resolving 703,441 authorization spells into 661,456 distinct stores, of which 656,868 carry coordinates that validate against US, state and territory borders. A store is counted as active in a year if an authorization covered December 31 of that year; 14,520 stores (2.2%) opened and closed between two such dates and never appear, and 31,135 more left SNAP before December 31, 2006. A final step shows USDA's live retailer list on November 5, 2026. It adds 11,869 stores not in the historical file and leaves out Restaurant Meals Program sites and farmers-market entries the historical file never carried. Each store carries USDA's own store-type category (18 values in the historical file, plus two broader types for stores only on the live list), a hand-checked retailer match (289 chains grouped into 13 parent companies), and an inferred owner class (chain, independent, or unknown). Fuel brands are classed as unknown rather than chain, because a fuel supply contract says nothing about who owns the store. No prices, sales, floor space, or redemption volumes are included; SNAP redemption figures are not public.\",\n      \"url\": \"https://www.data4thepeople.com/p/snap-retailer-map\",\n      \"license\": \"https://www.data4thepeople.com/terms-of-use\",\n      \"isAccessibleForFree\": true,\n      \"temporalCoverage\": \"2006/2026-11-05\",\n      \"spatialCoverage\": { \"@type\": \"Place\", \"name\": \"United States\" },\n      \"keywords\": [\"SNAP retailers\", \"food stamp map\", \"USDA SNAP data\", \"food access\", \"grocery store closures\", \"dollar stores\"],\n      \"variableMeasured\": [\n        \"Store count authorized on December 31, by year, plus November 5, 2026 (count of stores)\",\n        \"Store format, USDA category, 20 values (categorical)\",\n        \"Retailer brand, 289 matched chains (categorical)\",\n        \"Parent company, 13 groups (categorical)\",\n        \"Ownership class: chain, independent, or unknown (categorical)\",\n        \"Store location, latitude and longitude in decimal degrees (WGS 84)\",\n        \"Authorization start and end date (ISO 8601 date)\"\n      ],\n      \"creator\": {\n        \"@type\": \"Organization\",\n        \"name\": \"Data 4 The People\",\n        \"url\": \"https://data4thepeople.com\"\n      },\n      \"isBasedOn\": [\n        {\n          \"@type\": \"Dataset\",\n          \"name\": \"USDA FNS SNAP Retailer Locator Historical Data\",\n          \"description\": \"USDA's Food and Nutrition Service publishes every retail location it has authorized to accept SNAP benefits, with street address, coordinates, USDA store type, and the start and end dates of each authorization. The 2005–2025 historical file is used in full; records before 2006 are excluded because coverage in the first year is incomplete.\",\n          \"url\": \"https://www.fns.usda.gov/snap/retailer/historicaldata\",\n          \"license\": \"https://www.usda.gov/policies-and-links\",\n          \"creator\": {\n            \"@type\": \"Organization\",\n            \"name\": \"USDA Food and Nutrition Service\",\n            \"url\": \"https://www.fns.usda.gov\"\n          }\n        },\n        {\n          \"@type\": \"Dataset\",\n          \"name\": \"USDA SNAP Retailer Locator live feed\",\n          \"description\": \"The list behind USDA's online SNAP retailer locator: every store authorized on the day the feed was refreshed, with address, coordinates and one of 8 store types, and no authorization dates. The November 5, 2026 refresh (248,175 rows) is saved and used for the map's last step.\",\n          \"url\": \"https://services1.arcgis.com/RLQu0rK7h4kbsBq5/arcgis/rest/services/snap_retailer_location_data/FeatureServer/0\",\n          \"license\": \"https://www.usda.gov/policies-and-links\",\n          \"creator\": {\n            \"@type\": \"Organization\",\n            \"name\": \"USDA Food and Nutrition Service\",\n            \"url\": \"https://www.fns.usda.gov\"\n          }\n        }\n      ]\n    }\n  ]\n}"
+ }
+}
